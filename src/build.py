@@ -132,6 +132,7 @@ a.ch:hover{{border-color:var(--brand);transform:translateY(-2px)}}
 </style></head><body><div class="wrap">
 <h1>Ôn tập Nhà kho dữ liệu và tích hợp</h1>
 <p class="sub">Trắc nghiệm 50 câu mỗi chương · Nhận biết 8 · Thông hiểu 15 · Vận dụng 17 · Vận dụng cao 10</p>
+<a class="ch" href="on-tap.html" style="margin-bottom:14px"><span class="n">★</span><span><b>Ôn tập trọng tâm</b><br>40 câu hỏi ôn tập: công thức, đáp án, ví dụ tính tay</span></a>
 <div class="grid">
 {items}
 </div>
