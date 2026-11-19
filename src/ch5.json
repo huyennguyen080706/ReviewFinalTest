@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "Luật kết hợp",
+"q": "Trong luật kết hợp X ⇒ Y, X được gọi là gì?",
+"o": [
+"Antecedent (tiền đề)",
+"Consequent (hậu đề)",
+"Support (độ hỗ trợ)",
+"Itemset hậu tố"
+],
+"w": "X là antecedent (tiền đề, vế trái, điều kiện); Y là consequent (hậu đề, vế phải, kết quả). X và Y là hai tập item không giao nhau.",
+"x": [
+"Consequent là Y.",
+"Support là một độ đo của luật, không phải một vế.",
+"Không có thuật ngữ này trong định nghĩa luật."
+],
+"trap": "Đảo hai vế.",
+"mem": "Antecedent ⇒ Consequent (tiền đề ⇒ hậu đề)."
+},
+{
+"lv": "TH",
+"t": "Bản chất luật kết hợp",
+"q": "Luật {thẻ tín dụng} ⇒ {vay tiêu dùng} có confidence 0,85. Diễn giải nào đúng?",
+"o": [
+"85% khách có thẻ tín dụng cũng có vay tiêu dùng; đây là đồng xuất hiện thống kê, không phải nhân quả",
+"Việc mở thẻ tín dụng là nguyên nhân khiến 85% khách hàng phát sinh nhu cầu vay tiêu dùng",
+"85% tổng số khách hàng của ngân hàng có đồng thời cả thẻ tín dụng và khoản vay tiêu dùng",
+"Khách có vay tiêu dùng thì chắc chắn 85% trong số họ cũng đang sở hữu thẻ tín dụng"
+],
+"w": "Confidence = P(Y | X): trong những khách có X, 85% có cả Y. Luật kết hợp là quan hệ đồng xuất hiện thống kê, không phải quan hệ nhân quả.",
+"x": [
+"Luật kết hợp không chứng minh nhân quả.",
+"Tỷ lệ trên toàn bộ khách là support, không phải confidence.",
+"Đây là confidence của luật ngược Y ⇒ X, thường khác."
+],
+"trap": "Đọc confidence thành support, hoặc thành quan hệ nhân quả.",
+"mem": "Confidence = P(Y|X), mẫu số là số giao dịch có X."
+},
+{
+"lv": "VD",
+"t": "Support, confidence",
+"q": "CSDL 10 giao dịch: T1{A,B,C}, T2{A,B}, T3{A,C,D}, T4{B,C}, T5{A,B,C,D}, T6{B,D}, T7{A,C}, T8{A,B,D}, T9{C}, T10{A,B,C}. Support và confidence của luật A ⇒ B là:",
+"o": [
+"Sup = 0,50; Conf ≈ 0,714",
+"Sup = 0,70; Conf ≈ 0,714",
+"Sup = 0,50; Conf = 0,50",
+"Sup ≈ 0,714; Conf = 0,50"
+],
+"w": "Giao dịch chứa A: T1, T2, T3, T5, T7, T8, T10 = 7. Chứa cả A và B: T1, T2, T5, T8, T10 = 5.<br>Sup = 5/10 = 0,50. Conf = Sup(A, B)/Sup(A) = 5/7 ≈ 0,714.",
+"x": [
+"0,70 là support của riêng A.",
+"Confidence chia cho số giao dịch có tiền đề (7), không chia cho tổng (10).",
+"Đảo hai độ đo."
+],
+"trap": "Dùng sai mẫu số.",
+"mem": "Support chia tổng giao dịch; Confidence chia số giao dịch có tiền đề."
+},
+{
+"lv": "VD",
+"t": "Lift",
+"q": "Cùng CSDL 10 giao dịch ở câu trước (A có trong 7 giao dịch, B trong 7, {A,B} trong 5). Lift của luật A ⇒ B xấp xỉ bao nhiêu và nghĩa là gì?",
+"o": [
+"≈ 1,02; gần như độc lập",
+"≈ 0,71; quan hệ tiêu cực",
+"≈ 1,43; quan hệ tích cực mạnh",
+"≈ 0,50; quan hệ tiêu cực"
+],
+"w": "Lift = Conf/P(B) = (5/7)/(7/10) = 0,714/0,7 ≈ 1,02. Lift gần 1 nghĩa là A gần như không làm thay đổi khả năng có B. Confidence 71% trông cao nhưng chỉ vì B vốn đã phổ biến (70%).",
+"x": [
+"0,71 là confidence, chưa chia P(B).",
+"1,43 = 1/0,7, quên nhân với confidence.",
+"0,5 là support."
+],
+"trap": "Thấy confidence cao kết luận luật mạnh, quên so với P(Y).",
+"mem": "Lift = Conf/P(Y). ≈1 độc lập; >1 tích cực; <1 tiêu cực."
+},
+{
+"lv": "VD",
+"t": "Lift",
+"q": "2.000 khách; 400 có bảo hiểm nhân thọ; 500 có quỹ hưu trí; 200 có cả hai. Lift của luật {bảo hiểm nhân thọ} ⇒ {quỹ hưu trí} là:",
+"o": [
+"2,0",
+"0,5",
+"0,4",
+"1,0"
+],
+"w": "Conf = 200/400 = 0,5. P(quỹ hưu trí) = 500/2.000 = 0,25. Lift = 0,5/0,25 = 2,0. Kiểm tra: Sup/(P(X)·P(Y)) = 0,1/(0,2 × 0,25) = 2,0. Khách có bảo hiểm nhân thọ có khả năng có quỹ hưu trí gấp đôi mức chung.",
+"x": [
+"0,5 là confidence.",
+"0,4 = 200/500, là confidence của luật ngược.",
+"Lift = 1 chỉ khi độc lập."
+],
+"trap": "Dừng ở confidence.",
+"mem": "Lift = P(X∩Y)/(P(X)·P(Y))."
+},
+{
+"lv": "VDC",
+"t": "Lift và độc lập",
+"q": "95% khách có tài khoản thanh toán. Luật {vay mua nhà} ⇒ {tài khoản thanh toán} có confidence 0,95. Đánh giá đúng là:",
+"o": [
+"Lift = 1, luật không cho thêm thông tin dù confidence rất cao",
+"Lift = 0,95, luật có quan hệ tiêu cực nhẹ cần loại bỏ",
+"Luật rất mạnh vì confidence nằm trong khoảng 0,9–1",
+"Lift = 1,9, luật có quan hệ tích cực rất đáng khai thác"
+],
+"w": "Lift = 0,95/0,95 = 1: vay mua nhà và có tài khoản thanh toán độc lập. Slide nêu chính ví dụ này để giải thích vì sao cần Lift: confidence cao vẫn có thể vô nghĩa nếu Y vốn đã rất phổ biến.",
+"x": [
+"0,95 là confidence, không phải lift.",
+"Thang confidence chỉ đánh giá độ chắc chắn, không cho biết luật có thêm thông tin.",
+"Không có phép tính nào cho 1,9."
+],
+"trap": "Chỉ nhìn confidence.",
+"mem": "Hậu đề rất phổ biến ⇒ confidence cao giả tạo ⇒ kiểm tra Lift."
+},
+{
+"lv": "VD",
+"t": "Luật bị loại",
+"q": "Cùng CSDL 10 giao dịch (A: 7, B: 7, C: 7; {A,B}: 5; {A,B,C}: 3). Với minsup = 0,2 và minconf = 0,7, luật {A,B} ⇒ C có được giữ không?",
+"o": [
+"Không; Sup = 0,3 đạt nhưng Conf = 0,6 không đạt",
+"Có; Sup = 0,3 và Conf = 0,6 đều vượt ngưỡng",
+"Không; Sup = 0,3 không đạt ngưỡng minsup",
+"Có; Lift ≈ 0,86 nhỏ hơn 1 nên luật được giữ"
+],
+"w": "Sup = 3/10 = 0,3 ≥ 0,2 đạt minsup. Conf = 3/5 = 0,6 < 0,7 không đạt minconf. Luật chỉ được giữ khi vượt cả hai ngưỡng, nên bị loại. (Lift = 0,6/0,7 ≈ 0,86, còn là quan hệ tiêu cực.)",
+"x": [
+"0,6 nhỏ hơn 0,7.",
+"0,3 lớn hơn 0,2.",
+"Lift < 1 không phải lý do để giữ; nó cho thấy quan hệ tiêu cực."
+],
+"trap": "Chỉ kiểm tra một ngưỡng.",
+"mem": "Luật được giữ khi Sup ≥ minsup VÀ Conf ≥ minconf."
+},
+{
+"lv": "TH",
+"t": "Đổi chiều luật",
+"q": "Khi đổi chiều luật từ X ⇒ Y thành Y ⇒ X, độ đo nào <b>thay đổi</b>?",
+"o": [
+"Confidence",
+"Support",
+"Lift",
+"Cả Support và Lift"
+],
+"w": "Support = P(X ∩ Y) và Lift = P(X ∩ Y)/(P(X)P(Y)) đối xứng nên giữ nguyên. Confidence = P(Y|X) đổi thành P(X|Y), mẫu số đổi từ Sup(X) sang Sup(Y).",
+"x": [
+"Support đối xứng.",
+"Lift đối xứng.",
+"Cả hai đều đối xứng."
+],
+"trap": "Nghĩ Lift chứa Confidence nên cũng đổi.",
+"mem": "Đổi chiều: Support, Lift giữ nguyên; Confidence đổi."
+},
+{
+"lv": "VD",
+"t": "Đổi chiều luật",
+"q": "Trong CSDL 10 giao dịch (A: 7, D: 4, {A,D}: 3), confidence của A ⇒ D và D ⇒ A lần lượt là:",
+"o": [
+"≈ 0,43 và 0,75",
+"0,75 và ≈ 0,43",
+"0,30 và 0,30",
+"≈ 0,43 và ≈ 0,43"
+],
+"w": "Conf(A ⇒ D) = 3/7 ≈ 0,43. Conf(D ⇒ A) = 3/4 = 0,75. Support của cả hai luật đều là 0,3.",
+"x": [
+"Đảo hai giá trị.",
+"0,3 là support, giống nhau ở hai chiều.",
+"Confidence thay đổi khi đổi chiều."
+],
+"trap": "Dùng nhầm mẫu số.",
+"mem": "Conf(X⇒Y) chia Sup(X)."
+},
+{
+"lv": "NB",
+"t": "Tập phổ biến",
+"q": "Một itemset được coi là phổ biến khi:",
+"o": [
+"Support ≥ minsup",
+"Support > minsup",
+"Confidence ≥ minconf",
+"Lift > 1"
+],
+"w": "Itemset là phổ biến nếu support ≥ minsup. Chú ý dấu ≥: bằng ngưỡng vẫn tính là phổ biến.",
+"x": [
+"Dấu lớn hơn chặt sẽ loại các tập đúng bằng ngưỡng.",
+"Confidence là độ đo của luật, không của itemset.",
+"Lift dùng đánh giá luật."
+],
+"trap": "Bỏ sót tập có support đúng bằng ngưỡng.",
+"mem": "Phổ biến ⇔ support ≥ minsup."
+},
+{
+"lv": "NB",
+"t": "Số tập con",
+"q": "Tập item I có 6 phần tử. Số itemset khác rỗng có thể tạo ra là:",
+"o": [
+"63",
+"64",
+"36",
+"15"
+],
+"w": "Số tập con khác rỗng của n item là 2^n − 1 = 2^6 − 1 = 63. Đây là lý do không thể đếm hết mọi tập khi n lớn.",
+"x": [
+"64 tính cả tập rỗng.",
+"36 = 6², không phải số tập con.",
+"15 là số tập kích thước 2 (C(6,2))."
+],
+"trap": "Quên trừ tập rỗng.",
+"mem": "Số tập con khác rỗng = 2^n − 1."
+},
+{
+"lv": "TH",
+"t": "Tính chất Apriori",
+"q": "Tính chất Apriori (anti-monotone) phát biểu rằng:",
+"o": [
+"Nếu một tập không phổ biến thì mọi tập cha của nó cũng không phổ biến",
+"Nếu một tập phổ biến thì mọi tập cha của nó cũng phổ biến",
+"Nếu một tập không phổ biến thì mọi tập con của nó cũng không phổ biến",
+"Support của tập cha luôn lớn hơn hoặc bằng support của tập con"
+],
+"w": "Nếu X ⊆ Y thì Sup(Y) ≤ Sup(X), vì giao dịch chứa Y chắc chắn chứa X. Suy ra: tập con không phổ biến ⇒ tập cha không phổ biến; tương đương, tập con của tập phổ biến thì phổ biến.",
+"x": [
+"Tập cha có thể có support thấp hơn và không phổ biến.",
+"Tập con của tập không phổ biến vẫn có thể phổ biến.",
+"Ngược chiều bất đẳng thức."
+],
+"trap": "Đảo chiều tập con / tập cha.",
+"mem": "Không phổ biến lan lên tập cha; phổ biến lan xuống tập con."
+},
+{
+"lv": "VDC",
+"t": "Apriori từng bước",
+"q": "CSDL 10 giao dịch với support count: A 7, B 7, C 7, D 4; AB 5, AC 5, BC 4, AD 3, BD 3, CD 2. minsup count = 3. Ở bước sinh ứng viên kích thước 3 từ các tập 2 phổ biến, những ứng viên nào bị loại <b>không cần đếm</b> nhờ tính chất Apriori?",
+"o": [
+"{A,C,D} và {B,C,D}",
+"{A,B,D} và {A,C,D}",
+"{A,B,C} và {B,C,D}",
+"Không ứng viên nào bị loại trước khi đếm"
+],
+"w": "Tập 2 phổ biến: AB, AC, BC, AD, BD (CD = 2 bị loại). Ứng viên kích thước 3: ABC, ABD, ACD, BCD.<br>• ACD chứa CD không phổ biến → loại.<br>• BCD chứa CD → loại.<br>• ABC (tập con AB, AC, BC đều phổ biến) và ABD (AB, AD, BD đều phổ biến) phải đếm.<br>Đếm: ABC = 3 đạt; ABD = 2 không đạt.",
+"x": [
+"ABD có mọi tập con 2 đều phổ biến nên phải đếm; nó chỉ bị loại sau khi đếm (count 2).",
+"ABC có mọi tập con phổ biến và cuối cùng đạt (count 3).",
+"CD không phổ biến nên có ứng viên bị loại sớm."
+],
+"trap": "Nhầm “bị loại sau khi đếm” với “bị loại không cần đếm”.",
+"mem": "Loại không cần đếm: ứng viên có ít nhất một tập con (k−1) không phổ biến."
+},
+{
+"lv": "VDC",
+"t": "Apriori – tổng số tập phổ biến",
+"q": "Tiếp câu trước (minsup count = 3; ABC = 3, ABD = 2). Tổng số tập phổ biến của CSDL là:",
+"o": [
+"10",
+"9",
+"11",
+"15"
+],
+"w": "Kích thước 1: A, B, C, D = 4. Kích thước 2: AB, AC, BC, AD, BD = 5. Kích thước 3: ABC = 1 (ABD = 2 bị loại). Kích thước 4: ABCD chứa CD không phổ biến → loại. Tổng = 4 + 5 + 1 = 10.",
+"x": [
+"9 là khi quên D (support 4 ≥ 3) hoặc quên ABC.",
+"11 là khi tính thêm ABD dù count 2 < 3.",
+"15 = 2^4 − 1, là khi mọi tập con đều phổ biến."
+],
+"trap": "Quên tập đúng bằng ngưỡng hoặc tính tập dưới ngưỡng.",
+"mem": "Đếm theo từng kích thước, kiểm tra ≥ minsup."
+},
+{
+"lv": "TH",
+"t": "Hạn chế Apriori",
+"q": "Hai điểm yếu chính của Apriori mà FP-Growth khắc phục là:",
+"o": [
+"Quét CSDL nhiều lần và sinh rất nhiều ứng viên",
+"Không tìm được tập phổ biến kích thước lớn hơn 2",
+"Cho kết quả khác FP-Growth trên cùng CSDL",
+"Chỉ xử lý được dữ liệu số liên tục"
+],
+"w": "Apriori quét CSDL một lần cho mỗi kích thước k và sinh rất nhiều ứng viên (n item phổ biến cho khoảng n²/2 ứng viên kích thước 2). FP-Growth nén CSDL vào FP-tree sau 2 lần quét và không sinh ứng viên.",
+"x": [
+"Apriori tìm được tập mọi kích thước.",
+"Hai thuật toán cho cùng kết quả, chỉ khác cách làm.",
+"Apriori làm việc với item rời rạc."
+],
+"trap": "Nghĩ FP-Growth cho kết quả “tốt hơn”. Nó chỉ nhanh hơn.",
+"mem": "FP-Growth: 2 lần quét, không sinh ứng viên, cùng kết quả với Apriori."
+},
+{
+"lv": "NB",
+"t": "FP-Growth",
+"q": "FP-Growth quét CSDL bao nhiêu lần?",
+"o": [
+"2 lần",
+"1 lần",
+"Một lần cho mỗi kích thước itemset",
+"Một lần cho mỗi item phổ biến"
+],
+"w": "Lần 1: đếm support từng item, chọn item phổ biến, sắp thứ tự. Lần 2: đọc từng giao dịch, bỏ item không phổ biến, sắp theo thứ tự rồi chèn vào FP-tree. Sau đó khai phá trực tiếp trên cây.",
+"x": [
+"Một lần chưa đủ vì phải biết support trước để sắp thứ tự.",
+"Đây là Apriori.",
+"Khai phá trên cây không cần quét lại CSDL."
+],
+"trap": "Lẫn với Apriori.",
+"mem": "FP-Growth = 2 lần quét."
+},
+{
+"lv": "TH",
+"t": "Thứ tự item trong FP-tree",
+"q": "Vì sao mọi giao dịch phải được sắp item theo cùng một thứ tự (support giảm dần) trước khi chèn vào FP-tree?",
+"o": [
+"Để các giao dịch có chung tiền tố đi chung nhánh, nhờ đó cây nén được",
+"Để Apriori và FP-Growth cho cùng một tập kết quả phổ biến",
+"Để loại các item không phổ biến ra khỏi từng giao dịch",
+"Để tính confidence của luật ngay trong quá trình xây cây"
+],
+"w": "Cùng thứ tự thì các giao dịch có chung phần đầu (tiền tố) đi chung một nhánh, chỉ lưu một lần và tăng count. Sắp theo support giảm dần giúp các item phổ biến nhất ở gần gốc, tối đa hóa phần chung.",
+"x": [
+"Kết quả hai thuật toán giống nhau không phụ thuộc thứ tự.",
+"Loại item không phổ biến là bước lọc riêng, không phải mục đích của việc sắp xếp.",
+"Confidence tính sau khi có tập phổ biến."
+],
+"trap": "Nhầm bước lọc với bước sắp xếp.",
+"mem": "Cùng thứ tự ⇒ chung tiền tố ⇒ nén."
+},
+{
+"lv": "VD",
+"t": "Xây FP-tree",
+"q": "Thứ tự item: F, C, A, B, M, P. Cây hiện có nhánh root–F2–C2–A2–M1–P1 và nhánh con A–B1–M1. Chèn giao dịch đã sắp {F, C, A, M, P}. Count các nút trên nhánh sau khi chèn là:",
+"o": [
+"F3, C3, A3, M2, P2",
+"F3, C3, A3, M1, P1 và nhánh mới M1–P1",
+"F2, C2, A2, M2, P2",
+"F3, C3, A3, B2, M2, P2"
+],
+"w": "Giao dịch {F, C, A, M, P} trùng hoàn toàn nhánh root–F–C–A–M–P đã có, nên tăng count mỗi nút trên đường đi lên 1: F3, C3, A3, M2, P2. Không tạo nút mới.",
+"x": [
+"Tạo nhánh mới khi đã có tiền tố trùng là không nén.",
+"Quên tăng count các nút F, C, A.",
+"Giao dịch không chứa B nên không đi qua nhánh A–B."
+],
+"trap": "Tạo nút mới thay vì đi theo tiền tố có sẵn.",
+"mem": "Tiền tố trùng ⇒ tăng count; khác ⇒ tách nhánh mới."
+},
+{
+"lv": "VD",
+"t": "Conditional Pattern Base",
+"q": "Item X có 3 nút trong FP-tree với đường tiền tố: {F, C, A} : 2, {F, B} : 1, {C} : 1 (count lấy từ nút X). Với minsupport count = 3, item nào trong CPB của X đạt ngưỡng?",
+"o": [
+"F và C (mỗi item count 3)",
+"Chỉ F (count 3)",
+"F, C và A (count 3, 3, 2)",
+"Không item nào đạt ngưỡng"
+],
+"w": "Đếm item trong CPB là cộng count của các đường chứa nó, không phải đếm số đường.<br>F: đường 1 (2) + đường 2 (1) = 3. C: đường 1 (2) + đường 3 (1) = 3. A: 2. B: 1.<br>Đạt ngưỡng 3: F và C.",
+"x": [
+"C cũng xuất hiện ở hai đường với tổng count 3.",
+"A chỉ có 2 < 3.",
+"Đếm số đường thay vì cộng count sẽ ra F = 2, C = 2."
+],
+"trap": "Đếm số đường thay vì cộng count.",
+"mem": "Count trong CPB = tổng count của các đường chứa item."
+},
+{
+"lv": "VDC",
+"t": "CPB – ví dụ slide",
+"q": "Trong ví dụ FP-tree của slide (minsupport count = 3), CPB của P là {F, C, A, M : 2}, {C, B : 1}. Tập phổ biến chứa P là:",
+"o": [
+"{P} và {C, P}",
+"{P}, {C, P}, {F, P}",
+"{P}, {C, P}, {F, C, A, M, P}",
+"Chỉ {P}"
+],
+"w": "Đếm trong CPB của P: F 2, C 2 + 1 = 3, A 2, M 2, B 1. Chỉ C đạt ngưỡng 3, nên Conditional FP-tree của P chỉ có C. Tập phổ biến chứa P: {P} (count 3) và {C, P}.",
+"x": [
+"F chỉ có count 2 trong CPB của P.",
+"Đường F, C, A, M chỉ có count 2.",
+"C đạt ngưỡng nên {C, P} là tập phổ biến."
+],
+"trap": "Lấy count của nút F trên cây (F4) thay vì count của nút P trên đường.",
+"mem": "Count của mỗi đường trong CPB là count của nút item đang xét."
+},
+{
+"lv": "VD",
+"t": "Bài tập ngân hàng",
+"q": "Bài 1 của slide: 5 giao dịch sản phẩm ngân hàng, minsup = 2. Kết quả có 4 item phổ biến CC, PL, FD, LI và mọi tổ hợp của chúng đều phổ biến; CI chỉ xuất hiện 1 lần. Tổng số tập phổ biến là:",
+"o": [
+"15",
+"16",
+"31",
+"11"
+],
+"w": "Mọi tập con khác rỗng của {CC, PL, FD, LI} đều phổ biến: 2^4 − 1 = 15 (4 tập đơn, 6 tập đôi, 4 tập ba, 1 tập bốn). CI bị loại từ đầu nên không có tập nào chứa CI.",
+"x": [
+"16 tính cả tập rỗng.",
+"31 = 2^5 − 1, tính cả CI.",
+"11 là kết quả của ví dụ pasta/lemon ở slide khác."
+],
+"trap": "Tính cả item không phổ biến.",
+"mem": "Mọi tập con của k item phổ biến ⇒ 2^k − 1."
+},
+{
+"lv": "TH",
+"t": "Biểu diễn FP-tree",
+"q": "Trong FP-tree, <b>node-link</b> (nét đứt) dùng để làm gì?",
+"o": [
+"Nối các nút cùng item ở các nhánh khác nhau",
+"Nối mỗi nút với nút cha để lấy đường tiền tố",
+"Lưu số lần quét CSDL đã làm cho mỗi item",
+"Đánh dấu item không phổ biến cần bỏ khỏi cây"
+],
+"w": "Node-link nối các nút cùng item ở các nhánh khác nhau, bắt đầu từ bảng đầu mục. Muốn tìm mọi nút của item M chỉ cần đi theo chuỗi liên kết này. Liên kết tới nút cha (parent, nét liền) mới dùng để lấy đường tiền tố.",
+"x": [
+"Đây là con trỏ parent (nét liền).",
+"Cây không lưu số lần quét.",
+"Item không phổ biến đã bị lọc trước khi chèn."
+],
+"trap": "Lẫn node-link với parent.",
+"mem": "Node-link: cùng item, khác nhánh. Parent: đi ngược lấy tiền tố."
+},
+{
+"lv": "NB",
+"t": "ID3 và C4.5",
+"q": "Tiêu chí chọn thuộc tính của C4.5 là:",
+"o": [
+"Gain Ratio",
+"Information Gain",
+"Gini Index",
+"Confidence"
+],
+"w": "ID3 dùng Information Gain; C4.5 dùng Gain Ratio = Gain/SplitInfo để sửa sự thiên vị thuộc tính có nhiều giá trị.",
+"x": [
+"Đây là tiêu chí của ID3.",
+"Gini thuộc CART, không có trong slide.",
+"Confidence là độ đo luật kết hợp."
+],
+"trap": "Lẫn ID3 với C4.5.",
+"mem": "ID3 ↔ Information Gain. C4.5 ↔ Gain Ratio."
+},
+{
+"lv": "TH",
+"t": "Gain Ratio",
+"q": "Vì sao cột Customer (mỗi khách một giá trị duy nhất) có Information Gain cao nhất nhưng vô dụng để dự đoán, và C4.5 xử lý thế nào?",
+"o": [
+"Mỗi nhánh 1 dòng nên thuần tuyệt đối; Gain Ratio chia cho SplitInfo lớn nên bị phạt",
+"Cột Customer có entropy bằng 0 nên ID3 tự loại nó khỏi danh sách thuộc tính",
+"Cột Customer là liên tục nên C4.5 chia thành hai nhánh theo một ngưỡng",
+"Cột Customer có giá trị Null nên C4.5 chia vào mọi nhánh theo trọng số"
+],
+"w": "Information Gain thiên vị thuộc tính có nhiều giá trị: mỗi nhánh chỉ 1 dòng nên thuần, Gain = 1, nhưng không áp dụng được cho khách mới. C4.5 chia Gain cho SplitInfo = log2 8 = 3, cho GainRatio = 0,333 < 0,575 của Credit History.",
+"x": [
+"ID3 không tự loại; ngược lại nó sẽ chọn cột này.",
+"Customer là mã định danh rời rạc, không phải số liên tục.",
+"Không có giá trị thiếu trong tình huống."
+],
+"trap": "Tin rằng Gain cao luôn là thuộc tính tốt.",
+"mem": "Info Gain thiên vị nhiều giá trị ⇒ Gain Ratio phạt bằng SplitInfo."
+},
+{
+"lv": "VD",
+"t": "Gain Ratio",
+"q": "Thuộc tính A chia 8 bản ghi thành 3 nhánh có 2, 2, 4 bản ghi, Gain(A) = 0,6. Gain Ratio của A là:",
+"o": [
+"0,4",
+"0,6",
+"0,9",
+"1,5"
+],
+"w": "SplitInfo = −(2/8 log2 2/8 + 2/8 log2 2/8 + 4/8 log2 4/8) = 0,5 + 0,5 + 0,5 = 1,5. GainRatio = 0,6/1,5 = 0,4.",
+"x": [
+"0,6 là Gain, chưa chia SplitInfo.",
+"0,9 = 0,6 × 1,5, nhân thay vì chia.",
+"1,5 là SplitInfo."
+],
+"trap": "Nhân thay vì chia.",
+"mem": "GainRatio = Gain/SplitInfo; SplitInfo là entropy của chính cách chia."
+},
+{
+"lv": "VD",
+"t": "ID3 và C4.5",
+"q": "Dữ liệu có cột thu nhập liên tục, một số hồ sơ thiếu giá trị, và cần cây gọn để tránh overfitting. Thuật toán phù hợp hơn là:",
+"o": [
+"C4.5",
+"ID3",
+"Apriori",
+"K-Means"
+],
+"w": "C4.5 xử lý dữ liệu liên tục (chọn ngưỡng t, tách x ≤ t và x > t), hỗ trợ giá trị Null bằng trọng số xác suất, và có post-pruning để giảm overfitting. ID3 không làm được cả ba.",
+"x": [
+"ID3 chỉ dùng dữ liệu rời rạc, không hỗ trợ Null, không cắt tỉa.",
+"Apriori là khai phá luật kết hợp, không phân lớp.",
+"K-Means là phân cụm không giám sát."
+],
+"trap": "Rời rạc hóa thủ công rồi dùng ID3 vẫn không giải quyết Null và overfitting.",
+"mem": "Liên tục, Null, pruning ⇒ C4.5."
+},
+{
+"lv": "TH",
+"t": "Overfitting",
+"q": "Overfitting của cây quyết định là hiện tượng:",
+"o": [
+"Cây học thuộc cả nhiễu: rất đúng trên dữ liệu cũ, kém trên dữ liệu mới",
+"Cây quá nông nên dự đoán kém trên cả dữ liệu huấn luyện lẫn dữ liệu mới",
+"Cây không xây được vì dữ liệu có quá nhiều giá trị Null ở nhiều cột",
+"Cây chọn thuộc tính có Gain Ratio nhỏ nhất làm nút gốc của cây"
+],
+"w": "Overfitting (quá khớp): cây sâu học thuộc cả nhiễu của dữ liệu huấn luyện. C4.5 dùng post-pruning: dựng cây đầy đủ rồi cắt các nhánh không giúp giảm lỗi dự đoán.",
+"x": [
+"Đây là underfitting.",
+"Null là vấn đề dữ liệu, không phải overfitting.",
+"Mô tả sai tiêu chí chọn thuộc tính."
+],
+"trap": "Nhầm overfitting với underfitting.",
+"mem": "Overfitting: tốt trên cũ, kém trên mới ⇒ post-pruning."
+},
+{
+"lv": "NB",
+"t": "Naive Bayes",
+"q": "Giả định “naive” của Naive Bayes là:",
+"o": [
+"Các thuộc tính độc lập với nhau khi đã biết lớp",
+"Các lớp luôn có xác suất tiên nghiệm bằng nhau",
+"Dữ liệu luôn tuân theo phân phối chuẩn",
+"Mỗi thuộc tính chỉ có đúng hai giá trị"
+],
+"w": "Naive Bayes giả định các thuộc tính độc lập có điều kiện khi đã biết lớp, nên P(C | X) ∝ P(C) × Π P(xk | C).",
+"x": [
+"P(C) là tỷ lệ lớp trong dữ liệu, không giả định bằng nhau.",
+"Slide không giả định phân phối chuẩn.",
+"Thuộc tính có thể có nhiều giá trị."
+],
+"trap": "Nghĩ “naive” là các lớp bằng nhau.",
+"mem": "Naive = độc lập có điều kiện khi biết lớp."
+},
+{
+"lv": "VDC",
+"t": "Naive Bayes",
+"q": "10 hồ sơ: 6 Yes, 4 No. Trong lớp Yes: 3 có Income = Cao, 5 có Credit = Tốt. Trong lớp No: 1 có Income = Cao, 1 có Credit = Tốt. Hồ sơ mới X = (Income = Cao, Credit = Tốt). Naive Bayes dự đoán gì và P(Yes | X) xấp xỉ bao nhiêu?",
+"o": [
+"Yes; P(Yes | X) ≈ 0,91",
+"Yes; P(Yes | X) ≈ 0,25",
+"No; P(No | X) ≈ 0,91",
+"Yes; P(Yes | X) ≈ 0,60"
+],
+"w": "Yes: P(Yes) × P(Cao|Yes) × P(Tốt|Yes) = 0,6 × 3/6 × 5/6 = 0,6 × 0,5 × 0,8333 = 0,25.<br>No: 0,4 × 1/4 × 1/4 = 0,025.<br>0,25 > 0,025 → Yes. Chuẩn hóa: 0,25/(0,25 + 0,025) ≈ 0,909.",
+"x": [
+"0,25 là tích chưa chuẩn hóa.",
+"Đảo kết luận lớp.",
+"0,6 chỉ là xác suất tiên nghiệm P(Yes)."
+],
+"trap": "Dừng ở tích chưa chuẩn hóa hoặc quên nhân P(C).",
+"mem": "So sánh P(C)·ΠP(xk|C); chuẩn hóa bằng cách chia tổng các lớp."
+},
+{
+"lv": "TH",
+"t": "Mạng Bayes",
+"q": "Mạng Bayes khác Naive Bayes ở điểm cốt lõi nào?",
+"o": [
+"Mô hình hóa phụ thuộc giữa các thuộc tính bằng đồ thị có hướng không chu trình",
+"Giả định mọi thuộc tính độc lập hoàn toàn với nhau và với cả lớp",
+"Không dùng định lý Bayes mà dùng Information Gain để chọn nút",
+"Chỉ xử lý được dữ liệu liên tục theo phân phối chuẩn"
+],
+"w": "Mạng Bayes là DAG: mỗi nút là một biến, mũi tên U → V nghĩa là V phụ thuộc trực tiếp vào U, mỗi nút kèm bảng xác suất có điều kiện. Điểm chính là bỏ giả định độc lập của Naive Bayes. Slide gọi là “Naive Bayes Network”, tên chuẩn là Bayesian Network.",
+"x": [
+"Độc lập là giả định của Naive Bayes, và thuộc tính không độc lập với lớp.",
+"Mạng Bayes vẫn dựa trên xác suất có điều kiện.",
+"Slide không giới hạn kiểu dữ liệu."
+],
+"trap": "Tên trên slide có chữ “Naive” gây hiểu nhầm.",
+"mem": "Mạng Bayes = DAG + bảng xác suất có điều kiện, không naive."
+},
+{
+"lv": "VD",
+"t": "K-Means",
+"q": "Các điểm trên trục số: 2, 4, 10, 12, 20. K-Means với k = 2, tâm ban đầu c1 = 2, c2 = 12. Sau một vòng (gán điểm rồi tính lại tâm), hai tâm mới là:",
+"o": [
+"c1 = 3, c2 = 14",
+"c1 = 2, c2 = 12",
+"c1 = 5,33, c2 = 16",
+"c1 = 3, c2 = 11"
+],
+"w": "Gán: 2 → c1 (0); 4 → c1 (2 so với 8); 10 → c2 (8 so với 2); 12 → c2; 20 → c2 (18 so với 8).<br>Tâm mới: c1 = (2 + 4)/2 = 3; c2 = (10 + 12 + 20)/3 = 14.",
+"x": [
+"Chưa tính lại tâm.",
+"Gán sai 10 vào c1: (2 + 4 + 10)/3 = 5,33; (12 + 20)/2 = 16.",
+"Quên điểm 20 khi tính tâm c2."
+],
+"trap": "Gán điểm 10 nhầm cụm.",
+"mem": "K-Means: gán vào tâm gần nhất → tâm mới = mean của cụm."
+},
+{
+"lv": "VD",
+"t": "K-Medoids",
+"q": "Cụm gồm các giá trị 1, 3, 5, 6, 40. Mean và medoid của cụm lần lượt là:",
+"o": [
+"Mean = 11; medoid = 5",
+"Mean = 5; medoid = 11",
+"Mean = 11; medoid = 6",
+"Mean = 11; medoid = 3"
+],
+"w": "Mean = (1 + 3 + 5 + 6 + 40)/5 = 55/5 = 11, nằm xa mọi điểm thật vì bị 40 kéo đi.<br>Tổng khoảng cách: từ 1: 0+2+4+5+39 = 50; từ 3: 2+0+2+3+37 = 44; từ 5: 4+2+0+1+35 = 42; từ 6: 5+3+1+0+34 = 43; từ 40: 156. Nhỏ nhất là 5 → medoid = 5.",
+"x": [
+"Đảo hai giá trị; medoid phải là điểm thật.",
+"Tổng khoảng cách từ 6 là 43 > 42.",
+"Tổng khoảng cách từ 3 là 44 > 42."
+],
+"trap": "Chọn medoid bằng trung vị hoặc ước lượng mà không tính tổng khoảng cách.",
+"mem": "Medoid = điểm thật có tổng khoảng cách nhỏ nhất; chống ngoại lai tốt hơn mean."
+},
+{
+"lv": "TH",
+"t": "K-Means và K-Medoids",
+"q": "Nhận định nào đúng khi so sánh K-Means và K-Medoids?",
+"o": [
+"K-Means nhanh nhưng nhạy ngoại lai; K-Medoids chống nhiễu tốt nhưng chậm với dữ liệu lớn",
+"K-Means chống nhiễu tốt vì tâm là điểm thật; K-Medoids nhanh vì tâm là trung bình",
+"K-Means dùng được cho mọi loại dữ liệu; K-Medoids chỉ dùng cho dữ liệu số",
+"Cả hai đều không cần biết trước số cụm k khi bắt đầu chạy thuật toán"
+],
+"w": "K-Means: tâm là mean (trọng tâm ảo), chỉ cho dữ liệu số, rất nhanh nhưng nhạy ngoại lai. K-Medoids: tâm là medoid (điểm thật), dùng được cho mọi loại dữ liệu vì chỉ cần đo khoảng cách, chống nhiễu tốt nhưng chậm.",
+"x": [
+"Đảo ngược tâm của hai thuật toán.",
+"Đảo ngược phạm vi dữ liệu.",
+"Cả hai đều cần biết trước k; DBSCAN mới không cần."
+],
+"trap": "Đảo đặc điểm hai thuật toán.",
+"mem": "Mean ↔ K-Means ↔ nhanh, nhạy ngoại lai. Medoid ↔ K-Medoids ↔ bền, chậm."
+},
+{
+"lv": "VD",
+"t": "Biến thể phân cụm",
+"q": "Dữ liệu khách hàng có cả cột số (thu nhập, tuổi) và cột phân loại (nghề nghiệp, tỉnh). Thuật toán phân cụm phù hợp theo slide là:",
+"o": [
+"K-Prototypes",
+"K-Modes",
+"Mini-Batch K-Means",
+"CLARA"
+],
+"w": "K-Prototypes lai K-Means và K-Modes cho dữ liệu hỗn hợp (vừa cột số vừa cột phân loại).",
+"x": [
+"K-Modes chỉ cho dữ liệu phân loại.",
+"Mini-Batch K-Means dành cho dữ liệu số rất lớn.",
+"CLARA là bản lấy mẫu của K-Medoids cho dữ liệu lớn."
+],
+"trap": "Chọn K-Modes vì có cột phân loại, bỏ qua cột số.",
+"mem": "Số → K-Means; phân loại → K-Modes; hỗn hợp → K-Prototypes; K-Medoids dữ liệu lớn → CLARA/CLARANS."
+},
+{
+"lv": "TH",
+"t": "K-Modes",
+"q": "Trong K-Modes, tâm cụm và khoảng cách được xác định thế nào?",
+"o": [
+"Tâm là mode của mỗi thuộc tính; khoảng cách là số thuộc tính khác nhau",
+"Tâm là trung bình của mỗi thuộc tính; khoảng cách Euclid",
+"Tâm là một điểm thật có tổng khoảng cách nhỏ nhất; khoảng cách Manhattan",
+"Tâm là ô lưới có mật độ cao nhất; khoảng cách theo số ô"
+],
+"w": "K-Modes cho dữ liệu phân loại: thay mean bằng mode (giá trị xuất hiện nhiều nhất), khoảng cách là số thuộc tính khác nhau giữa hai bản ghi.",
+"x": [
+"Đây là K-Means.",
+"Đây là K-Medoids.",
+"Đây là ý tưởng của phân cụm lưới."
+],
+"trap": "Lấy trung bình của giá trị phân loại.",
+"mem": "K-Modes: mode + đếm thuộc tính khác nhau."
+},
+{
+"lv": "NB",
+"t": "DBSCAN",
+"q": "Trong DBSCAN, điểm <b>core</b> là điểm:",
+"o": [
+"Có ít nhất MinPts điểm trong bán kính Eps",
+"Nằm trong Eps của một điểm core nhưng không đủ MinPts",
+"Không nằm trong Eps của bất kỳ điểm core nào",
+"Nằm gần tâm trung bình của cụm nhất"
+],
+"w": "Core: có ≥ MinPts điểm trong bán kính Eps, là nơi cụm phát triển. Border: trong Eps của một core nhưng không đủ MinPts. Noise: không thuộc hai loại trên.",
+"x": [
+"Đây là border.",
+"Đây là noise.",
+"DBSCAN không dùng tâm trung bình."
+],
+"trap": "Lẫn ba loại điểm.",
+"mem": "Core ≥ MinPts; Border gần core; Noise còn lại."
+},
+{
+"lv": "VDC",
+"t": "DBSCAN",
+"q": "Các điểm trên trục số: 1, 2, 3, 7, 8, 9, 10, 15. Eps = 1, MinPts = 3 (tính cả chính điểm đó). Kết quả DBSCAN là:",
+"o": [
+"2 cụm {1,2,3} và {7,8,9,10}; điểm 15 là nhiễu; có 3 điểm core",
+"3 cụm {1,2,3}, {7,8,9,10}, {15}; có 4 điểm core",
+"2 cụm {1,2,3} và {7,8,9,10}; điểm 15 là nhiễu; có 5 điểm core",
+"1 cụm gồm tất cả các điểm trừ 15; có 3 điểm core"
+],
+"w": "Hàng xóm trong bán kính 1 (tính cả chính nó):<br>• 2: {1,2,3} = 3 → core. 1: {1,2}, 3: {2,3} → border của 2.<br>• 8: {7,8,9} → core. 9: {8,9,10} → core. 7, 10 có 2 điểm → border.<br>• 15: chỉ chính nó → noise.<br>Core: 2, 8, 9 (3 điểm). Hai cụm {1,2,3} và {7,8,9,10}; khoảng 3 → 7 rộng hơn Eps nên không nối.",
+"x": [
+"15 là nhiễu, không tạo cụm; và chỉ có 3 core.",
+"Các điểm 1, 3, 7, 10 chỉ có 2 điểm trong Eps nên là border.",
+"Khoảng cách giữa 3 và 7 là 4 > Eps nên hai nhóm không nối."
+],
+"trap": "Tính mọi điểm thuộc cụm là core.",
+"mem": "DBSCAN tự tìm số cụm, loại nhiễu; cụm loang qua các điểm core."
+},
+{
+"lv": "VD",
+"t": "DBSCAN và K-Means",
+"q": "Dữ liệu vị trí khách có các cụm hình vòng cung dài và nhiều điểm nhiễu rải rác; không biết trước số cụm. Thuật toán phù hợp nhất là:",
+"o": [
+"DBSCAN",
+"K-Means",
+"K-Medoids",
+"AGNES"
+],
+"w": "DBSCAN không cần biết trước k, tìm được cụm hình dạng bất kỳ (cong, dài) vì loang theo mật độ, và tự loại nhiễu.",
+"x": [
+"K-Means cần k và tạo cụm dạng cầu quanh tâm, nhạy nhiễu.",
+"K-Medoids cũng cần k và tạo cụm quanh medoid.",
+"AGNES tốn tính toán, và không tự loại nhiễu như DBSCAN."
+],
+"trap": "Chọn K-Medoids vì “chống nhiễu”, bỏ qua yêu cầu hình dạng và k.",
+"mem": "Không biết k + hình dạng bất kỳ + có nhiễu ⇒ DBSCAN."
+},
+{
+"lv": "TH",
+"t": "Hierarchical clustering",
+"q": "AGNES và DIANA khác nhau ở điểm nào?",
+"o": [
+"AGNES gộp dần từ dưới lên; DIANA chia dần từ trên xuống",
+"AGNES chia dần từ trên xuống; DIANA gộp dần từ dưới lên",
+"AGNES dựa trên mật độ; DIANA dựa trên ô lưới",
+"AGNES cần biết k; DIANA không cần dendrogram"
+],
+"w": "AGNES (agglomerative): mỗi điểm là một cụm, lần lượt gộp hai cụm gần nhất. DIANA (divisive): bắt đầu một cụm chứa tất cả rồi tách dần. Cả hai tạo dendrogram; cắt ở độ cao nào được số cụm tương ứng.",
+"x": [
+"Đảo ngược.",
+"Mật độ là DBSCAN; lưới là STING, CLIQUE.",
+"Cả hai đều tạo dendrogram và không cần k trước."
+],
+"trap": "Đảo chiều gộp/chia.",
+"mem": "AGNES gộp (bottom-up); DIANA chia (top-down)."
+},
+{
+"lv": "VD",
+"t": "Hierarchical và grid",
+"q": "Cần phân cụm 10.000 điểm. Phân cụm phân cấp kiểu AGNES phải tính khoảng cách giữa mọi cặp điểm. Số cặp là bao nhiêu và vì sao grid-based nhanh hơn?",
+"o": [
+"49.995.000 cặp; grid-based phụ thuộc số ô chứ không phụ thuộc số điểm",
+"100.000.000 cặp; grid-based chỉ xét mẫu ngẫu nhiên của dữ liệu",
+"49.995.000 cặp; grid-based dùng medoid thay cho trung bình của cụm",
+"10.000 cặp; grid-based không cần tính khoảng cách giữa các ô"
+],
+"w": "Số cặp = n(n − 1)/2 = 10.000 × 9.999/2 = 49.995.000. Grid-based chia không gian thành ô lưới, gom thông tin điểm vào ô rồi gom cụm trên các ô, nên thời gian phụ thuộc số ô.",
+"x": [
+"n² đếm mỗi cặp hai lần và cả cặp với chính nó; grid không lấy mẫu.",
+"Medoid là của K-Medoids.",
+"Số cặp không bằng n."
+],
+"trap": "Dùng n² thay cho n(n − 1)/2.",
+"mem": "Hierarchical: O(n²) cặp ⇒ kém với dữ liệu lớn. Grid: theo số ô ⇒ nhanh."
+},
+{
+"lv": "VDC",
+"t": "BIRCH và dữ liệu lớn",
+"q": "Slide ghi phân cụm phân cấp “rất kém” với dữ liệu lớn và liệt kê BIRCH trong nhóm hierarchical. Nhận định nào chính xác nhất?",
+"o": [
+"Đúng với AGNES/DIANA; BIRCH được thiết kế riêng cho dữ liệu lớn, tóm tắt vào cây đặc trưng cụm và quét khoảng một lần",
+"Đúng với mọi thuật toán trong nhóm, kể cả BIRCH, vì đều phải tính khoảng cách mọi cặp điểm",
+"Sai với mọi thuật toán phân cấp vì dendrogram luôn được tính trong thời gian tuyến tính",
+"Đúng với BIRCH nhưng sai với AGNES vì AGNES chỉ gộp các cụm lân cận nhau"
+],
+"w": "Giáo trình lưu ý: dòng “dữ liệu lớn: rất kém” đúng với AGNES và DIANA (phải tính n(n − 1)/2 khoảng cách). BIRCH tóm tắt dữ liệu vào một cây đặc trưng cụm và chỉ cần quét khoảng một lần, nên dùng được cho dữ liệu lớn.",
+"x": [
+"BIRCH không tính khoảng cách mọi cặp điểm.",
+"AGNES/DIANA tốn ít nhất bậc hai theo số điểm.",
+"Ngược lại: AGNES mới là thuật toán kém với dữ liệu lớn."
+],
+"trap": "Áp nhận xét chung của slide cho mọi thuật toán trong nhóm.",
+"mem": "AGNES/DIANA chậm với dữ liệu lớn; BIRCH là ngoại lệ."
+},
+{
+"lv": "TH",
+"t": "Outlier detection",
+"q": "Điểm khác chính giữa phát hiện ngoại lai dựa trên thống kê và dựa trên khoảng cách là:",
+"o": [
+"Thống kê cần giả định phân phối và nhanh; khoảng cách không cần giả định nhưng tốn tài nguyên",
+"Thống kê không cần giả định phân phối; khoảng cách cần dữ liệu theo phân phối chuẩn",
+"Thống kê hợp dữ liệu nhiều chiều; khoảng cách chỉ dùng được cho một chiều",
+"Thống kê dựa trên số điểm trong bán kính r; khoảng cách dựa trên Z-score"
+],
+"w": "Statistical-based giả định dữ liệu theo một phân phối (thường là chuẩn), điểm ở hai đuôi là ngoại lai (ví dụ |Z| > 3): nhanh nhưng sai nếu dữ liệu không theo phân phối giả định. Distance-based: điểm có ít hơn k điểm khác trong bán kính r là ngoại lai: không giả định phân phối, hợp dữ liệu đa chiều, nhưng tốn tài nguyên.",
+"x": [
+"Đảo ngược giả định.",
+"Distance-based mới hợp dữ liệu nhiều chiều.",
+"Đảo ngược phương pháp."
+],
+"trap": "Đảo đặc điểm hai cách tiếp cận.",
+"mem": "Thống kê: giả định phân phối, nhanh. Khoảng cách: không giả định, tốn, đa chiều."
+},
+{
+"lv": "VD",
+"t": "Outlier detection",
+"q": "Dữ liệu giao dịch 40 chiều, phân phối không rõ và có nhiều đỉnh. Cách phát hiện ngoại lai phù hợp hơn là:",
+"o": [
+"Distance-based, đếm số điểm lân cận trong bán kính r",
+"Statistical-based với Z-score và ngưỡng |Z| > 3",
+"Equal-width binning rồi loại bin có ít điểm nhất",
+"Apriori để tìm tập item không phổ biến nhất"
+],
+"w": "Distance-based không giả định phân phối, chỉ dựa vào hình học, hợp dữ liệu nhiều chiều. Z-score giả định phân phối chuẩn, dễ sai với dữ liệu nhiều đỉnh.",
+"x": [
+"Z-score dựa trên giả định phân phối chuẩn, không phù hợp ở đây.",
+"Binning là kỹ thuật rời rạc hóa, không phải phát hiện ngoại lai.",
+"Apriori khai phá luật kết hợp."
+],
+"trap": "Dùng Z-score cho mọi trường hợp.",
+"mem": "Phân phối không rõ, nhiều chiều ⇒ distance-based."
+},
+{
+"lv": "VDC",
+"t": "Chọn kỹ thuật khai phá",
+"q": "Ngân hàng có ba yêu cầu: (1) tìm sản phẩm thường được mua cùng nhau để bán chéo; (2) dự đoán hồ sơ vay mới được duyệt hay không từ hồ sơ cũ đã có nhãn; (3) chia khách thành nhóm chưa biết trước. Ghép kỹ thuật đúng là:",
+"o": [
+"(1) Apriori/FP-Growth; (2) C4.5 hoặc Naive Bayes; (3) K-Means hoặc DBSCAN",
+"(1) K-Means; (2) Apriori/FP-Growth; (3) C4.5 hoặc Naive Bayes",
+"(1) C4.5; (2) DBSCAN; (3) Apriori/FP-Growth",
+"(1) Naive Bayes; (2) K-Medoids; (3) FP-Growth"
+],
+"w": "(1) Luật kết hợp: Apriori, FP-Growth. (2) Phân lớp có giám sát (dữ liệu có nhãn): cây quyết định ID3/C4.5, Naive Bayes. (3) Phân cụm không nhãn: K-Means, K-Medoids, DBSCAN.",
+"x": [
+"Đảo vai trò của các kỹ thuật.",
+"C4.5 cần nhãn, không tìm luật mua cùng; DBSCAN không dự đoán nhãn.",
+"Naive Bayes không tìm tập phổ biến; K-Medoids không dự đoán nhãn."
+],
+"trap": "Nhầm phân lớp (có nhãn) với phân cụm (không nhãn).",
+"mem": "Mua cùng → luật kết hợp. Có nhãn → phân lớp. Không nhãn → phân cụm."
+},
+{
+"lv": "VDC",
+"t": "Support tuyệt đối và tương đối",
+"q": "Đề bài cho minsup = 20% trên CSDL 15 giao dịch. Itemset {X, Y} xuất hiện trong 3 giao dịch. Kết luận đúng là:",
+"o": [
+"Phổ biến, vì support tương đối 3/15 = 20% ≥ 20%",
+"Không phổ biến, vì 3 < 20",
+"Không phổ biến, vì 20% chưa vượt hẳn ngưỡng",
+"Phổ biến, vì support tuyệt đối 3 ≥ 2"
+],
+"w": "minsup cho dạng tỷ lệ nên phải đổi support count sang tỷ lệ: 3/15 = 0,2 = 20%. Điều kiện là ≥ minsup nên tập này phổ biến. (Tương đương minsup count = 20% × 15 = 3.)",
+"x": [
+"So số đếm 3 với con số phần trăm 20 là sai đơn vị.",
+"Bằng ngưỡng vẫn là phổ biến.",
+"Đề không cho minsup count = 2; kết luận đúng nhưng lý do sai."
+],
+"trap": "So support tuyệt đối với minsup dạng tỷ lệ, hoặc dùng dấu > chặt.",
+"mem": "Đồng nhất đơn vị: count ↔ count, tỷ lệ ↔ tỷ lệ; dùng ≥."
+},
+{
+"lv": "NB",
+"t": "Itemset kích thước k",
+"q": "Tập I gồm 5 item. Có bao nhiêu itemset kích thước 2?",
+"o": [
+"10",
+"5",
+"20",
+"25"
+],
+"w": "Số tập kích thước 2 là C(5, 2) = 5 × 4/2 = 10.",
+"x": [
+"5 là số tập kích thước 1.",
+"20 = 5 × 4, đếm cặp có thứ tự.",
+"25 = 5², đếm cả cặp trùng và có thứ tự."
+],
+"trap": "Quên chia 2 vì itemset không có thứ tự.",
+"mem": "Số k-itemset = C(n, k)."
+},
+{
+"lv": "TH",
+"t": "Conditional Pattern Base",
+"q": "Conditional Pattern Base (CPB) của item x trong FP-Growth có thể hiểu là:",
+"o": [
+"Một CSDL con gồm các giao dịch có x, đã bỏ x đi, mỗi đường kèm count của nút x",
+"Danh sách các item có count lớn hơn x trong bảng đầu mục",
+"Tập các luật kết hợp có x ở vế phải với confidence lớn nhất",
+"Đường đi từ nút x xuống tất cả các lá của FP-tree"
+],
+"w": "CPB của x là tập các đường tiền tố từ gốc đến ngay trước mỗi nút x, mỗi đường kèm count của nút x. Có thể coi đó là CSDL con gồm những giao dịch có x, đã bỏ x đi.",
+"x": [
+"Bảng đầu mục không phải CPB.",
+"CPB dùng để tìm tập phổ biến, chưa phải luật.",
+"CPB là đường từ gốc tới trước x (tiền tố), không phải xuống lá."
+],
+"trap": "Lấy đường đi xuống thay vì đường tiền tố.",
+"mem": "CPB(x) = các prefix path của x, count = count nút x."
+},
+{
+"lv": "VD",
+"t": "Apriori – loại ứng viên",
+"q": "Trong ví dụ pasta/lemon của slide, {lemon, cake} có support 1 < minsup 2. Ở vòng kích thước 3, ứng viên nào bị loại mà không cần đếm?",
+"o": [
+"{pasta, lemon, cake} và {lemon, orange, cake}",
+"{pasta, lemon, orange} và {pasta, orange, cake}",
+"{pasta, orange, cake} và {lemon, orange, cake}",
+"Chỉ {pasta, lemon, orange}"
+],
+"w": "Theo tính chất Apriori, ứng viên chứa tập con không phổ biến {lemon, cake} bị loại ngay: {pasta, lemon, cake} và {lemon, orange, cake}. Hai tập còn lại được đếm và đều đạt support 2.",
+"x": [
+"Hai tập này không chứa {lemon, cake} và đều phổ biến.",
+"{pasta, orange, cake} không chứa {lemon, cake}.",
+"{pasta, lemon, orange} không bị loại và đạt support 2."
+],
+"trap": "Không kiểm tra tập con không phổ biến.",
+"mem": "Có tập con không phổ biến ⇒ loại không cần đếm."
+},
+{
+"lv": "TH",
+"t": "Biến thể cho dữ liệu lớn",
+"q": "Cần phân cụm 50 triệu bản ghi số mà bộ nhớ không đủ chứa toàn bộ trong mỗi vòng lặp. Biến thể nào theo slide phù hợp?",
+"o": [
+"Mini-Batch K-Means, mỗi vòng chỉ dùng một nhóm mẫu nhỏ",
+"K-Medoids thuần, thử mọi điểm làm medoid ở mỗi vòng",
+"AGNES, gộp dần từng cặp cụm gần nhau nhất",
+"K-Modes, thay trung bình bằng giá trị xuất hiện nhiều nhất"
+],
+"w": "Mini-Batch K-Means mỗi vòng chỉ dùng một nhóm mẫu nhỏ ngẫu nhiên để cập nhật tâm, tiết kiệm bộ nhớ và thời gian cho Big Data.",
+"x": [
+"K-Medoids rất chậm với dữ liệu lớn; bản lấy mẫu của nó mới là CLARA/CLARANS.",
+"AGNES phải tính khoảng cách mọi cặp điểm, không khả thi với 50 triệu bản ghi.",
+"K-Modes dành cho dữ liệu phân loại."
+],
+"trap": "Chọn thuật toán theo độ chính xác mà bỏ qua giới hạn bộ nhớ.",
+"mem": "Dữ liệu số rất lớn ⇒ Mini-Batch K-Means; K-Medoids lớn ⇒ CLARA/CLARANS."
+},
+{
+"lv": "VDC",
+"t": "Apriori và FP-Growth với dữ liệu lớn",
+"q": "Một sàn TMĐT có 50.000 item phổ biến sau vòng 1 và CSDL giao dịch vài TB nằm trên đĩa. Với Apriori, số ứng viên kích thước 2 xấp xỉ bao nhiêu, và lựa chọn hợp lý là gì?",
+"o": [
+"≈ 1,25 tỷ ứng viên; chọn FP-Growth vì chỉ quét 2 lần và không sinh ứng viên",
+"≈ 2,5 tỷ ứng viên; chọn Apriori vì đếm ứng viên song song được trên cloud",
+"≈ 50.000 ứng viên; chọn Apriori vì số ứng viên vẫn nhỏ so với dữ liệu",
+"≈ 1,25 tỷ ứng viên; chọn Apriori nhưng tăng minsup để giảm số lần quét"
+],
+"w": "Số ứng viên kích thước 2 = n(n − 1)/2 = 50.000 × 49.999/2 ≈ 1,25 tỷ. Apriori còn phải quét lại CSDL vài TB cho mỗi kích thước k. FP-Growth nén CSDL vào FP-tree chỉ sau 2 lần quét và tìm tập phổ biến trực tiếp trên cây mà không sinh ứng viên.",
+"x": [
+"2,5 tỷ là n², đếm cặp có thứ tự; và số lần quét của Apriori vẫn là vấn đề.",
+"50.000 là số item, không phải số cặp.",
+"Tăng minsup giảm số ứng viên nhưng không giảm việc quét lại CSDL mỗi vòng."
+],
+"trap": "Đánh giá thấp bùng nổ ứng viên bậc hai.",
+"mem": "Ứng viên 2-itemset ≈ n²/2 ⇒ dữ liệu lớn chọn FP-Growth."
+}
+]
+}

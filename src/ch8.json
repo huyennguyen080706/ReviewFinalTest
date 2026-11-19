@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "Descriptive và actionable",
+"q": "Phân tích <b>descriptive</b> trả lời câu hỏi nào?",
+"o": [
+"Điều gì đã xảy ra?",
+"Điều gì sẽ xảy ra?",
+"Nên làm gì tiếp theo?",
+"Vì sao mô hình dự báo sai?"
+],
+"w": "Descriptive là báo cáo quá khứ, trả lời “điều gì đã xảy ra?” (ví dụ doanh thu quý 3). Actionable gồm predict (điều gì sẽ xảy ra) và prescribe (nên làm gì).",
+"x": [
+"Đây là predict, thuộc actionable.",
+"Đây là prescribe, thuộc actionable.",
+"Đây là root-cause, không phải định nghĩa descriptive."
+],
+"trap": "Lẫn descriptive với predict.",
+"mem": "Descriptive: đã xảy ra. Actionable: predict + prescribe."
+},
+{
+"lv": "VD",
+"t": "Descriptive và actionable",
+"q": "Báo cáo nào là phân tích <b>actionable</b> theo slide?",
+"o": [
+"Danh sách 200 khách sắp rời bỏ kèm đề xuất gửi ưu đãi cho họ",
+"Biểu đồ tỷ lệ rời bỏ của tháng trước là 5% theo chi nhánh",
+"Bảng tổng hợp doanh thu quý 3 theo từng dòng sản phẩm",
+"Dashboard số giao dịch thẻ theo ngày trong tuần qua"
+],
+"w": "Actionable dùng AI trong kho để dự báo (khách nào sắp rời bỏ) và đề xuất hành động (gửi ưu đãi). Slide lấy đúng ví dụ: không chỉ báo tỷ lệ rời bỏ 5% mà chỉ ra 200 khách sắp rời bỏ và đề xuất ưu đãi.",
+"x": [
+"Đây là descriptive: báo cáo quá khứ.",
+"Đây là descriptive.",
+"Đây là descriptive."
+],
+"trap": "Nghĩ cứ có biểu đồ đẹp là actionable.",
+"mem": "Actionable = dự báo + đề xuất hành động."
+},
+{
+"lv": "NB",
+"t": "Object Tables",
+"q": "BigQuery Object Tables là:",
+"o": [
+"Bảng chỉ đọc, mỗi dòng là một file trên Cloud Storage kèm metadata",
+"Bảng chứa vector embedding của văn bản để tìm kiếm theo nghĩa",
+"Bảng tạm lưu kết quả của câu truy vấn chạy liên tục",
+"Bảng fact lưu từng sự kiện từ topic Kafka"
+],
+"w": "Object Tables là bảng chỉ đọc mà mỗi dòng là một file (ảnh, PDF, audio, video) trên Cloud Storage, gồm cột metadata như đường dẫn, loại file, kích thước. Kết hợp Vertex AI để trích tri thức bằng SQL.",
+"x": [
+"Embedding được tạo sau; Object Tables chứa metadata file.",
+"Continuous query là khái niệm khác.",
+"Object Tables không liên quan đến Kafka."
+],
+"trap": "Nghĩ Object Tables chứa nội dung đã trích xuất.",
+"mem": "Object Table: 1 dòng = 1 file (uri, content_type, size)."
+},
+{
+"lv": "TH",
+"t": "Object Tables",
+"q": "Lợi ích của việc phân tích file phi cấu trúc ngay trong warehouse bằng Object Tables là:",
+"o": [
+"SQL trên file ngay trong kho: không chuyển file ra ngoài, bảo mật và quản trị tập trung",
+"Biến mọi file PDF thành bảng có cấu trúc ngay khi tải lên, không cần đến mô hình AI",
+"Giảm dung lượng lưu trữ vì file gốc bị xóa ngay sau khi tạo xong Object Table",
+"Cho phép sửa trực tiếp nội dung của file PDF bằng câu lệnh UPDATE trong SQL"
+],
+"w": "Kết hợp Object Tables với mô hình Vertex AI, có thể dùng SQL trích tri thức từ file mà không chuyển file ra ngoài. Lợi ích: bảo mật tập trung, quản trị thống nhất, khai thác dữ liệu phi cấu trúc (slide ước 80% dữ liệu doanh nghiệp).",
+"x": [
+"Vẫn cần mô hình AI để trích nội dung.",
+"File gốc vẫn nằm trên Cloud Storage.",
+"Object Tables là bảng chỉ đọc."
+],
+"trap": "Nghĩ Object Table tự hiểu nội dung file.",
+"mem": "Object Tables + AI: SQL trên file, dữ liệu không rời kho."
+},
+{
+"lv": "VD",
+"t": "Phi cấu trúc → cấu trúc",
+"q": "Trong ví dụ NKDL_TH_8.1, thứ tự đúng để biến báo cáo tài chính PDF thành dữ liệu phân tích là:",
+"o": [
+"Đẩy PDF vào Bronze → Gemini trả JSON → làm phẳng JSON thành dòng bảng",
+"Gemini trả JSON → đẩy JSON vào Bronze → chuyển ngược JSON thành PDF",
+"Làm phẳng PDF thành bảng → Gemini trả JSON → đẩy JSON vào Gold",
+"Đẩy PDF thẳng vào Gold → tạo dashboard → Gemini kiểm tra số liệu"
+],
+"w": "Ba bước theo ba dạng dữ liệu: phi cấu trúc (PDF vào thư mục bronze_financial_pdfs) → bán cấu trúc (Gemini 2.5 Flash trả JSON gồm ten_cong_ty, tong_tai_san…) → cấu trúc (làm phẳng JSON thành một dòng bảng pandas).",
+"x": [
+"Sai thứ tự và không có bước chuyển ngược.",
+"Không làm phẳng PDF trực tiếp được; cần AI trích ra JSON trước.",
+"Bỏ qua Bronze và bước trích xuất."
+],
+"trap": "Đảo thứ tự ba dạng dữ liệu.",
+"mem": "Phi cấu trúc → bán cấu trúc (JSON) → cấu trúc (bảng)."
+},
+{
+"lv": "TH",
+"t": "Kiểm tra đầu ra AI",
+"q": "Vì sao code trong ví dụ NKDL_TH_8.1 có nhánh bắt lỗi <i>JSONDecodeError</i>?",
+"o": [
+"LLM đôi khi trả kèm ký tự thừa làm JSON không hợp lệ, nên pipeline phải kiểm tra đầu ra AI",
+"File PDF trên Cloud Storage đôi khi bị hỏng nên không mở được",
+"Pandas không đọc được số lớn như 624.894.429.708 nếu không bắt lỗi",
+"Object Tables chỉ trả metadata nên phải bắt lỗi khi đọc nội dung"
+],
+"w": "LLM đôi khi trả kèm ký tự thừa làm JSON không hợp lệ. Pipeline dùng AI phải kiểm tra đầu ra, không được tin tuyệt đối.",
+"x": [
+"Lỗi JSONDecodeError phát sinh khi phân tích chuỗi JSON, không khi mở PDF.",
+"Pandas đọc được số lớn.",
+"Lỗi nằm ở đầu ra của LLM, không phải Object Tables."
+],
+"trap": "Tin đầu ra của LLM luôn đúng định dạng.",
+"mem": "Đầu ra LLM phải được kiểm tra (validate)."
+},
+{
+"lv": "TH",
+"t": "Nghiên cứu lan truyền",
+"q": "Trong nghiên cứu lan truyền thông tin trên mạng xã hội (slide 8–9), Phase 4.2 dùng thuật toán nào để dự đoán người tiếp theo lan truyền?",
+"o": [
+"CPT (dự đoán chuỗi) sau khi giữ chuỗi dài ≥ 3",
+"PageRank để xếp hạng người có ảnh hưởng nhất",
+"K-Means để chia người dùng thành nhóm",
+"Apriori để tìm nhóm người hay chia sẻ cùng nhau"
+],
+"w": "Phase 4.2: bỏ chuỗi ngắn hơn 3, giữ chuỗi dài ≥ 3; áp dụng CPT (Chương 6) để nén không mất thông tin, dựng mô hình theo thứ tự thời gian, dự đoán người tiếp theo.",
+"x": [
+"Xếp hạng theo trọng số lan truyền là Phase 4.1.",
+"Slide không dùng K-Means.",
+"Slide không dùng Apriori."
+],
+"trap": "Lẫn Phase 4.1 (xếp hạng) với 4.2 (dự đoán).",
+"mem": "Phase 4.1 xếp hạng; Phase 4.2 CPT dự đoán chuỗi."
+},
+{
+"lv": "NB",
+"t": "Embeddings",
+"q": "Embedding trong semantic search là:",
+"o": [
+"Vector số thực mang nghĩa; hai nội dung cùng nghĩa có vector gần nhau",
+"Chỉ mục giúp tìm vector gần nhất trong vài mili giây",
+"Danh sách từ khóa trích từ văn bản để so khớp chính xác",
+"Bảng metadata mô tả đường dẫn và loại file trên storage"
+],
+"w": "Embeddings biến văn bản, hình ảnh thành vector (dãy số thực) mang nghĩa; hai nội dung cùng ý nghĩa cho hai vector gần nhau.",
+"x": [
+"Đây là vector index (như IVFFLAT).",
+"Đây là keyword search.",
+"Đây là Object Table."
+],
+"trap": "Lẫn embedding với vector index.",
+"mem": "Embedding = vector; index = cách tìm nhanh vector."
+},
+{
+"lv": "TH",
+"t": "Semantic và keyword search",
+"q": "Câu hỏi “thẻ hết tiền” tìm được tài liệu “card has no balance” nhờ cơ chế nào?",
+"o": [
+"Semantic match qua embeddings: hai câu không chung từ nhưng vector gần nhau",
+"Keyword search: hệ thống tự dịch từng từ tiếng Việt sang tiếng Anh",
+"Full-text index: hai câu có cùng số ký tự nên được coi là giống nhau",
+"Fuzzy matching: khoảng cách Levenshtein giữa hai câu rất nhỏ"
+],
+"w": "Keyword search khớp chữ; semantic search khớp nghĩa nhờ embeddings. Hai câu không chung từ nào nhưng có vector gần nhau.",
+"x": [
+"Keyword search không tìm được vì không có từ chung.",
+"Số ký tự không quyết định nghĩa.",
+"Levenshtein giữa hai câu khác ngôn ngữ rất lớn."
+],
+"trap": "Nghĩ tìm kiếm luôn dựa trên từ khóa.",
+"mem": "Semantic search = khớp nghĩa (embeddings)."
+},
+{
+"lv": "VD",
+"t": "Cosine similarity",
+"q": "Câu hỏi q = (3, 4), tài liệu d = (4, 3). Cosine similarity cos(q, d) bằng:",
+"o": [
+"0,96",
+"1,00",
+"0,75",
+"24"
+],
+"w": "q · d = 3·4 + 4·3 = 24. ‖q‖ = √(9 + 16) = 5; ‖d‖ = 5. cos = 24/(5 × 5) = 24/25 = 0,96.",
+"x": [
+"Chỉ bằng 1 khi hai vector cùng hướng.",
+"0,75 = 3/4, không theo công thức.",
+"24 là tích vô hướng, chưa chia độ dài."
+],
+"trap": "Quên chia cho tích độ dài.",
+"mem": "cos(a, b) = a·b / (‖a‖·‖b‖)."
+},
+{
+"lv": "VD",
+"t": "Cosine similarity",
+"q": "q = (1, 0, 1); d1 = (1, 1, 0); d2 = (2, 0, 2). cos(q, d1) và cos(q, d2) lần lượt là:",
+"o": [
+"0,5 và 1,0",
+"1,0 và 0,5",
+"0,5 và 0,5",
+"1,0 và 2,0"
+],
+"w": "cos(q, d1) = (1 + 0 + 0)/(√2 × √2) = 1/2 = 0,5.<br>cos(q, d2) = (2 + 0 + 2)/(√2 × √8) = 4/4 = 1,0. d2 cùng hướng với q (d2 = 2q) nên cosine bằng 1 dù độ dài khác.",
+"x": [
+"Đảo hai giá trị.",
+"d2 cùng hướng với q nên cosine phải bằng 1.",
+"Cosine không vượt quá 1; 2 là khi quên chia ‖d2‖."
+],
+"trap": "Nghĩ vector dài hơn thì “giống” hơn hoặc kém hơn.",
+"mem": "Cosine chỉ đo hướng, không đo độ dài."
+},
+{
+"lv": "VDC",
+"t": "Cosine – xếp hạng",
+"q": "Câu hỏi q = (1, 2, 2). Ba tài liệu: d1 = (2, 1, 2), d2 = (1, 0, 0), d3 = (0, 2, 2). Thứ tự trả về theo cosine similarity giảm dần là:",
+"o": [
+"d3, d1, d2",
+"d1, d3, d2",
+"d3, d2, d1",
+"d1, d2, d3"
+],
+"w": "‖q‖ = √(1 + 4 + 4) = 3.<br>• d1: q·d1 = 2 + 2 + 4 = 8; ‖d1‖ = 3 → 8/9 ≈ 0,889.<br>• d2: q·d2 = 1; ‖d2‖ = 1 → 1/3 ≈ 0,333.<br>• d3: q·d3 = 0 + 4 + 4 = 8; ‖d3‖ = √8 ≈ 2,828 → 8/8,485 ≈ 0,943.<br>Thứ tự: d3 (0,943) > d1 (0,889) > d2 (0,333).",
+"x": [
+"Xếp theo tích vô hướng (d1 = d3 = 8) sẽ không phân biệt được; phải chia độ dài, khi đó d3 cao hơn.",
+"d2 thấp nhất.",
+"Sai cả thứ tự d3 và d2."
+],
+"trap": "Xếp theo tích vô hướng thay vì cosine.",
+"mem": "Phải chuẩn hóa theo độ dài: cùng dot product, vector ngắn hơn có cosine cao hơn."
+},
+{
+"lv": "VD",
+"t": "Cosine – ví dụ slide",
+"q": "Ví dụ slide: q = (1, 2, 0); d1 = (2, 4, 1); d2 = (0, 1, 3). Biết cos(q, d1) ≈ 0,98 và cos(q, d2) ≈ 0,28. Kết luận đúng là:",
+"o": [
+"d1 gần nghĩa với câu hỏi hơn nên được trả về trước",
+"d2 gần nghĩa hơn vì có thành phần thứ ba lớn nhất",
+"Hai tài liệu như nhau vì đều có tích vô hướng dương",
+"Không so được vì hai tài liệu có độ dài vector khác nhau"
+],
+"w": "Cosine càng gần 1 càng giống nghĩa. 0,98 > 0,28 nên d1 được trả về trước.",
+"x": [
+"Thành phần riêng lẻ không quyết định; q không có thành phần thứ ba.",
+"Cosine khác nhau rõ rệt.",
+"Cosine đã chuẩn hóa độ dài nên so sánh được."
+],
+"trap": "So sánh từng thành phần thay vì cosine.",
+"mem": "Cosine cao hơn ⇒ gần nghĩa hơn."
+},
+{
+"lv": "VDC",
+"t": "Cosine – giá trị đặc biệt",
+"q": "q = (3, 4). Ba vector a = (6, 8), b = (−3, −4), c = (4, −3). Cosine của q với a, b, c lần lượt là:",
+"o": [
+"1; −1; 0",
+"1; 1; 0",
+"2; −1; 0",
+"1; 0; −1"
+],
+"w": "• a = 2q, cùng hướng: cos = 1.<br>• b = −q, ngược hướng: cos = (−9 − 16)/(5 × 5) = −1.<br>• c: q·c = 12 − 12 = 0 → vuông góc, cos = 0.<br>Cosine nằm trong [−1, 1]: 1 giống nhất, 0 không liên quan, −1 ngược nghĩa.",
+"x": [
+"Vector ngược hướng cho −1, không phải 1.",
+"Cosine không vượt quá 1 dù a dài gấp đôi.",
+"Đảo b và c."
+],
+"trap": "Nghĩ vector dài gấp đôi cho cosine gấp đôi.",
+"mem": "Cùng hướng 1; vuông góc 0; ngược hướng −1."
+},
+{
+"lv": "TH",
+"t": "Vector index",
+"q": "Vai trò của vector index như IVFFLAT trong semantic search là:",
+"o": [
+"Tìm vector gần nhất trong hàng triệu bản ghi chỉ trong vài mili giây",
+"Biến văn bản thành vector số thực mang nghĩa",
+"Chia tài liệu dài thành các đoạn nhỏ trước khi tạo vector",
+"Đưa đoạn tài liệu liên quan vào prompt của LLM"
+],
+"w": "Vector Index giúp tìm vector gần nhất trong hàng triệu bản ghi chỉ mất vài mili giây, ví dụ IVFFLAT (chi tiết ở Chương 9).",
+"x": [
+"Đây là embedding.",
+"Đây là chunking trong bước Embedding của RAG.",
+"Đây là bước Generation của RAG."
+],
+"trap": "Lẫn index với embedding.",
+"mem": "Index = tìm nhanh; embedding = biểu diễn."
+},
+{
+"lv": "NB",
+"t": "RAG",
+"q": "Thứ tự bốn bước của RAG theo slide là:",
+"o": [
+"Ingestion → Embedding → Retrieval → Generation",
+"Embedding → Ingestion → Generation → Retrieval",
+"Retrieval → Ingestion → Embedding → Generation",
+"Generation → Retrieval → Embedding → Ingestion"
+],
+"w": "Ingestion (đưa tài liệu vào Object Tables) → Embedding (chia chunk, tạo vector) → Retrieval (vector search lấy đoạn gần nhất với câu hỏi) → Generation (LLM tổng hợp câu trả lời).",
+"x": [
+"Phải có tài liệu trước khi tạo vector.",
+"Phải có vector trước khi tìm.",
+"Sinh câu trả lời là bước cuối."
+],
+"trap": "Đảo Retrieval và Generation.",
+"mem": "Ingestion → Embedding → Retrieval → Generation."
+},
+{
+"lv": "TH",
+"t": "RAG – mục đích",
+"q": "Mục đích chính của RAG đối với dữ liệu doanh nghiệp là:",
+"o": [
+"Giảm hallucination, trả lời bằng dữ liệu nội bộ mà không cần huấn luyện lại LLM",
+"Huấn luyện lại LLM trên toàn bộ dữ liệu nội bộ để mô hình nhớ mọi tài liệu",
+"Thay thế kho dữ liệu bằng LLM để không phải lưu tài liệu nữa",
+"Tăng tốc độ sinh văn bản của LLM bằng cách rút ngắn câu hỏi"
+],
+"w": "RAG tìm các đoạn tài liệu nội bộ liên quan rồi đưa kèm vào câu hỏi, để LLM trả lời dựa trên dữ liệu tin cậy của doanh nghiệp, giảm hallucination, mà không cần huấn luyện lại LLM.",
+"x": [
+"RAG không huấn luyện lại mô hình.",
+"Tài liệu vẫn được lưu và truy xuất.",
+"Prompt thường dài hơn vì có thêm tài liệu."
+],
+"trap": "Nghĩ muốn LLM biết dữ liệu riêng phải huấn luyện lại.",
+"mem": "RAG = truy xuất + đưa vào prompt ⇒ chống hallucination."
+},
+{
+"lv": "VD",
+"t": "RAG – ví dụ",
+"q": "Nhân viên hỏi chatbot nội bộ “Nghỉ phép năm được bao nhiêu ngày?”. Bước <b>Retrieval</b> làm gì?",
+"o": [
+"Tạo vector cho câu hỏi rồi lấy đoạn quy chế gần nhất bằng vector search",
+"Đưa file quy chế nhân sự vào Object Tables trên Cloud Storage",
+"Chia file quy chế thành các đoạn nhỏ và tạo vector cho từng đoạn",
+"LLM viết câu trả lời “14 ngày” kèm nguồn là file quy chế"
+],
+"w": "Retrieval: khi có câu hỏi, tạo vector cho câu hỏi rồi dùng vector search lấy các đoạn gần nhất, ví dụ đoạn “Nhân viên chính thức được 14 ngày phép/năm…”.",
+"x": [
+"Đây là Ingestion.",
+"Đây là Embedding.",
+"Đây là Generation."
+],
+"trap": "Lẫn các bước.",
+"mem": "Retrieval = vector hóa câu hỏi + tìm đoạn gần nhất."
+},
+{
+"lv": "NB",
+"t": "Hallucination",
+"q": "Hallucination của LLM là:",
+"o": [
+"Mô hình tự tin trả lời sai hoặc bịa thông tin",
+"Mô hình từ chối trả lời câu hỏi nhạy cảm",
+"Mô hình trả lời chậm do câu hỏi quá dài",
+"Mô hình trả JSON có ký tự thừa không hợp lệ"
+],
+"w": "Hallucination (ảo giác): LLM tự tin trả lời sai hoặc bịa thông tin. RAG giảm hiện tượng này bằng cách buộc mô hình chỉ dùng dữ liệu nội bộ đã kiểm chứng.",
+"x": [
+"Từ chối không phải hallucination.",
+"Độ trễ không phải hallucination.",
+"Lỗi định dạng khác với bịa nội dung."
+],
+"trap": "Gọi mọi lỗi của LLM là hallucination.",
+"mem": "Hallucination = bịa nhưng tự tin."
+},
+{
+"lv": "VDC",
+"t": "RAG – thiết kế prompt",
+"q": "Chatbot nội bộ trả lời “Nhân viên được 12 ngày phép” trong khi quy chế ghi 14 ngày. Kiểm tra cho thấy bước Retrieval đã lấy đúng đoạn quy chế. Nguyên nhân hợp lý nhất và cách sửa là:",
+"o": [
+"Prompt chưa buộc LLM chỉ dùng đoạn đã truy xuất; thêm ràng buộc đó và yêu cầu dẫn nguồn",
+"Embedding của câu hỏi bị sai; cần huấn luyện lại mô hình embedding trên quy chế",
+"Object Tables chưa có file quy chế; cần nạp lại tài liệu ở bước Ingestion",
+"Vector index quá chậm; cần đổi sang keyword search để lấy đúng đoạn quy chế"
+],
+"w": "Retrieval đã đúng, nên lỗi nằm ở Generation: LLM dùng kiến thức chung thay vì đoạn đã lấy. Ví dụ slide dùng prompt “Chỉ dùng thông tin sau để trả lời: [đoạn quy chế]. Câu hỏi: …”, và câu trả lời kèm nguồn.",
+"x": [
+"Retrieval đã lấy đúng đoạn, nên embedding không phải nguyên nhân.",
+"Tài liệu đã có vì Retrieval lấy được.",
+"Tốc độ index không làm sai nội dung; keyword search còn kém hơn về nghĩa."
+],
+"trap": "Sửa bước đã chạy đúng thay vì bước gây lỗi.",
+"mem": "Retrieval đúng mà trả lời sai ⇒ ràng buộc prompt ở Generation."
+},
+{
+"lv": "VD",
+"t": "Chunking",
+"q": "Trong bước Embedding của RAG, vì sao tài liệu dài được chia thành các đoạn nhỏ (chunk) vài trăm từ trước khi tạo vector?",
+"o": [
+"Để Retrieval lấy đúng đoạn liên quan đưa vào prompt thay vì cả tài liệu dài",
+"Để giảm dung lượng lưu trữ file gốc trên Cloud Storage",
+"Để LLM được huấn luyện lại trên từng đoạn nhỏ của tài liệu",
+"Để mỗi đoạn có cùng số chiều vector với câu hỏi người dùng"
+],
+"w": "Bước Embedding chia tài liệu thành đoạn nhỏ và tạo vector cho từng đoạn. Khi có câu hỏi, Retrieval lấy các đoạn gần nhất, ví dụ đúng đoạn quy định số ngày phép, để đưa vào prompt.",
+"x": [
+"File gốc không bị thay đổi.",
+"RAG không huấn luyện lại LLM.",
+"Số chiều vector do mô hình embedding quyết định, không phụ thuộc độ dài đoạn."
+],
+"trap": "Nghĩ chunking để huấn luyện.",
+"mem": "Chunk nhỏ ⇒ truy xuất đúng phần liên quan."
+},
+{
+"lv": "TH",
+"t": "Generative BI",
+"q": "“Dân chủ hóa dữ liệu” trong Generative BI có nghĩa là:",
+"o": [
+"Ai trong công ty cũng tự hỏi dữ liệu bằng ngôn ngữ tự nhiên, không phải chờ nhóm dữ liệu",
+"Mọi nhân viên đều được cấp quyền xem toàn bộ dữ liệu không giới hạn",
+"Dữ liệu của công ty được công bố công khai cho mọi người bên ngoài",
+"Mỗi phòng ban tự xây kho dữ liệu riêng theo nhu cầu của mình"
+],
+"w": "Người kinh doanh hỏi trực tiếp bằng ngôn ngữ tự nhiên, không cần biết SQL. Ai cũng tự khai thác được dữ liệu, không phải xếp hàng chờ nhóm dữ liệu.",
+"x": [
+"Auto-SQL vẫn tuân theo RLS/masking; dân chủ hóa không bỏ phân quyền.",
+"Không công bố ra ngoài.",
+"Đây là silo, đi ngược kho tập trung."
+],
+"trap": "Hiểu “dân chủ” là bỏ phân quyền.",
+"mem": "Dân chủ hóa = bỏ rào cản SQL, không bỏ phân quyền."
+},
+{
+"lv": "NB",
+"t": "Conversational BI",
+"q": "Ba bước của quy trình Conversational BI là:",
+"o": [
+"Natural Query → Auto-SQL → Instant Insight",
+"Ingestion → Embedding → Generation",
+"Monitor → Detect → Report",
+"Producer → Topic → Consumer"
+],
+"w": "Natural Query (hỏi bằng tiếng Việt/Anh) → Auto-SQL (LLM dịch thành SQL chuẩn, an toàn) → Instant Insight (chạy SQL, tự chọn biểu đồ, hiển thị).",
+"x": [
+"Đây là các bước RAG (thiếu Retrieval).",
+"Đây là continuous auditing (thiếu Alert).",
+"Đây là các thành phần Kafka."
+],
+"trap": "Lẫn quy trình giữa các mục.",
+"mem": "Natural Query → Auto-SQL → Instant Insight."
+},
+{
+"lv": "VD",
+"t": "Auto-SQL",
+"q": "Người dùng hỏi “top 5 sản phẩm có doanh thu cao nhất quý 3 năm 2026”. Câu SQL do LLM sinh ra cần có những thành phần nào?",
+"o": [
+"JOIN fact_sales, dim_product, dim_date; lọc 2026 quý 3; GROUP BY sản phẩm; ORDER BY SUM DESC LIMIT 5",
+"SELECT từ dim_product; ORDER BY tên sản phẩm; LIMIT 5; hoàn toàn không cần dùng bảng fact",
+"JOIN fact_sales với dim_customer; GROUP BY khách hàng; ORDER BY COUNT(*) DESC LIMIT 5",
+"SELECT từ fact_sales; lọc quý 3; ORDER BY amount DESC LIMIT 5, không dùng GROUP BY"
+],
+"w": "Doanh thu là SUM(amount) trên fact_sales; tên sản phẩm ở dim_product; năm, quý ở dim_date. Câu cần JOIN ba bảng, lọc, GROUP BY sản phẩm, ORDER BY revenue DESC LIMIT 5.",
+"x": [
+"Không có số đo doanh thu.",
+"Nhóm theo khách và đếm giao dịch, sai câu hỏi.",
+"Không GROUP BY thì trả 5 dòng giao dịch lớn nhất, không phải 5 sản phẩm."
+],
+"trap": "Quên GROUP BY nên ra giao dịch thay vì sản phẩm.",
+"mem": "Top-N theo tổng ⇒ GROUP BY + SUM + ORDER BY DESC + LIMIT."
+},
+{
+"lv": "VDC",
+"t": "Generative BI và semantic layer",
+"q": "Trợ lý Generative BI trả về “doanh thu thuần” khác hẳn số của phòng Tài chính, vì LLM tự hiểu doanh thu là SUM(amount) mà không trừ chiết khấu và hàng trả lại. Biện pháp gốc rễ là:",
+"o": [
+"Cung cấp semantic layer và metric catalog có định nghĩa chính thức của chỉ số làm ngữ cảnh cho LLM",
+"Chuyển sang mô hình LLM lớn hơn để mô hình tự suy ra định nghĩa doanh thu thuần đúng",
+"Yêu cầu người dùng luôn viết câu hỏi bằng tiếng Anh để LLM hiểu chính xác hơn",
+"Cấm Generative BI truy cập bảng fact_sales và chỉ cho đọc dashboard có sẵn"
+],
+"w": "Để sinh đúng SQL, LLM phải biết “doanh thu thuần” tính thế nào trên bảng nào: đó là vai trò của semantic layer và metric catalog (Chương 2), nơi định nghĩa chỉ số một lần và cung cấp context cho GenAI.",
+"x": [
+"Mô hình lớn hơn vẫn không biết định nghĩa nội bộ của công ty.",
+"Ngôn ngữ hỏi không phải nguyên nhân.",
+"Cấm truy cập đi ngược mục tiêu chat-with-your-data."
+],
+"trap": "Nghĩ lỗi do năng lực mô hình.",
+"mem": "Generative BI đúng số ⇐ semantic layer + metric catalog."
+},
+{
+"lv": "VD",
+"t": "Auto-SQL an toàn",
+"q": "Theo slide, câu SQL do Auto-SQL sinh ra phải đáp ứng điều kiện an toàn nào?",
+"o": [
+"Chỉ đọc và vẫn tuân theo phân quyền RLS, masking của người hỏi",
+"Có quyền ghi để tự cập nhật bảng khi phát hiện số liệu sai",
+"Chạy với quyền quản trị để không bị giới hạn dòng hay cột",
+"Chỉ được truy vấn tầng Bronze để bảo toàn dữ liệu gốc"
+],
+"w": "Auto-SQL dịch câu hỏi thành SQL chuẩn, tối ưu và an toàn: chỉ đọc, vẫn tuân theo phân quyền RLS/masking (Chương 7).",
+"x": [
+"Quyền ghi tạo rủi ro sửa dữ liệu ngoài ý muốn.",
+"Quyền quản trị làm AI trở thành đường vượt quyền.",
+"Báo cáo dùng tầng Gold, không phải Bronze."
+],
+"trap": "Cho AI quyền cao hơn người dùng.",
+"mem": "Auto-SQL: read-only + RLS/masking."
+},
+{
+"lv": "TH",
+"t": "Instant Insight",
+"q": "Ở bước Instant Insight, hệ thống chọn biểu đồ thế nào theo slide?",
+"o": [
+"Cột cho so sánh, đường cho xu hướng theo thời gian",
+"Luôn dùng biểu đồ tròn để hiển thị mọi kết quả",
+"Luôn dùng bảng số để người dùng tự vẽ biểu đồ",
+"Dùng bản đồ nhiệt cho mọi câu hỏi có hai chiều"
+],
+"w": "Instant Insight: chạy SQL, tự chọn biểu đồ phù hợp (cột cho so sánh, đường cho xu hướng theo thời gian) và hiển thị.",
+"x": [
+"Biểu đồ tròn không hợp với mọi dữ liệu.",
+"Hệ thống tự chọn biểu đồ.",
+"Slide không nêu bản đồ nhiệt."
+],
+"trap": "Nghĩ một loại biểu đồ dùng cho mọi trường hợp.",
+"mem": "So sánh → cột; xu hướng → đường."
+},
+{
+"lv": "TH",
+"t": "Real-time insights",
+"q": "Pub/Sub kết hợp Continuous Queries cho phép điều gì?",
+"o": [
+"Xử lý mỗi sự kiện mới ngay khi đến và hành động tự động trong vài giây",
+"Chạy truy vấn theo lịch mỗi đêm trên toàn bộ dữ liệu trong ngày",
+"Tạo dashboard tĩnh tổng hợp số liệu theo từng tháng",
+"Lưu sự kiện vào Bronze để phân tích lại vào cuối tuần"
+],
+"w": "Pub/Sub: bên phát publish sự kiện, bên nhận subscribe. Continuous Queries chạy liên tục, xử lý mỗi sự kiện mới ngay khi đến thay vì chờ lịch. Slide gọi là “độ trễ bằng 0”, hiểu là rất nhỏ, tính bằng giây.",
+"x": [
+"Đây là batch.",
+"Đây là descriptive.",
+"Đây là xử lý trễ."
+],
+"trap": "Hiểu “độ trễ bằng 0” theo nghĩa đen.",
+"mem": "Pub/Sub + Continuous Queries ⇒ hành động tức thời."
+},
+{
+"lv": "VD",
+"t": "Quyết định tức thời",
+"q": "Khách bỏ giỏ hàng chưa thanh toán và ngay giây đó nhận thông báo khuyến mãi cá nhân hóa. Kiến trúc phù hợp theo slide là:",
+"o": [
+"Pub/Sub kết hợp Continuous Queries",
+"Batch ETL hằng đêm và gửi email sáng hôm sau",
+"Dashboard descriptive cập nhật mỗi tuần",
+"Data catalog với Semantic Search"
+],
+"w": "Slide trang 16 lấy đúng ví dụ này: kết hợp Pub/Sub với Continuous Queries để hành động tự động ngay khi dữ liệu vừa phát sinh.",
+"x": [
+"Hằng đêm quá trễ cho tình huống bỏ giỏ hàng.",
+"Dashboard tuần không hành động tự động.",
+"Catalog dùng để tìm bảng, không xử lý sự kiện."
+],
+"trap": "Chọn batch vì quen thuộc.",
+"mem": "Hành động tại điểm chạm ⇒ Pub/Sub + Continuous Queries."
+},
+{
+"lv": "NB",
+"t": "Kafka",
+"q": "Trong Kafka, <b>offset</b> là:",
+"o": [
+"Số thứ tự của sự kiện trong một partition",
+"Tên của kênh chứa các sự kiện cùng loại",
+"Máy chủ lưu trữ các partition của topic",
+"Chương trình gửi sự kiện vào Kafka"
+],
+"w": "Offset là số thứ tự của sự kiện trong partition (0, 1, 2…). Consumer nhớ offset đã đọc để đọc tiếp, hoặc đọc lại từ offset cũ.",
+"x": [
+"Đây là topic.",
+"Đây là broker.",
+"Đây là producer."
+],
+"trap": "Lẫn các thành phần Kafka.",
+"mem": "Producer ghi; topic → partition; offset = vị trí; broker lưu; consumer đọc."
+},
+{
+"lv": "TH",
+"t": "Kafka",
+"q": "Vì sao thêm một hệ thống phân tích mới đọc giao dịch thẻ từ Kafka <b>không</b> phải sửa ứng dụng ngân hàng (producer)?",
+"o": [
+"Producer và consumer không biết nhau, chỉ cùng biết topic",
+"Zookeeper tự sửa code producer khi có consumer mới",
+"Mỗi consumer có broker riêng nên không ảnh hưởng producer",
+"Producer gửi trực tiếp tới từng consumer qua địa chỉ IP"
+],
+"w": "Producer và consumer không biết nhau, chỉ cùng biết topic. Kafka tách rời bên gửi và bên nhận, nên thêm consumer mới không phải sửa producer.",
+"x": [
+"Zookeeper điều phối cluster, không sửa code.",
+"Broker không gắn riêng với từng consumer.",
+"Ngược lại, producer không biết consumer."
+],
+"trap": "Nghĩ producer phải biết danh sách người nhận.",
+"mem": "Kafka decoupling: chỉ chung topic."
+},
+{
+"lv": "VD",
+"t": "Kafka offset",
+"q": "Consumer chống gian lận đã xử lý xong sự kiện có offset 41 ở partition 0 thì bị khởi động lại. Nó nên đọc tiếp từ offset nào ở partition 0 để không bỏ sót và không xử lý lại?",
+"o": [
+"42",
+"41",
+"0",
+"40"
+],
+"w": "Consumer nhớ offset đã đọc tới đâu để đọc tiếp. Đã xử lý xong offset 41 thì sự kiện kế tiếp là offset 42.",
+"x": [
+"Đọc lại 41 sẽ xử lý trùng.",
+"Đọc từ 0 xử lý lại toàn bộ partition.",
+"40 xử lý trùng hai sự kiện."
+],
+"trap": "Đọc lại sự kiện cuối đã xử lý.",
+"mem": "Tiếp tục từ offset đã xử lý + 1."
+},
+{
+"lv": "VDC",
+"t": "Kafka partition",
+"q": "Topic card_transactions có 3 partition. Hệ thống cần mọi giao dịch của cùng một thẻ được xử lý đúng thứ tự thời gian. Theo đặc điểm của partition trong slide, cách thiết kế hợp lý là:",
+"o": [
+"Đưa mọi giao dịch của một thẻ vào cùng một partition, vì thứ tự chỉ giữ trong partition",
+"Chia đều giao dịch của mỗi thẻ ra cả 3 partition để đọc song song nhanh hơn nhiều",
+"Giảm xuống 1 partition duy nhất cho mọi thẻ để Zookeeper tự sắp xếp lại thứ tự",
+"Dùng một offset chung cho cả 3 partition để consumer biết được thứ tự toàn cục"
+],
+"w": "Trong một partition, sự kiện được nối vào cuối theo thứ tự và có offset riêng. Thứ tự giữa các partition khác nhau không được đảm bảo. Đưa giao dịch cùng thẻ vào cùng partition giữ được thứ tự, mà các thẻ khác nhau vẫn xử lý song song trên 3 partition.",
+"x": [
+"Chia một thẻ ra nhiều partition làm mất thứ tự giữa các giao dịch.",
+"Một partition giữ thứ tự nhưng mất khả năng song song; Zookeeper không sắp xếp sự kiện.",
+"Offset là riêng của từng partition."
+],
+"trap": "Nghĩ Kafka đảm bảo thứ tự toàn topic.",
+"mem": "Thứ tự chỉ trong một partition; offset theo partition."
+},
+{
+"lv": "TH",
+"t": "Kafka – Zookeeper và broker",
+"q": "Vai trò của Zookeeper trong Kafka cluster theo slide là:",
+"o": [
+"Điều phối, theo dõi broker nào đang sống và quản lý metadata của cluster",
+"Lưu trữ các partition và phục vụ yêu cầu đọc ghi của client",
+"Gửi sự kiện từ ứng dụng nguồn vào các topic của Kafka",
+"Đọc sự kiện từ topic để phân tích và hiển thị dashboard"
+],
+"w": "Zookeeper là dịch vụ điều phối: theo dõi broker nào đang sống và quản lý metadata của cluster. Broker mới là máy chủ lưu các partition.",
+"x": [
+"Đây là broker.",
+"Đây là producer.",
+"Đây là consumer."
+],
+"trap": "Lẫn Zookeeper với broker.",
+"mem": "Zookeeper điều phối; broker lưu."
+},
+{
+"lv": "VD",
+"t": "Ứng dụng streaming",
+"q": "Ứng dụng nào được slide nêu là ứng dụng cốt lõi của phân tích streaming với Dataflow hoặc Kafka?",
+"o": [
+"Định giá động theo cung cầu từng phút như giá vé, giá xe công nghệ",
+"Báo cáo tài chính hợp nhất cuối năm gửi cơ quan thuế",
+"Tính lương nhân viên vào cuối mỗi tháng",
+"Lập kế hoạch ngân sách cho năm tài chính tiếp theo"
+],
+"w": "Ứng dụng cốt lõi: phát hiện gian lận thẻ tín dụng; định giá động theo thời gian thực (giá thay đổi theo cung cầu từng phút); quản trị chuỗi cung ứng và giao vận.",
+"x": [
+"Báo cáo cuối năm là batch.",
+"Tính lương là batch.",
+"Lập kế hoạch năm không cần dữ liệu tức thời."
+],
+"trap": "Chọn nghiệp vụ quan trọng nhưng không cần độ trễ thấp.",
+"mem": "Streaming: gian lận, định giá động, chuỗi cung ứng."
+},
+{
+"lv": "NB",
+"t": "Data storytelling",
+"q": "Thứ tự cấu trúc câu chuyện dữ liệu theo slide là:",
+"o": [
+"Bối cảnh → Vấn đề → Giải pháp → Hành động",
+"Vấn đề → Bối cảnh → Hành động → Giải pháp",
+"Giải pháp → Vấn đề → Bối cảnh → Hành động",
+"Hành động → Giải pháp → Vấn đề → Bối cảnh"
+],
+"w": "Cấu trúc câu chuyện: Bối cảnh → Vấn đề → Giải pháp → Hành động.",
+"x": [
+"Cần bối cảnh trước để thấy vấn đề.",
+"Giải pháp phải sau khi nêu vấn đề.",
+"Hành động là bước cuối."
+],
+"trap": "Đảo thứ tự.",
+"mem": "Bối cảnh → Vấn đề → Giải pháp → Hành động."
+},
+{
+"lv": "VD",
+"t": "Data storytelling",
+"q": "Trong câu chuyện: “Tỷ lệ nợ xấu toàn hệ thống ổn định 2%; riêng chi nhánh miền Trung tăng lên 5% trong 3 tháng; phần tăng nằm ở gói vay tiêu dùng không thẩm định thu nhập; tạm dừng gói vay và gọi nhắc 300 khách sắp quá hạn”, câu “phần tăng nằm ở gói vay tiêu dùng không thẩm định thu nhập, nên siết thẩm định gói này” thuộc phần nào?",
+"o": [
+"Giải pháp",
+"Bối cảnh",
+"Vấn đề",
+"Hành động"
+],
+"w": "Bối cảnh: nợ xấu toàn hệ thống 2%. Vấn đề: miền Trung tăng lên 5%. Giải pháp: phần tăng nằm ở gói vay không thẩm định thu nhập, nên siết thẩm định gói này. Hành động: tạm dừng gói vay, gọi nhắc 300 khách.",
+"x": [
+"Bối cảnh là tỷ lệ chung 2%.",
+"Vấn đề là mức tăng ở miền Trung.",
+"Hành động là việc cụ thể sẽ làm (tạm dừng, gọi nhắc)."
+],
+"trap": "Lẫn giải pháp và hành động.",
+"mem": "Giải pháp = chẩn đoán + hướng xử lý; Hành động = việc cụ thể."
+},
+{
+"lv": "TH",
+"t": "Trực quan hóa thông minh",
+"q": "Nguyên tắc trực quan hóa thông minh trong dashboard theo slide là:",
+"o": [
+"Dùng màu và vị trí dẫn mắt tới chỉ số then chốt, chỉ nhấn điểm bất thường",
+"Tô mỗi chi nhánh một màu khác nhau để biểu đồ trông sinh động hơn",
+"Hiển thị càng nhiều biểu đồ càng tốt để không bỏ sót thông tin nào",
+"Dùng toàn màu đỏ để lãnh đạo chú ý đến mọi chỉ số trên dashboard"
+],
+"w": "Dùng màu và vị trí dẫn mắt người xem tới chỉ số then chốt; ví dụ chỉ tô màu cam cho chi nhánh bất thường, các chi nhánh khác để màu trung tính.",
+"x": [
+"Quá nhiều màu làm mất trọng tâm.",
+"Quá nhiều biểu đồ làm loãng thông điệp.",
+"Mọi thứ đều nổi bật thì không gì nổi bật."
+],
+"trap": "Nghĩ nhiều màu là trực quan tốt.",
+"mem": "Một màu nhấn cho điểm cần chú ý, còn lại trung tính."
+},
+{
+"lv": "VD",
+"t": "Write-back",
+"q": "Trên dashboard nợ xấu có nút “Đưa vào danh sách chăm sóc”, bấm vào thì danh sách khách được ghi ngược vào CRM để đội tổng đài gọi. Tính năng này là:",
+"o": [
+"Alerting & Actions với write-back",
+"Tự động tóm tắt bằng Gen AI",
+"Semantic Search trên data catalog",
+"Zero-copy data sharing"
+],
+"w": "Alerting & Actions: dashboard có nút kích hoạt quy trình nghiệp vụ, ví dụ ghi ngược danh sách khách cần chăm sóc vào CRM (write-back).",
+"x": [
+"Tóm tắt là Gen AI viết đoạn giải thích.",
+"Semantic Search tìm bảng.",
+"Data sharing là chia sẻ dữ liệu cho đối tác."
+],
+"trap": "Nghĩ dashboard chỉ để xem.",
+"mem": "Write-back: dashboard ghi ngược vào hệ thống nghiệp vụ."
+},
+{
+"lv": "TH",
+"t": "Agentic BI",
+"q": "Khác biệt cốt lõi giữa Generative BI và Agentic BI là:",
+"o": [
+"Generative BI trả lời khi được hỏi; Agentic BI tự theo dõi mục tiêu và đề xuất",
+"Generative BI tự chủ động phân tích; Agentic BI chỉ trả lời khi được người hỏi",
+"Generative BI dùng SQL; Agentic BI hoàn toàn không truy vấn kho dữ liệu",
+"Generative BI dùng LLM; Agentic BI chỉ dùng các dashboard cố định dựng sẵn"
+],
+"w": "Generative BI vẫn chờ người hỏi. AI Agent chủ động: tự theo dõi mục tiêu kinh doanh, lập kế hoạch phân tích, truy vấn kho, phát hiện xu hướng ẩn và gửi đề xuất chiến lược.",
+"x": [
+"Đảo ngược.",
+"Agent vẫn tự truy vấn kho dữ liệu.",
+"Dashboard cố định là BI truyền thống."
+],
+"trap": "Đảo hai khái niệm.",
+"mem": "Generative: phản ứng (khi hỏi). Agentic: chủ động."
+},
+{
+"lv": "VD",
+"t": "BI truyền thống, Generative, Agentic",
+"q": "Mỗi sáng, hệ thống tự kiểm tra mục tiêu doanh số, phát hiện doanh số khu vực miền Tây giảm, tự truy vấn nguyên nhân và gửi email đề xuất tăng khuyến mãi cho 3 dòng sản phẩm, không ai yêu cầu. Đây là:",
+"o": [
+"Agentic BI",
+"Generative BI",
+"BI truyền thống",
+"Descriptive analytics"
+],
+"w": "Agentic BI: agent tự theo dõi mục tiêu kinh doanh, tự lập kế hoạch phân tích, tự truy vấn, phát hiện xu hướng và gửi đề xuất hành động mà không cần người ra lệnh từng bước.",
+"x": [
+"Generative BI cần người dùng đặt câu hỏi.",
+"BI truyền thống là dashboard cố định do người dựng.",
+"Descriptive chỉ báo cáo quá khứ, không đề xuất."
+],
+"trap": "Chọn Generative BI vì có dùng AI.",
+"mem": "Không ai hỏi mà vẫn phân tích và đề xuất ⇒ Agentic."
+},
+{
+"lv": "TH",
+"t": "BI truyền thống",
+"q": "Theo bảng so sánh ở slide 23, ai khởi động và đầu ra của BI truyền thống là gì?",
+"o": [
+"Người dựng báo cáo; dashboard cố định",
+"Người dùng đặt câu hỏi; câu trả lời kèm biểu đồ",
+"Agent tự theo dõi mục tiêu; đề xuất hành động",
+"LLM tự sinh SQL; bảng dữ liệu thô"
+],
+"w": "BI truyền thống: người dựng báo cáo khởi động, đầu ra là dashboard cố định. Generative BI: người dùng hỏi, đầu ra là câu trả lời + biểu đồ. Agentic BI: agent tự theo dõi mục tiêu, đầu ra là phát hiện + đề xuất hành động.",
+"x": [
+"Đây là Generative BI.",
+"Đây là Agentic BI.",
+"Không có trong bảng."
+],
+"trap": "Lẫn ba cột của bảng.",
+"mem": "Truyền thống → Generative → Agentic: từ cố định → hỏi đáp → chủ động."
+},
+{
+"lv": "VD",
+"t": "Ví dụ NKDL_TH_8.2",
+"q": "Trong ví dụ NKDL_TH_8.2 phân tích đánh giá ứng dụng Shopee, các thành phần được dùng là:",
+"o": [
+"Embedding đa ngôn ngữ 384 chiều, lưu vào Qdrant với khoảng cách cosine",
+"Apriori trên đánh giá 1 sao, lưu luật kết hợp vào BigQuery",
+"K-Means trên số sao, lưu tâm cụm vào Snowflake",
+"Naive Bayes trên từ khóa, lưu xác suất vào Kafka"
+],
+"w": "Notebook tạo embedding bằng paraphrase-multilingual-MiniLM-L12-v2 (vector 384 chiều, hiểu tiếng Việt), lưu vào CSDL vector Qdrant với khoảng cách cosine, rồi tìm phản hồi khớp nghĩa nhất với một chủ đề.",
+"x": [
+"Không dùng luật kết hợp.",
+"Không dùng phân cụm.",
+"Không dùng Naive Bayes hay Kafka."
+],
+"trap": "Gán thuật toán của chương khác.",
+"mem": "8.2: embedding 384 chiều + Qdrant + cosine."
+},
+{
+"lv": "VDC",
+"t": "Semantic search – ứng dụng",
+"q": "Kết quả NKDL_TH_8.2 xếp đầu các phản hồi 1 sao về trả hàng, hoàn tiền, vận chuyển khi tìm theo chủ đề cần phân tích. Vì sao semantic search phù hợp hơn keyword search ở đây?",
+"o": [
+"Khách viết cùng ý bằng nhiều cách khác nhau; khớp nghĩa gom được cả phản hồi không chứa đúng từ khóa",
+"Keyword search không chạy được trên dữ liệu tiếng Việt có dấu trong mọi hệ quản trị CSDL",
+"Semantic search đếm được chính xác số sao của mỗi phản hồi tốt hơn keyword search",
+"Semantic search không cần tạo vector nên nhanh hơn keyword search trên dữ liệu lớn"
+],
+"w": "Phản hồi “mãi không thấy tiền về”, “đổi trả cực khổ” cùng ý hoàn tiền/trả hàng nhưng khác từ. Semantic search khớp nghĩa nhờ embeddings nên gom được chúng; keyword search chỉ bắt được phản hồi chứa đúng từ khóa.",
+"x": [
+"Keyword search vẫn chạy được trên tiếng Việt; vấn đề là khác cách diễn đạt.",
+"Số sao là cột có cấu trúc, không cần semantic search.",
+"Semantic search cần tạo vector."
+],
+"trap": "Nghĩ vấn đề nằm ở ngôn ngữ.",
+"mem": "Cùng ý khác chữ ⇒ semantic search."
+},
+{
+"lv": "VDC",
+"t": "Chọn kỹ thuật GenAI cho BI",
+"q": "Ngân hàng có ba nhu cầu: (1) giám đốc hỏi bằng tiếng Việt “dư nợ tháng này theo chi nhánh” và nhận biểu đồ; (2) chatbot trả lời quy trình mở thẻ dựa trên tài liệu nội bộ, không bịa; (3) hệ thống tự phát hiện chi nhánh có nợ xấu tăng và gửi đề xuất mỗi sáng. Ghép đúng là:",
+"o": [
+"(1) Generative BI; (2) RAG; (3) Agentic BI",
+"(1) RAG; (2) Generative BI; (3) Data storytelling",
+"(1) Agentic BI; (2) RAG; (3) Generative BI",
+"(1) Generative BI; (2) Agentic BI; (3) RAG"
+],
+"w": "(1) Hỏi bằng ngôn ngữ tự nhiên → Auto-SQL → biểu đồ: Generative BI. (2) Trả lời dựa trên tài liệu nội bộ, chống hallucination: RAG. (3) Tự chủ động theo dõi và đề xuất: Agentic BI.",
+"x": [
+"RAG trả lời từ tài liệu, không sinh SQL trên kho; storytelling là cách trình bày.",
+"Agentic không chờ người hỏi; Generative cần người hỏi.",
+"Agentic không phải cơ chế chống bịa trên tài liệu."
+],
+"trap": "Lẫn RAG với Generative BI vì cùng dùng LLM.",
+"mem": "Hỏi số liệu → Generative BI; hỏi tài liệu → RAG; tự chủ động → Agentic."
+},
+{
+"lv": "VDC",
+"t": "Real-time và RLS",
+"q": "Một ứng dụng Conversational BI cho phép nhân viên chi nhánh hỏi “top khách có số dư cao nhất”. Nhân viên chi nhánh Huế thấy cả khách của chi nhánh Hà Nội. Nguyên nhân và cách sửa phù hợp với slide là:",
+"o": [
+"Auto-SQL chạy bằng tài khoản có quyền rộng; phải chạy với danh tính người hỏi để RLS và masking được áp dụng",
+"LLM sinh sai câu SQL; cần đổi sang mô hình lớn hơn để sinh câu lọc chi nhánh",
+"Semantic layer thiếu định nghĩa số dư; cần bổ sung metric catalog cho chỉ số số dư",
+"Vector index trả nhầm bảng; cần xây lại IVFFLAT cho bảng khách hàng"
+],
+"w": "Slide: Auto-SQL phải chỉ đọc và vẫn tuân theo phân quyền RLS/masking (Chương 7). Nếu câu SQL chạy với tài khoản dịch vụ có quyền xem mọi dòng, RLS theo người hỏi không được áp dụng. Phải thực thi với danh tính của người hỏi.",
+"x": [
+"Không thể dựa vào LLM tự thêm điều kiện lọc để bảo mật; phân quyền phải ở tầng kho.",
+"Định nghĩa số dư không liên quan đến việc thấy dòng của chi nhánh khác.",
+"Không dùng vector search trong truy vấn số liệu này."
+],
+"trap": "Giao phần bảo mật cho LLM.",
+"mem": "Bảo mật Generative BI: RLS/masking theo người hỏi, không theo LLM."
+},
+{
+"lv": "TH",
+"t": "Tự động tóm tắt",
+"q": "Tính năng “Tự động tóm tắt” trong dashboard thông minh là:",
+"o": [
+"Gen AI viết đoạn giải thích cho dashboard để lãnh đạo nắm nhanh trọng tâm",
+"Dashboard tự gộp dữ liệu ngày thành tháng khi người dùng phóng to",
+"Dashboard tự xóa các biểu đồ không ai xem trong 30 ngày",
+"Hệ thống tự gửi file Excel tổng hợp vào email mỗi tuần"
+],
+"w": "Tự động tóm tắt: Gen AI viết đoạn giải thích cho dashboard để lãnh đạo nắm nhanh trọng tâm.",
+"x": [
+"Đây là roll-up, không phải tóm tắt bằng AI.",
+"Slide không mô tả việc này.",
+"Đây là báo cáo định kỳ, không phải tóm tắt bằng AI."
+],
+"trap": "Hiểu tóm tắt là tổng hợp số liệu.",
+"mem": "Tóm tắt = Gen AI viết lời giải thích."
+},
+{
+"lv": "VDC",
+"t": "Cosine – vector dài",
+"q": "Hệ thống dùng tích vô hướng (không chuẩn hóa) thay cho cosine để xếp hạng. Câu hỏi q = (1, 1). Tài liệu A = (1, 1) nói đúng chủ đề; tài liệu B = (10, 0) rất dài và chỉ nói một khía cạnh. Kết quả xếp hạng và nhận xét đúng là:",
+"o": [
+"Tích vô hướng xếp B (10) trên A (2), dù cosine của A là 1 còn B ≈ 0,71; nên dùng cosine",
+"Tích vô hướng và cosine đều xếp A trên B nên hai cách tương đương",
+"Tích vô hướng xếp A trên B, còn cosine xếp B trên A vì B dài hơn",
+"Cả hai cách đều cho A và B bằng nhau vì cùng có thành phần đầu dương"
+],
+"w": "Tích vô hướng: q·A = 2; q·B = 10 → B xếp trên.<br>Cosine: cos(q, A) = 2/(√2 × √2) = 1; cos(q, B) = 10/(√2 × 10) ≈ 0,71 → A xếp trên.<br>Tích vô hướng thiên vị vector dài; cosine chỉ đo hướng (ý nghĩa), nên phù hợp cho semantic match.",
+"x": [
+"Hai cách cho thứ tự ngược nhau.",
+"Đảo ngược: cosine mới chuẩn hóa độ dài.",
+"Giá trị khác nhau rõ rệt."
+],
+"trap": "Nghĩ điểm cao hơn ở tích vô hướng là giống nghĩa hơn.",
+"mem": "Cosine chuẩn hóa độ dài, tránh thiên vị vector lớn."
+},
+{
+"lv": "VD",
+"t": "Kafka – vai trò thành phần",
+"q": "Trong demo Oracle Streaming (slide 20), chương trình lấy bài đăng từ Reddit API và đẩy vào topic đóng vai trò gì, còn chương trình phân loại cảm xúc và vẽ dashboard đóng vai trò gì?",
+"o": [
+"Producer; consumer",
+"Consumer; producer",
+"Broker; Zookeeper",
+"Topic; partition"
+],
+"w": "Producer gửi sự kiện vào Kafka (lấy bài từ Reddit API và đẩy vào topic). Consumer đọc sự kiện để xử lý (phân loại cảm xúc 5 mức, cập nhật bảng đếm, vẽ dashboard Dash/Plotly).",
+"x": [
+"Đảo ngược.",
+"Broker lưu partition; Zookeeper điều phối cluster.",
+"Topic và partition là nơi chứa sự kiện, không phải chương trình."
+],
+"trap": "Đảo producer và consumer.",
+"mem": "Ghi vào Kafka = producer; đọc ra xử lý = consumer."
+},
+{
+"lv": "VDC",
+"t": "Giá trị storytelling",
+"q": "Báo cáo gửi Hội đồng quản trị gồm bảng tính 40 cột số liệu chi nhánh. Lãnh đạo không nắm được vấn đề. Theo slide, cách cải thiện phù hợp nhất là:",
+"o": [
+"Kể theo Bối cảnh → Vấn đề → Giải pháp → Hành động, nhấn màu điểm bất thường, thêm tóm tắt AI",
+"Thêm 20 cột chỉ số nữa để lãnh đạo có đầy đủ thông tin chi tiết hơn trên bảng tính",
+"Đổi toàn bộ bảng sang biểu đồ tròn với mỗi chi nhánh mang một màu sắc khác nhau",
+"Gửi file dữ liệu thô từ tầng Bronze để lãnh đạo tự phân tích theo cách của mình"
+],
+"w": "Slide 21–22: cấu trúc câu chuyện, trực quan hóa dẫn mắt tới chỉ số then chốt, Gen AI tóm tắt trọng tâm, Alerting & Actions. Dữ liệu trình bày thành câu chuyện dễ nhớ và thuyết phục hơn 65% so với con số khô trên bảng tính.",
+"x": [
+"Thêm số liệu làm vấn đề tệ hơn.",
+"Nhiều màu không dẫn mắt tới điểm then chốt.",
+"Dữ liệu thô càng khó đọc với lãnh đạo."
+],
+"trap": "Nghĩ thêm dữ liệu là thêm giá trị.",
+"mem": "Storytelling: cấu trúc câu chuyện + màu nhấn + tóm tắt + hành động."
+}
+]
+}

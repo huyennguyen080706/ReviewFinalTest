@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "In-Database ML",
+"q": "Ý tưởng cốt lõi của In-Database Machine Learning là:",
+"o": [
+"Đưa code tới dữ liệu: huấn luyện và dự báo ngay trên hạ tầng của kho",
+"Đưa dữ liệu tới code: trích dữ liệu ra một máy chủ ML riêng để huấn luyện",
+"Chỉ dùng kho để lưu kết quả dự báo do máy chủ ML bên ngoài gửi về",
+"Chuyển toàn bộ kho dữ liệu sang cụm Spark/Hadoop để chạy mô hình"
+],
+"w": "In-Database ML giữ dữ liệu tại chỗ, đóng gói thuật toán ML và đẩy vào chạy trực tiếp trên hạ tầng của kho: đưa code tới dữ liệu thay vì đưa dữ liệu tới code. Loại bỏ độ trễ, chi phí dịch chuyển và giữ dữ liệu dưới một chế độ quản trị.",
+"x": [
+"Đây là cách truyền thống mà In-Database ML thay thế.",
+"Huấn luyện vẫn nằm ngoài kho, dữ liệu vẫn phải chuyển đi.",
+"Slide nêu lợi ích là không phải dựng cụm Spark/Hadoop riêng."
+],
+"trap": "Đảo chiều “code tới dữ liệu”.",
+"mem": "In-Database ML = không di chuyển dữ liệu."
+},
+{
+"lv": "TH",
+"t": "Hạn chế cách truyền thống",
+"q": "Cách huấn luyện truyền thống (trích dữ liệu từ kho qua Internet sang máy chủ ML riêng) gây ra những vấn đề nào theo slide?",
+"o": [
+"Tốn băng thông và phí egress, trễ do chờ chuyển dữ liệu, rủi ro bảo mật vì dữ liệu nằm thêm ở nơi khác",
+"Không huấn luyện được mô hình Deep Learning vì máy chủ ML riêng không có GPU phù hợp",
+"Không đánh giá được mô hình vì máy chủ ML không tính được Precision và Recall",
+"Không thể dùng Python hoặc R vì kho dữ liệu chỉ hỗ trợ ngôn ngữ SQL chuẩn"
+],
+"w": "Slide trang 4: cách cũ tốn băng thông (và phí egress), trễ thời gian vì phải chờ chuyển dữ liệu, và rủi ro bảo mật vì dữ liệu khách hàng nằm thêm ở một nơi ngoài kho.",
+"x": [
+"Năng lực phần cứng không phải vấn đề slide nêu.",
+"Máy chủ ML vẫn đánh giá được mô hình.",
+"Ngược lại, Python vốn là môi trường của máy chủ ML riêng."
+],
+"trap": "Nghĩ vấn đề nằm ở công cụ thay vì việc di chuyển dữ liệu.",
+"mem": "Di chuyển dữ liệu ⇒ băng thông + egress, trễ, rủi ro bảo mật."
+},
+{
+"lv": "VD",
+"t": "RBAC cho mô hình",
+"q": "Ngân hàng muốn chỉ vai trò <i>risk_analyst</i> được gọi mô hình chấm điểm tín dụng chạy trong kho. Theo lợi ích Governance của In-Database ML, cách làm là:",
+"o": [
+"Cấp quyền dùng mô hình cho vai trò risk_analyst theo cùng cơ chế RBAC như cấp quyền đọc bảng",
+"Xuất mô hình ra file và gửi riêng cho từng nhân viên trong nhóm risk_analyst",
+"Cài mô hình lên máy cá nhân của nhóm risk_analyst và khóa máy của nhóm khác",
+"Đặt mật khẩu riêng trong code Python của mô hình và chia sẻ cho nhóm"
+],
+"w": "Governance: phân quyền theo vai trò (RBAC) đồng nhất. Quyền dùng một mô hình được cấp cho role theo đúng cơ chế cấp quyền đọc một bảng.",
+"x": [
+"Phân phát file mô hình làm mất kiểm soát tập trung.",
+"Đưa mô hình ra ngoài kho đi ngược In-Database ML.",
+"Mật khẩu trong code là cách quản lý quyền phi tập trung và kém an toàn."
+],
+"trap": "Quản lý quyền ngoài kho.",
+"mem": "In-DB ML: quyền dùng mô hình theo RBAC như quyền trên bảng."
+},
+{
+"lv": "NB",
+"t": "Supervised và unsupervised",
+"q": "Bài toán nào là <b>unsupervised learning</b>?",
+"o": [
+"Chia khách hàng thành nhóm theo hành vi khi chưa có nhãn",
+"Dự đoán khách có vỡ nợ hay không từ hồ sơ cũ đã có nhãn",
+"Dự đoán thu nhập của khách từ các đặc trưng đã biết",
+"Dự đoán điểm đánh giá sao từ lịch sử đánh giá cũ"
+],
+"w": "Unsupervised dùng dữ liệu không có nhãn: clustering (chia nhóm theo độ tương tự), anomaly detection. Supervised dùng dữ liệu có nhãn: classification, regression.",
+"x": [
+"Đây là classification (supervised).",
+"Đây là regression (supervised).",
+"Điểm sao đóng vai trò nhãn nên là supervised."
+],
+"trap": "Nghĩ dự đoán số là unsupervised.",
+"mem": "Có nhãn → supervised (classification/regression). Không nhãn → clustering/anomaly."
+},
+{
+"lv": "TH",
+"t": "Classification và regression",
+"q": "Dự đoán <b>tỷ giá USD/VND</b> ngày mai thuộc loại bài toán nào?",
+"o": [
+"Regression, vì dự đoán một số liên tục",
+"Classification, vì kết quả là tăng hoặc giảm",
+"Clustering, vì tỷ giá được nhóm theo ngày",
+"Anomaly detection, vì tỷ giá biến động bất thường"
+],
+"w": "Regression dự đoán giá trị số liên tục (thu nhập, tỷ giá). Classification dự đoán nhãn danh mục (vỡ nợ: có/không).",
+"x": [
+"Chỉ là classification nếu đề hỏi tăng hay giảm; ở đây hỏi giá trị tỷ giá.",
+"Clustering không dự đoán giá trị.",
+"Anomaly detection tìm bản ghi dị biệt, không dự báo giá trị."
+],
+"trap": "Đổi bài toán thành tăng/giảm trong đầu.",
+"mem": "Số liên tục → regression; nhãn → classification."
+},
+{
+"lv": "VD",
+"t": "One-hot encoding",
+"q": "Cột <i>kenh_mo_tai_khoan</i> có 4 giá trị: Quầy, Web, App, Đối tác. Sau one-hot encoding, cột này được thay bằng bao nhiêu cột 0/1?",
+"o": [
+"4",
+"1",
+"2",
+"16"
+],
+"w": "One-hot encoding biến cột phân loại thành nhiều cột 0/1, mỗi giá trị một cột (ví dụ khu_vuc 3 giá trị thành kv_Bac, kv_Trung, kv_Nam). 4 giá trị → 4 cột.",
+"x": [
+"Một cột mã số là label encoding, không phải one-hot.",
+"2 cột là mã nhị phân (2² = 4), không phải one-hot.",
+"16 = 4², không có ý nghĩa ở đây."
+],
+"trap": "Nhầm với mã hóa nhị phân.",
+"mem": "One-hot: k giá trị → k cột 0/1."
+},
+{
+"lv": "VD",
+"t": "K-fold cross validation",
+"q": "Bộ 1.000 hồ sơ, dùng K-fold cross validation với k = 5. Mỗi lần huấn luyện dùng bao nhiêu hồ sơ và mô hình được huấn luyện bao nhiêu lần?",
+"o": [
+"800 hồ sơ; 5 lần",
+"200 hồ sơ; 5 lần",
+"800 hồ sơ; 1 lần",
+"1.000 hồ sơ; 5 lần"
+],
+"w": "Chia 5 phần, mỗi phần 200. Lần lượt lấy 1 phần làm kiểm tra, 4 phần (800) làm huấn luyện; lặp 5 lần rồi lấy trung bình kết quả.",
+"x": [
+"200 là kích thước phần kiểm tra.",
+"Cross validation lặp k lần.",
+"Huấn luyện trên cả 1.000 thì không còn dữ liệu kiểm tra."
+],
+"trap": "Lẫn phần kiểm tra với phần huấn luyện.",
+"mem": "K-fold: mỗi lần (k−1)/k huấn luyện, 1/k kiểm tra; lặp k lần."
+},
+{
+"lv": "TH",
+"t": "Training và test set",
+"q": "Vì sao phải đánh giá mô hình trên test set mà mô hình chưa từng thấy?",
+"o": [
+"Chấm trên dữ liệu đã học thì điểm luôn đẹp giả tạo, không phản ánh khả năng với dữ liệu mới",
+"Vì test set luôn có nhiều mẫu dương hơn nên đo Recall chính xác hơn",
+"Vì mô hình không tính được Accuracy trên dữ liệu đã dùng để huấn luyện",
+"Vì test set đã được chuẩn hóa còn training set thì chưa được chuẩn hóa"
+],
+"w": "Test set giữ riêng để chấm điểm. Chấm trên dữ liệu đã học thì điểm luôn đẹp giả tạo, nhất là khi mô hình overfitting.",
+"x": [
+"Test set không nhất thiết có nhiều mẫu dương hơn.",
+"Vẫn tính được, chỉ là vô nghĩa.",
+"Hai tập phải được xử lý cùng một cách."
+],
+"trap": "Nghĩ đây là ràng buộc kỹ thuật.",
+"mem": "Test set = dữ liệu chưa thấy ⇒ đánh giá trung thực."
+},
+{
+"lv": "NB",
+"t": "Độ đo phân lớp",
+"q": "Công thức của <b>Recall</b> là:",
+"o": [
+"TP / (TP + FN)",
+"TP / (TP + FP)",
+"(TP + TN) / tổng",
+"TN / (TN + FP)"
+],
+"w": "Recall = TP/(TP + FN): trong số dương thật, mô hình bắt được bao nhiêu.",
+"x": [
+"Đây là Precision.",
+"Đây là Accuracy.",
+"Đây là specificity, không có trong slide."
+],
+"trap": "Lẫn Precision và Recall.",
+"mem": "Precision: trong số báo dương. Recall: trong số dương thật."
+},
+{
+"lv": "VD",
+"t": "Độ đo phân lớp",
+"q": "200 hồ sơ kiểm tra, 20 hồ sơ thật sự vỡ nợ. Mô hình gắn cờ 25 hồ sơ, trong đó 15 đúng là vỡ nợ. Precision và Recall lần lượt là:",
+"o": [
+"0,60 và 0,75",
+"0,75 và 0,60",
+"0,60 và 0,925",
+"0,925 và 0,75"
+],
+"w": "TP = 15; FP = 25 − 15 = 10; FN = 20 − 15 = 5; TN = 200 − 15 − 10 − 5 = 170.<br>Precision = 15/25 = 0,60. Recall = 15/20 = 0,75.",
+"x": [
+"Đảo hai độ đo.",
+"0,925 là Accuracy (185/200), không phải Recall.",
+"0,925 là Accuracy, không phải Precision."
+],
+"trap": "Đảo mẫu số của Precision và Recall.",
+"mem": "Precision = TP/(TP+FP); Recall = TP/(TP+FN)."
+},
+{
+"lv": "VD",
+"t": "F1",
+"q": "Tiếp câu trước: Precision = 0,60, Recall = 0,75. F1 bằng bao nhiêu?",
+"o": [
+"≈ 0,667",
+"0,675",
+"0,450",
+"1,350"
+],
+"w": "F1 = 2 × P × R/(P + R) = 2 × 0,60 × 0,75/1,35 = 0,90/1,35 ≈ 0,667. F1 là trung bình điều hòa nên gần với giá trị nhỏ hơn.",
+"x": [
+"0,675 là trung bình cộng.",
+"0,45 là tích P × R, chưa nhân 2 và chia tổng.",
+"1,35 là tổng P + R."
+],
+"trap": "Dùng trung bình cộng.",
+"mem": "F1 = 2PR/(P + R), trung bình điều hòa."
+},
+{
+"lv": "VDC",
+"t": "Accuracy với dữ liệu mất cân bằng",
+"q": "Tiếp ví dụ 200 hồ sơ, 20 vỡ nợ. Mô hình A có Accuracy 92,5% (Recall 0,75). Mô hình B đoán “không vỡ nợ” cho tất cả. Accuracy của B và kết luận đúng là:",
+"o": [
+"90%; Accuracy gần nhau nhưng B bỏ sót mọi ca vỡ nợ, phải xem Precision, Recall, F1",
+"10%; B rõ ràng kém hơn A nên Accuracy đủ để so sánh hai mô hình",
+"90%; B gần bằng A nên có thể dùng B vì đơn giản và nhanh hơn",
+"100%; B không đưa ra cảnh báo sai nào nên tốt hơn A"
+],
+"w": "B đoán đúng 180 hồ sơ không vỡ nợ: Accuracy = 180/200 = 90%, chỉ kém A 2,5 điểm, nhưng Recall = 0 (bỏ sót cả 20 ca). Với dữ liệu mất cân bằng, Accuracy gây hiểu lầm; phải xem Precision, Recall, F1.",
+"x": [
+"B đúng với 180 hồ sơ âm nên Accuracy là 90%, không phải 10%.",
+"Mô hình bỏ sót mọi ca vỡ nợ là vô dụng với nghiệp vụ.",
+"B có FN = 20 nên Accuracy không thể là 100%."
+],
+"trap": "Tin Accuracy khi lớp dương rất hiếm.",
+"mem": "Dữ liệu lệch: Accuracy cao vẫn có thể vô dụng ⇒ xem Recall, F1."
+},
+{
+"lv": "VDC",
+"t": "Precision hay Recall",
+"q": "Hệ thống cảnh báo rửa tiền: bỏ sót một giao dịch rửa tiền gây hậu quả pháp lý nghiêm trọng, còn cảnh báo nhầm chỉ tốn thêm thời gian kiểm tra thủ công. Nên ưu tiên tối ưu độ đo nào?",
+"o": [
+"Recall, vì cần bắt được càng nhiều ca dương thật càng tốt",
+"Precision, vì cần mọi cảnh báo đưa ra đều phải chính xác",
+"Accuracy, vì đây là độ đo tổng quát nhất của mô hình",
+"Specificity, vì cần giảm số giao dịch bình thường bị gắn cờ"
+],
+"w": "Bỏ sót (FN) đắt hơn báo nhầm (FP), nên ưu tiên Recall = TP/(TP + FN): trong số dương thật, bắt được bao nhiêu. Chấp nhận Precision thấp hơn.",
+"x": [
+"Precision ưu tiên giảm FP; ở đây FP chỉ tốn công kiểm tra.",
+"Accuracy gây hiểu lầm khi lớp dương rất hiếm.",
+"Giảm cảnh báo nhầm đi ngược ưu tiên của nghiệp vụ."
+],
+"trap": "Chọn Precision vì nghe “chính xác”.",
+"mem": "FN đắt ⇒ Recall. FP đắt ⇒ Precision."
+},
+{
+"lv": "NB",
+"t": "Cấu trúc CPT",
+"q": "Ba cấu trúc dữ liệu của CPT là:",
+"o": [
+"Prediction Tree, Inverted Index, Lookup Table",
+"FP-tree, Header Table, Conditional Pattern Base",
+"Dendrogram, Grid, Medoid",
+"Model Registry, Feature Store, UDF"
+],
+"w": "Prediction Tree (cây tiền tố lưu chuỗi), Inverted Index (bảng item × chuỗi để tìm nhanh chuỗi chứa một tập item), Lookup Table (trỏ tới nút cuối của mỗi chuỗi).",
+"x": [
+"Đây là các cấu trúc của FP-Growth.",
+"Đây là khái niệm phân cụm.",
+"Đây là thành phần MLOps."
+],
+"trap": "Lẫn CPT với FP-Growth vì cùng dùng cây tiền tố.",
+"mem": "CPT: Prediction Tree + Inverted Index + Lookup Table."
+},
+{
+"lv": "TH",
+"t": "Inverted Index",
+"q": "Trong CPT, Inverted Index được dùng thế nào để tìm chuỗi tương tự với hậu tố {A, D}?",
+"o": [
+"Lấy dòng của A AND dòng của D; chuỗi có giá trị 1 là chuỗi chứa cả A và D",
+"Đi từ nút cuối của mỗi chuỗi ngược lên gốc để tìm A rồi D theo thứ tự",
+"Cộng số lần xuất hiện của A và D trong mọi chuỗi rồi chọn chuỗi có tổng lớn nhất",
+"Duyệt Prediction Tree từ gốc theo nhánh A rồi đến nhánh con D"
+],
+"w": "Inverted Index là bảng item × chuỗi, ô bằng 1 nếu chuỗi chứa item. Lấy AND các dòng của mọi phần tử trong hậu tố cho ra chuỗi chứa đủ chúng. Ví dụ slide: A = 1,0,1,1; D = 1,1,1,1 → AND = 1,0,1,1 → s1, s3, s4.",
+"x": [
+"Đây là cách Lookup Table dùng để lấy lại toàn bộ chuỗi.",
+"Không cộng số lần; chỉ cần chứa đủ.",
+"Chuỗi tương tự không cần A, D theo đúng thứ tự hay là tiền tố."
+],
+"trap": "Nghĩ chuỗi tương tự phải có hậu tố theo đúng thứ tự.",
+"mem": "Inverted Index: AND các dòng item ⇒ chuỗi chứa đủ hậu tố."
+},
+{
+"lv": "TH",
+"t": "Lookup Table",
+"q": "Lookup Table trong CPT có vai trò gì?",
+"o": [
+"Với mỗi chuỗi, trỏ tới nút cuối của nhánh để đi ngược lên gốc lấy lại toàn bộ chuỗi",
+"Ghi điểm của mỗi ứng viên để chọn phần tử có xác suất cao nhất",
+"Ghi lại mọi item xuất hiện trong mỗi chuỗi dưới dạng ma trận 0/1",
+"Nén các chuỗi con hay gặp thành một ký hiệu mới để tiết kiệm bộ nhớ"
+],
+"w": "Lookup Table trỏ từ mỗi chuỗi tới nút cuối của nhánh của nó. Từ nút cuối đi ngược lên gốc là lấy lại được toàn bộ chuỗi, cần để tìm mệnh đề kết quả.",
+"x": [
+"Đây là Count Table.",
+"Đây là Inverted Index.",
+"Đây là chiến lược nén của CPT+."
+],
+"trap": "Lẫn Lookup Table với Count Table.",
+"mem": "Lookup Table = con trỏ tới nút cuối của mỗi chuỗi."
+},
+{
+"lv": "VD",
+"t": "CPT – hậu tố",
+"q": "Chuỗi cần dự đoán s = ⟨E, G, A, D, B⟩. Hậu tố kích cỡ y = 3 là:",
+"o": [
+"⟨A, D, B⟩",
+"⟨E, G, A⟩",
+"⟨D, B⟩",
+"⟨G, A, D⟩"
+],
+"w": "Hậu tố kích cỡ y là y phần tử cuối: P3(s) = ⟨i3, i4, i5⟩ = ⟨A, D, B⟩.",
+"x": [
+"Đây là tiền tố 3 phần tử đầu.",
+"Đây là hậu tố y = 2.",
+"Đây là 3 phần tử ở giữa."
+],
+"trap": "Lấy phần đầu thay vì phần cuối.",
+"mem": "Py(s) = y phần tử cuối của s."
+},
+{
+"lv": "VDC",
+"t": "CPT – dự đoán",
+"q": "CSDL chuỗi: s1 = ⟨A, B, C, E⟩, s2 = ⟨B, A, D, C⟩, s3 = ⟨A, C, B, F⟩, s4 = ⟨D, E, B⟩, s5 = ⟨C, A, B, D, C⟩. Dự đoán phần tử kế tiếp của ⟨X, A, B⟩ với hậu tố y = 2. Phần tử được chọn và điểm của nó là:",
+"o": [
+"C, điểm 3/4 = 0,75",
+"C, điểm 3/5 = 0,60",
+"D, điểm 2/4 = 0,50",
+"B, điểm 4/4 = 1,00"
+],
+"w": "Hậu tố {A, B}. Chuỗi chứa cả A và B (thứ tự bất kỳ): s1, s2, s3, s5 (s4 không có A) → 4 chuỗi tương tự.<br>Mệnh đề kết quả (phần sau vị trí mà A và B đều đã xuất hiện):<br>• s1 ⟨A, B, C, E⟩ → ⟨C, E⟩<br>• s2 ⟨B, A, D, C⟩ → ⟨D, C⟩<br>• s3 ⟨A, C, B, F⟩ → ⟨F⟩<br>• s5 ⟨C, A, B, D, C⟩ → ⟨D, C⟩<br>Count: C = 3 (s1, s2, s5), D = 2, E = 1, F = 1. Chia cho 4 chuỗi tương tự: C = 0,75 cao nhất.",
+"x": [
+"Mẫu số là số chuỗi tương tự (4), không phải tổng số chuỗi (5).",
+"D chỉ xuất hiện trong 2 mệnh đề kết quả.",
+"B thuộc hậu tố, không nằm trong mệnh đề kết quả."
+],
+"trap": "Chia cho tổng số chuỗi, hoặc bỏ s2 vì A, B ngược thứ tự.",
+"mem": "CPT: chuỗi tương tự chứa đủ hậu tố (không cần thứ tự); điểm = count/số chuỗi tương tự."
+},
+{
+"lv": "VD",
+"t": "CPT – bài tập slide",
+"q": "Bài tập slide trang 16: u1 = ⟨A, B, C⟩, u2 = ⟨A, B, D, C⟩, u3 = ⟨B, C⟩, u4 = ⟨B, D, E⟩. Dự đoán phần tử kế tiếp của ⟨A, B⟩. Kết quả là:",
+"o": [
+"C với P(C) = 1,0",
+"C với P(C) = 0,5",
+"D với P(D) = 0,5",
+"C với P(C) = 0,75"
+],
+"w": "Hậu tố {A, B}. Chuỗi chứa cả A và B: u1, u2 (u3, u4 không có A). Mệnh đề kết quả: u1 → ⟨C⟩; u2 → ⟨D, C⟩. Count Table, mẫu số 2: P(C) = 2/2 = 1,0; P(D) = 1/2 = 0,5. Dự đoán C.",
+"x": [
+"0,5 là khi chia cho 4 chuỗi.",
+"D có điểm thấp hơn C.",
+"0,75 = 3/4 là khi đếm C trong cả u3 và chia cho 4."
+],
+"trap": "Chia cho tổng số chuỗi thay vì số chuỗi tương tự.",
+"mem": "Mẫu số CPT = số chuỗi tương tự."
+},
+{
+"lv": "TH",
+"t": "CPT – chuỗi tương tự",
+"q": "Theo CPT, chuỗi huấn luyện u được coi là <b>tương tự</b> với chuỗi s khi nào?",
+"o": [
+"u chứa mọi phần tử của hậu tố Py(s), theo thứ tự bất kỳ",
+"u có hậu tố giống hệt Py(s) theo đúng thứ tự",
+"u có cùng độ dài với chuỗi s cần dự đoán",
+"u bắt đầu bằng đúng các phần tử của Py(s)"
+],
+"w": "Chuỗi u tương tự s nếu chứa mọi phần tử của Py(s), theo thứ tự bất kỳ. Ví dụ hậu tố {A, B}: ⟨B, A, D, C⟩ vẫn tương tự.",
+"x": [
+"Không đòi đúng thứ tự hay vị trí cuối.",
+"Độ dài không liên quan.",
+"Không đòi là tiền tố của u."
+],
+"trap": "Áp điều kiện thứ tự quá chặt.",
+"mem": "Tương tự = chứa đủ phần tử hậu tố, thứ tự bất kỳ."
+},
+{
+"lv": "NB",
+"t": "PageRank",
+"q": "Trong công thức PageRank, C(Ti) là:",
+"o": [
+"Số liên kết đi ra từ trang Ti",
+"Số liên kết đi vào trang Ti",
+"Số liên kết đi vào trang A",
+"Tổng số trang trong đồ thị"
+],
+"w": "PR(A) = (1 − d) + d × Σ PR(Ti)/C(Ti). C(Ti) là số liên kết ra của Ti: trang Ti chia đều điểm của nó cho mọi trang nó trỏ tới.",
+"x": [
+"Mẫu số là liên kết ra, không phải vào.",
+"Liên kết vào A quyết định tập Ti, không phải mẫu số.",
+"Công thức không chuẩn hóa không chia cho tổng số trang."
+],
+"trap": "Dùng số liên kết vào của trang đích.",
+"mem": "C(Ti) = số link ra của trang nguồn."
+},
+{
+"lv": "VD",
+"t": "PageRank vòng 1",
+"q": "Trang G nhận liên kết từ X (X trỏ ra 2 trang) và từ Y (Y trỏ ra 4 trang). d = 0,85, vòng 0 mọi PR = 1. PR của G sau vòng 1 là:",
+"o": [
+"0,7875",
+"0,7500",
+"0,6375",
+"1,0000"
+],
+"w": "PR1(G) = 0,15 + 0,85 × (PR0(X)/2 + PR0(Y)/4) = 0,15 + 0,85 × (0,5 + 0,25) = 0,15 + 0,6375 = 0,7875.",
+"x": [
+"0,75 là tổng phần chia, chưa nhân d và cộng 1 − d.",
+"0,6375 quên cộng (1 − d) = 0,15.",
+"1 là giá trị khởi tạo."
+],
+"trap": "Quên cộng 1 − d hoặc quên nhân d.",
+"mem": "PR = 0,15 + 0,85 × Σ PR(Ti)/C(Ti)."
+},
+{
+"lv": "VD",
+"t": "PageRank – ví dụ slide",
+"q": "Slide trang 18: F chỉ nhận liên kết từ E; E trỏ ra 3 trang B, D, F. d = 0,85, vòng 0 mọi PR = 1. PR1(F) xấp xỉ:",
+"o": [
+"0,43",
+"0,28",
+"1,00",
+"0,15"
+],
+"w": "PR1(F) = 0,15 + 0,85 × PR0(E)/C(E) = 0,15 + 0,85 × 1/3 = 0,15 + 0,2833 ≈ 0,43.",
+"x": [
+"0,28 là phần 0,85/3, quên cộng 0,15.",
+"1 là giá trị khởi tạo.",
+"0,15 là khi bỏ qua liên kết từ E."
+],
+"trap": "Quên chia PR(E) cho số liên kết ra của E.",
+"mem": "Mỗi trang nguồn chia đều PR cho các trang nó trỏ tới."
+},
+{
+"lv": "VDC",
+"t": "PageRank vòng sau",
+"q": "Ở vòng 2, trang Z nhận liên kết từ U (PR1 = 1,2, trỏ ra 3 trang) và từ V (PR1 = 0,6, chỉ trỏ ra 1 trang là Z). d = 0,85. PR2(Z) là:",
+"o": [
+"1,00",
+"0,85",
+"1,68",
+"0,94"
+],
+"w": "PR2(Z) = 0,15 + 0,85 × (PR1(U)/3 + PR1(V)/1) = 0,15 + 0,85 × (0,4 + 0,6) = 0,15 + 0,85 = 1,00. Mỗi vòng dùng PR của vòng trước.",
+"x": [
+"0,85 quên cộng 0,15.",
+"1,68 = 0,15 + 0,85 × 1,8, quên chia PR(U) cho 3.",
+"0,94 là khi dùng PR0 = 1 cho V thay vì PR1 = 0,6 rồi tính sai phần U."
+],
+"trap": "Quên chia theo số liên kết ra hoặc dùng PR khởi tạo thay vì vòng trước.",
+"mem": "Vòng t dùng PR vòng t − 1; lặp đến khi chênh lệch < ε."
+},
+{
+"lv": "VDC",
+"t": "PageRank – trang không có liên kết vào",
+"q": "Trang Q không có trang nào trỏ tới. Với d = 0,85, PR của Q ở mọi vòng từ vòng 1 trở đi bằng bao nhiêu, và Q có ảnh hưởng tới các trang mà nó trỏ tới không?",
+"o": [
+"0,15; vẫn chuyển 0,85 × 0,15/C(Q) cho mỗi trang nó trỏ tới",
+"0; không chuyển điểm nào vì PR của Q bằng 0",
+"1; giữ nguyên giá trị khởi tạo vì không có liên kết vào",
+"0,85; vì chỉ còn lại thành phần d của công thức"
+],
+"w": "Không có Ti nào nên tổng bằng 0: PR(Q) = (1 − d) + 0 = 0,15 ở mọi vòng. Q vẫn có liên kết ra nên vẫn đóng góp PR(Q)/C(Q) = 0,15/C(Q), nhân d, cho mỗi trang nó trỏ tới.",
+"x": [
+"Thành phần (1 − d) luôn có mặt nên PR không bằng 0.",
+"Giá trị khởi tạo chỉ dùng ở vòng 0.",
+"Thành phần d nhân với tổng bằng 0."
+],
+"trap": "Nghĩ trang không có link vào thì PR bằng 0.",
+"mem": "Không có link vào ⇒ PR = 1 − d = 0,15."
+},
+{
+"lv": "TH",
+"t": "PageRank – ghi chú slide",
+"q": "Hình trên slide ghi PR của F là 3,9 trong khi tính tay vòng 1 được 0,43. Cách hiểu đúng là:",
+"o": [
+"Hình dùng dạng chuẩn hóa tổng bằng 1 (đơn vị %); 3,9% × 11 ≈ 0,43",
+"Phép tính tay ở trang 18 bị sai, giá trị đúng của F là 3,9",
+"Hình dùng hệ số d = 0,15 thay vì 0,85 nên kết quả khác nhau",
+"Hình chỉ là vòng 1, còn 0,43 là giá trị sau khi lặp 50 vòng"
+],
+"w": "Các số trên hình cộng lại xấp xỉ 100, tức là phần trăm theo dạng PageRank chuẩn hóa có tổng bằng 1. Công thức trang 17 là dạng không chuẩn hóa (trung bình PR bằng 1). Đồ thị có 11 trang: 3,9% × 11 ≈ 0,43. Khi làm bài tính tay, dùng đúng công thức trang 17.",
+"x": [
+"Phép tính tay đúng với công thức trang 17.",
+"Slide không đổi d.",
+"Ngược lại: 0,43 là vòng 1, còn hình là kết quả đã hội tụ."
+],
+"trap": "Nghĩ một trong hai số bị sai.",
+"mem": "Hình slide: dạng chuẩn hóa (%); bài tính tay: dạng không chuẩn hóa."
+},
+{
+"lv": "TH",
+"t": "PageRank và dự đoán web",
+"q": "Trong bài báo ở slide trang 19–20, PageRank được dùng vào việc gì cho dự đoán truy cập web?",
+"o": [
+"Xếp hạng chuỗi theo PR trung bình của các trang để thu gọn dữ liệu huấn luyện",
+"Thay thế hoàn toàn CPT trong việc dự đoán trang kế tiếp người dùng truy cập",
+"Mã hóa mỗi trang thành vector embedding để tính độ tương đồng giữa trang",
+"Phát hiện các trang bất thường để loại khỏi CSDL chuỗi bằng Z-score"
+],
+"w": "Chương trình tính PageRank cho từng nút, PR trung bình của từng chuỗi, rồi sắp CSDL chuỗi theo PR trung bình. Dùng PageRank để xếp hạng chuỗi theo độ quan trọng của các trang, từ đó thu gọn dữ liệu huấn luyện (KOSARAK 30%, FIFA 15%, MSNBC 50%).",
+"x": [
+"PageRank hỗ trợ, không thay thế mô hình dự đoán chuỗi.",
+"Không dùng embedding.",
+"Không dùng Z-score."
+],
+"trap": "Nghĩ PageRank trực tiếp dự đoán trang kế tiếp.",
+"mem": "PageRank + dự đoán chuỗi: xếp hạng và rút gọn dữ liệu huấn luyện."
+},
+{
+"lv": "NB",
+"t": "BigQuery ML",
+"q": "Trong BigQuery ML, câu lệnh dùng mô hình đã huấn luyện để dự báo trên bảng dữ liệu mới là:",
+"o": [
+"ML.PREDICT",
+"CREATE MODEL",
+"ML.EVALUATE",
+"ML.FORECAST"
+],
+"w": "Ba câu lệnh cốt lõi: CREATE MODEL (khởi tạo và huấn luyện), ML.EVALUATE (lấy chỉ số đánh giá), ML.PREDICT (dự báo trên dữ liệu mới).",
+"x": [
+"CREATE MODEL dùng để huấn luyện.",
+"ML.EVALUATE trả về chỉ số đánh giá.",
+"Forecast là tên của Snowflake Cortex, không phải ba lệnh BigQuery ML trong slide."
+],
+"trap": "Lẫn với Snowflake Cortex.",
+"mem": "BigQuery ML: CREATE MODEL → ML.EVALUATE → ML.PREDICT."
+},
+{
+"lv": "VD",
+"t": "BigQuery ML",
+"q": "Cần huấn luyện mô hình dự đoán hồ sơ vay được duyệt (Có/Không) bằng BigQuery ML. Tùy chọn model_type phù hợp là:",
+"o": [
+"logistic_reg",
+"linear_reg",
+"kmeans",
+"arima"
+],
+"w": "LOGISTIC_REG cho phân lớp, LINEAR_REG cho hồi quy. Duyệt hay không là nhãn danh mục nên dùng logistic_reg, với input_label_cols = ['approved'].",
+"x": [
+"linear_reg dự đoán số liên tục.",
+"kmeans là phân cụm không nhãn, không có trong ví dụ slide.",
+"arima dành cho chuỗi thời gian, không có trong ví dụ slide."
+],
+"trap": "Nghĩ “regression” trong tên logistic regression là hồi quy giá trị số.",
+"mem": "Phân lớp → logistic_reg; hồi quy → linear_reg."
+},
+{
+"lv": "TH",
+"t": "ROC-AUC",
+"q": "ROC-AUC bằng 0,5 nghĩa là gì?",
+"o": [
+"Mô hình không tốt hơn đoán ngẫu nhiên",
+"Mô hình phân lớp hoàn hảo mọi hồ sơ",
+"Mô hình đúng 50% trên tập huấn luyện",
+"Mô hình có Precision và Recall bằng nhau"
+],
+"w": "ROC-AUC là diện tích dưới đường ROC, từ 0,5 (đoán ngẫu nhiên) đến 1 (phân lớp hoàn hảo); đo khả năng mô hình xếp hồ sơ dương cao hơn hồ sơ âm.",
+"x": [
+"Hoàn hảo là AUC = 1.",
+"AUC không phải Accuracy.",
+"AUC không đo sự bằng nhau của Precision và Recall."
+],
+"trap": "Đọc AUC như Accuracy.",
+"mem": "AUC 0,5 = ngẫu nhiên; 1 = hoàn hảo."
+},
+{
+"lv": "VD",
+"t": "Snowflake Cortex",
+"q": "Đội chăm sóc khách hàng muốn tính điểm cảm xúc và tóm tắt cho hàng triệu đoạn chat ngay trong Snowflake bằng SQL. Tính năng phù hợp là:",
+"o": [
+"Cortex AI & LLM với SENTIMENT và SUMMARIZE",
+"Cortex ML Functions FORECAST",
+"BigQuery ML với ML.PREDICT",
+"Snowpipe Streaming với insertRows()"
+],
+"w": "Cortex AI & LLM gọi mô hình ngôn ngữ lớn (Llama, Mistral) bằng câu SQL, ví dụ SNOWFLAKE.CORTEX.SENTIMENT(chat_text) và SNOWFLAKE.CORTEX.SUMMARIZE(chat_text).",
+"x": [
+"FORECAST dự báo chuỗi thời gian số.",
+"BigQuery ML là dịch vụ của Google.",
+"Snowpipe Streaming là nạp dữ liệu, không phân tích văn bản."
+],
+"trap": "Chọn FORECAST vì cùng thuộc Cortex.",
+"mem": "Cortex ML Functions: Forecasting, Anomaly Detection. Cortex AI & LLM: SENTIMENT, SUMMARIZE."
+},
+{
+"lv": "VD",
+"t": "Snowflake Cortex",
+"q": "Cần dự báo doanh số 30 ngày tới từ bảng daily_sales mà không tự viết thuật toán. Theo slide, cách làm trong Snowflake là:",
+"o": [
+"Tạo SNOWFLAKE.ML.FORECAST trên daily_sales rồi gọi !FORECAST(FORECASTING_PERIODS => 30)",
+"Gọi SNOWFLAKE.CORTEX.SUMMARIZE trên cột revenue của bảng daily_sales",
+"Dùng ML.PREDICT với model_type = 'linear_reg' trên bảng daily_sales",
+"Tạo singular test trong dbt kiểm tra doanh số 30 ngày tiếp theo"
+],
+"w": "Cortex ML Functions có Forecasting cho chuỗi thời gian: CREATE SNOWFLAKE.ML.FORECAST sales_model(...) với TIMESTAMP_COLNAME và TARGET_COLNAME, rồi CALL sales_model!FORECAST(FORECASTING_PERIODS => 30).",
+"x": [
+"SUMMARIZE tóm tắt văn bản.",
+"ML.PREDICT là cú pháp BigQuery ML.",
+"Test dbt kiểm tra chất lượng, không dự báo."
+],
+"trap": "Lẫn cú pháp giữa hai nền tảng.",
+"mem": "Snowflake dự báo chuỗi thời gian: ML.FORECAST."
+},
+{
+"lv": "TH",
+"t": "Snowpark push-down",
+"q": "Cơ chế <b>push-down</b> của Snowpark nghĩa là:",
+"o": [
+"Code DataFrame Python được dịch thành SQL tối ưu và chạy song song trong kho",
+"Dữ liệu được tải xuống máy cá nhân để chạy code Python cho nhanh",
+"Code Python chạy trên một máy chủ ML riêng rồi đẩy kết quả lên kho",
+"Kho tự cài thêm thư viện Python còn thiếu từ Internet khi chạy code"
+],
+"w": "Snowpark tự biên dịch code Python thành SQL tối ưu, chạy song song trên các virtual warehouse. Ví dụ filter, group_by, agg được dịch thành SELECT … WHERE … GROUP BY. Dữ liệu thô không rời khỏi kho (Zero Data Movement).",
+"x": [
+"Ngược với Zero Data Movement.",
+"Đây là cách truyền thống.",
+"Thư viện có sẵn qua tích hợp Anaconda; sandbox không cho truy cập tùy ý ra ngoài."
+],
+"trap": "Nghĩ Python chạy ngoài kho.",
+"mem": "Push-down: Python → SQL → chạy trong kho."
+},
+{
+"lv": "VDC",
+"t": "Snowpark",
+"q": "Đoạn Snowpark: <code>session.table(\"LOANS\").filter(col(\"INCOME\") > 20).group_by(\"REGION\").agg(avg(\"LOAN_AMOUNT\"))</code>. SQL được dịch ra tương đương với:",
+"o": [
+"SELECT REGION, AVG(LOAN_AMOUNT) FROM LOANS WHERE INCOME > 20 GROUP BY REGION",
+"SELECT REGION, AVG(LOAN_AMOUNT) FROM LOANS GROUP BY REGION HAVING INCOME > 20",
+"SELECT AVG(LOAN_AMOUNT) FROM LOANS WHERE REGION > 20 GROUP BY INCOME",
+"SELECT REGION, LOAN_AMOUNT FROM LOANS WHERE INCOME > 20 ORDER BY REGION"
+],
+"w": "filter đứng trước group_by nên thành WHERE INCOME > 20; group_by(\"REGION\") thành GROUP BY REGION; agg(avg(...)) thành AVG(LOAN_AMOUNT). Câu này chạy trong Snowflake.",
+"x": [
+"Lọc trước khi nhóm là WHERE, không phải HAVING; và INCOME không phải cột tổng hợp.",
+"Đảo cột lọc và cột nhóm.",
+"Thiếu phép tổng hợp AVG và GROUP BY."
+],
+"trap": "Dịch filter thành HAVING.",
+"mem": "filter trước group_by ⇒ WHERE."
+},
+{
+"lv": "TH",
+"t": "Sandboxing",
+"q": "Sandboxing trong Secure Runtime Environment của kho có tác dụng gì?",
+"o": [
+"Code Python/R chạy trong không gian cô lập, không truy cập hạ tầng ngoài phạm vi cho phép",
+"Code Python/R được dịch hoàn toàn sang SQL trước khi chạy trên warehouse",
+"Code Python/R được chạy thử trên máy cá nhân trước khi đưa lên kho",
+"Code Python/R được tự động kiểm thử bằng dbt test trước khi triển khai"
+],
+"w": "Sandboxing: code Python/R chạy trong một không gian cô lập, không truy cập được hạ tầng bên ngoài phạm vi cho phép, ngăn mã độc xâm nhập.",
+"x": [
+"Đây là push-down của Snowpark.",
+"Slide không mô tả như vậy.",
+"dbt test không liên quan."
+],
+"trap": "Lẫn sandbox với push-down.",
+"mem": "Sandbox = môi trường cô lập, an toàn."
+},
+{
+"lv": "NB",
+"t": "Feature Store",
+"q": "Ba lợi ích của Feature Store theo slide là:",
+"o": [
+"Discovery, Consistency, Lineage",
+"Freshness, Volume, Schema",
+"Scalability, Governance, Simplicity",
+"Accuracy, Completeness, Timeliness"
+],
+"w": "Discovery (tìm và tái sử dụng đặc trưng có sẵn), Consistency (mọi mô hình, cả lúc huấn luyện lẫn dự báo, dùng cùng cách tính), Lineage (truy được đặc trưng tính từ bảng nguồn nào).",
+"x": [
+"Đây là trụ cột observability.",
+"Đây là ba lợi ích của In-Database ML.",
+"Đây là chiều chất lượng dữ liệu."
+],
+"trap": "Lẫn các bộ ba thuật ngữ giữa các chương.",
+"mem": "Feature Store: Discovery, Consistency, Lineage."
+},
+{
+"lv": "VD",
+"t": "Feature Store",
+"q": "Phòng tín dụng tính DTI theo thu nhập trước thuế, phòng thẻ tính theo thu nhập sau thuế; hai mô hình dùng hai định nghĩa mà không ai biết. Giải pháp phù hợp là:",
+"o": [
+"Feature Store: định nghĩa DTI một lần, mọi mô hình dùng chung khi huấn luyện và dự báo",
+"Model Registry: đánh dấu một trong hai mô hình ở trạng thái đã ngừng dùng",
+"AutoML: để hệ thống tự chọn định nghĩa DTI tốt hơn cho từng mô hình",
+"UDF: đóng gói cả hai mô hình thành hàm SQL để gọi trong cùng câu truy vấn"
+],
+"w": "Feature Store là kho tập trung quản lý, lưu trữ và phân phối đặc trưng tính sẵn cho nhiều mô hình. Lợi ích Consistency giải quyết đúng vấn đề tính lệch logic giữa các phòng ban.",
+"x": [
+"Registry quản lý trạng thái mô hình, không thống nhất đặc trưng.",
+"AutoML tối ưu mô hình, không giải quyết hai định nghĩa nghiệp vụ.",
+"UDF triển khai mô hình, vẫn giữ hai định nghĩa."
+],
+"trap": "Xử lý ở tầng mô hình thay vì tầng đặc trưng.",
+"mem": "Đặc trưng tính lệch giữa các đội ⇒ Feature Store."
+},
+{
+"lv": "TH",
+"t": "Model Registry và Versioning",
+"q": "Điểm khác giữa Model Registry và Model Versioning là:",
+"o": [
+"Registry quản lý danh mục và trạng thái mô hình; Versioning gắn mỗi phiên bản với đúng dữ liệu và mã đã tạo ra nó",
+"Registry gắn mỗi phiên bản với dữ liệu và mã; Versioning quản lý trạng thái phê duyệt của mô hình",
+"Registry dùng để huấn luyện lại mô hình; Versioning dùng để giám sát data drift của mô hình",
+"Registry chỉ lưu mô hình đang chạy; Versioning chỉ lưu mô hình đã ngừng sử dụng"
+],
+"w": "Model Registry: danh mục tập trung mọi mô hình, quản lý trạng thái (đang phát triển, đã phê duyệt, đã ngừng dùng). Model Versioning: gắn mỗi phiên bản với đúng phiên bản dữ liệu và mã nguồn, ví dụ credit_model v3 = snapshot 01/10 + commit a1b2c3, để tái lập được.",
+"x": [
+"Đảo ngược hai khái niệm.",
+"Huấn luyện lại và giám sát drift là việc khác.",
+"Registry quản lý mọi trạng thái."
+],
+"trap": "Đảo hai khái niệm.",
+"mem": "Registry = trạng thái. Versioning = dữ liệu + code của từng phiên bản."
+},
+{
+"lv": "VD",
+"t": "Model Versioning",
+"q": "Mô hình credit_model v3 đang chạy bỗng dự báo sai hàng loạt. Đội cần dựng lại đúng v3 để điều tra. Điều gì giúp làm được việc này?",
+"o": [
+"Model Versioning: v3 gắn với snapshot dữ liệu và commit code đã tạo ra nó",
+"Model Registry: v3 được đánh dấu trạng thái đã phê duyệt trong danh mục",
+"Data drift monitoring: phát hiện phân phối đầu vào đã thay đổi theo thời gian",
+"AutoML: tự động thử lại nhiều thuật toán và chọn mô hình tốt nhất"
+],
+"w": "Model Versioning gắn mỗi phiên bản mô hình với đúng phiên bản dữ liệu và mã nguồn đã tạo ra nó, để tái lập và kiểm thử được. Khi v3 dự báo sai, dựng lại được đúng v3.",
+"x": [
+"Trạng thái phê duyệt không đủ để tái lập mô hình.",
+"Giám sát drift phát hiện vấn đề, không dựng lại mô hình.",
+"AutoML tạo mô hình mới, không tái lập v3."
+],
+"trap": "Nghĩ Registry đủ để tái lập.",
+"mem": "Tái lập mô hình ⇒ versioning dữ liệu + code."
+},
+{
+"lv": "VDC",
+"t": "Data drift và concept drift",
+"q": "Sau khi lãi suất tăng mạnh, phân phối thu nhập của khách mới không đổi, nhưng khách có cùng mức DTI như trước lại có tỷ lệ vỡ nợ cao hơn hẳn. Đây là hiện tượng gì và xử lý ra sao?",
+"o": [
+"Concept drift; giám sát độ chính xác và kích hoạt huấn luyện lại với dữ liệu mới",
+"Data drift; chuẩn hóa lại thu nhập bằng Z-score rồi dùng tiếp mô hình cũ",
+"Data leakage; xóa đặc trưng DTI khỏi mô hình vì đặc trưng này lấy từ tương lai",
+"Overfitting; cắt tỉa cây quyết định để mô hình tổng quát hơn trên dữ liệu cũ"
+],
+"w": "Concept drift là quan hệ giữa đầu vào và nhãn thay đổi: cùng DTI nhưng xác suất vỡ nợ khác. Data drift là phân phối đầu vào đổi; ở đây phân phối không đổi. Giải pháp: giám sát tự động, khi độ chính xác tụt dưới ngưỡng thì huấn luyện lại.",
+"x": [
+"Phân phối đầu vào không đổi nên không phải data drift; chuẩn hóa lại không sửa được quan hệ đã đổi.",
+"Không có thông tin “từ tương lai” trong tình huống.",
+"Cắt tỉa trên dữ liệu cũ không học được quan hệ mới."
+],
+"trap": "Gọi mọi thay đổi là data drift.",
+"mem": "Đầu vào đổi phân phối → data drift. Quan hệ đầu vào → nhãn đổi → concept drift."
+},
+{
+"lv": "TH",
+"t": "MLOps",
+"q": "MLOps được hiểu đúng nhất là:",
+"o": [
+"Áp tư duy DevOps vào ML để tự động hóa và quản lý vòng đời mô hình từ thử nghiệm đến vận hành",
+"Một thuật toán học máy mới tối ưu siêu tham số tốt hơn các thuật toán truyền thống",
+"Một định dạng file chuẩn để lưu mô hình đã huấn luyện và chia sẻ giữa các đội",
+"Một công cụ BI hiển thị kết quả dự báo của mô hình lên dashboard điều hành"
+],
+"w": "MLOps áp tư duy DevOps (kiểm thử, triển khai, giám sát tự động thành quy trình liên tục) vào ML, quản lý vòng đời mô hình. Thành phần: Model Registry, Model Versioning, giám sát model drift, auto-retraining.",
+"x": [
+"MLOps là cách vận hành, không phải thuật toán; dò siêu tham số là việc của AutoML.",
+"Định dạng lưu mô hình (như joblib) chỉ là một chi tiết kỹ thuật.",
+"Dashboard là tầng hiển thị, không phải quản lý vòng đời mô hình."
+],
+"trap": "Nghĩ MLOps là một công cụ hay thuật toán.",
+"mem": "MLOps = DevOps cho ML: registry, versioning, drift monitoring, retrain."
+},
+{
+"lv": "VD",
+"t": "Data drift",
+"q": "Mô hình được huấn luyện trên khách có thu nhập phần lớn 10–30 triệu; năm sau phần lớn khách mới có thu nhập 30–60 triệu, và độ chính xác giảm. Đây là:",
+"o": [
+"Data drift",
+"Concept drift",
+"Data leakage",
+"Schema drift"
+],
+"w": "Data drift là phân phối dữ liệu đầu vào thay đổi so với lúc huấn luyện. Slide lấy đúng ví dụ thu nhập dịch từ 10–30 triệu sang 30–60 triệu.",
+"x": [
+"Đề không nói quan hệ thu nhập → nhãn thay đổi.",
+"Leakage là dùng thông tin chưa có tại thời điểm dự báo.",
+"Schema drift là cấu trúc dữ liệu nguồn thay đổi (Chương 3)."
+],
+"trap": "Lẫn data drift với schema drift.",
+"mem": "Data drift = phân phối đầu vào đổi."
+},
+{
+"lv": "TH",
+"t": "AutoML",
+"q": "Siêu tham số (hyperparameter) mà AutoML tự dò là gì?",
+"o": [
+"Thông số đặt trước khi huấn luyện mà mô hình không tự học ra, như độ sâu tối đa của cây, số cụm k",
+"Trọng số mà mô hình tự học được từ dữ liệu trong quá trình huấn luyện",
+"Các đặc trưng đầu vào được trích xuất từ dữ liệu thô của tầng Bronze",
+"Các chỉ số đánh giá như Precision và Recall của mô hình trên tập test"
+],
+"w": "Siêu tham số là thông số đặt trước khi huấn luyện, mô hình không tự học ra: độ sâu tối đa của cây, số cụm k của K-Means, Eps và MinPts của DBSCAN. AutoML tự động hóa feature engineering, thử nhiều thuật toán và dò siêu tham số.",
+"x": [
+"Trọng số là tham số, mô hình tự học ra.",
+"Đặc trưng là đầu vào, không phải siêu tham số.",
+"Chỉ số đánh giá là kết quả, không phải thông số đặt trước."
+],
+"trap": "Lẫn tham số và siêu tham số.",
+"mem": "Hyperparameter: đặt trước (k, Eps, MinPts, max_depth)."
+},
+{
+"lv": "VD",
+"t": "AutoML",
+"q": "Trong BigQuery ML, muốn hệ thống tự thử nhiều thuật toán và chọn mô hình phân lớp tốt nhất, cần sửa gì ở câu CREATE MODEL?",
+"o": [
+"Đổi model_type thành 'AUTOML_CLASSIFIER'",
+"Đổi model_type thành 'linear_reg'",
+"Thêm ML.EVALUATE vào trước CREATE MODEL",
+"Đổi input_label_cols thành danh sách mọi cột"
+],
+"w": "Slide: thay model_type = 'logistic_reg' bằng 'AUTOML_CLASSIFIER' thì hệ thống tự thử và chọn mô hình.",
+"x": [
+"linear_reg là hồi quy, không phải AutoML.",
+"ML.EVALUATE dùng sau khi có mô hình.",
+"input_label_cols chỉ định cột nhãn."
+],
+"trap": "Nghĩ AutoML cần viết thêm code.",
+"mem": "BigQuery AutoML: model_type = 'AUTOML_CLASSIFIER'."
+},
+{
+"lv": "NB",
+"t": "UDF",
+"q": "Khi mô hình được triển khai dưới dạng UDF trong kho, cách dự báo là:",
+"o": [
+"Gọi hàm trong câu SELECT, hàm trả kết quả cho từng dòng",
+"Gửi request tới một REST API riêng của máy chủ ML",
+"Xuất bảng ra file CSV rồi chạy script Python ngoài kho",
+"Chạy lại CREATE MODEL mỗi khi cần một dự báo mới"
+],
+"w": "Mô hình được đóng gói thành UDF ngay trong kho. Muốn dự báo chỉ cần SELECT bình thường; UDF trả kết quả cho từng dòng (scoring on-the-fly), không cần viết API riêng.",
+"x": [
+"UDF loại bỏ nhu cầu viết API riêng.",
+"Đưa dữ liệu ra ngoài đi ngược In-Database ML.",
+"CREATE MODEL là huấn luyện, không phải dự báo."
+],
+"trap": "Nghĩ triển khai mô hình phải qua API.",
+"mem": "UDF: mô hình = hàm SQL, gọi bằng SELECT."
+},
+{
+"lv": "VDC",
+"t": "UDF",
+"q": "Cho câu: <code>SELECT customer_id, predict_default(dti, utilization) AS p_default FROM customers WHERE predict_default(dti, utilization) > 0.7;</code>. Nhận định nào đúng?",
+"o": [
+"Câu trả về khách có xác suất vỡ nợ dự báo trên 0,7; mô hình chạy trong kho, dữ liệu không rời kho",
+"Câu huấn luyện lại mô hình trên bảng customers rồi lọc khách có dti lớn hơn 0,7",
+"Câu gửi từng dòng của customers ra API bên ngoài để chấm điểm rồi nhận kết quả về",
+"Câu chỉ chạy được khi dữ liệu customers đã được xuất ra file model.joblib"
+],
+"w": "predict_default là UDF Python bọc mô hình scikit-learn (load từ @ml_stage/model.joblib), trả predict_proba cho lớp vỡ nợ. Câu SELECT chấm điểm từng dòng và lọc p_default > 0,7. Dữ liệu không rời kho, đúng nguyên lý In-Database ML.",
+"x": [
+"UDF chỉ dự báo, không huấn luyện; điều kiện lọc trên xác suất dự báo, không trên dti.",
+"UDF chạy trong kho, không gọi API ngoài.",
+"model.joblib là file mô hình đã huấn luyện, không phải nơi chứa dữ liệu khách."
+],
+"trap": "Nhầm điều kiện lọc là trên đặc trưng đầu vào.",
+"mem": "UDF scoring on-the-fly, dùng được cả trong WHERE."
+},
+{
+"lv": "VDC",
+"t": "Chọn giải pháp MLOps",
+"q": "Ngân hàng có: (1) hai phòng tính “tần suất giao dịch 90 ngày” khác nhau; (2) không biết mô hình nào đang chạy thật, mô hình nào đã ngừng; (3) độ chính xác mô hình chấm điểm giảm dần sau 6 tháng. Ghép giải pháp đúng là:",
+"o": [
+"(1) Feature Store; (2) Model Registry; (3) giám sát drift và auto-retraining",
+"(1) Model Registry; (2) Feature Store; (3) AutoML thay mô hình mới",
+"(1) Feature Store; (2) Model Versioning; (3) đổi sang Snowpark",
+"(1) UDF; (2) Feature Store; (3) tăng kích thước warehouse"
+],
+"w": "(1) Đặc trưng tính lệch → Feature Store (Consistency). (2) Quản lý trạng thái mô hình (đang phát triển, đã phê duyệt, đã ngừng) → Model Registry. (3) Mô hình xuống cấp theo thời gian → giám sát model drift, tự kích hoạt huấn luyện lại khi tụt ngưỡng.",
+"x": [
+"Đảo vai trò của Registry và Feature Store.",
+"Versioning gắn phiên bản với dữ liệu, code; trạng thái là việc của Registry. Snowpark không xử lý drift.",
+"UDF là triển khai; tăng compute không sửa độ chính xác."
+],
+"trap": "Lẫn Registry và Versioning.",
+"mem": "Đặc trưng → Feature Store; trạng thái mô hình → Registry; xuống cấp → drift monitoring + retrain."
+},
+{
+"lv": "VDC",
+"t": "In-Database ML – ba lợi ích",
+"q": "Công ty muốn huấn luyện mô hình trên 8 TB dữ liệu giao dịch, không muốn dựng cụm Spark, cần phân quyền mô hình như phân quyền bảng, và muốn bước dự báo chỉ là thêm một câu SQL vào pipeline ELT. Ba yêu cầu lần lượt ứng với lợi ích nào?",
+"o": [
+"Scalability, Governance (RBAC), Simplicity",
+"Governance, Scalability, Consistency",
+"Simplicity, Lineage, Scalability",
+"Discovery, Governance, Simplicity"
+],
+"w": "Slide trang 5: Scalability (tận dụng MPP và tự mở rộng của kho cho hàng TB, không phải dựng cụm Spark/Hadoop riêng); Governance (RBAC đồng nhất); Simplicity (mô hình gắn thẳng vào pipeline ELT, dự báo chỉ là thêm một câu SQL).",
+"x": [
+"Sai thứ tự; Consistency là lợi ích của Feature Store.",
+"Lineage là lợi ích của Feature Store.",
+"Discovery là lợi ích của Feature Store."
+],
+"trap": "Lẫn bộ ba của In-Database ML với bộ ba của Feature Store.",
+"mem": "In-DB ML: Scalability, Governance, Simplicity."
+},
+{
+"lv": "TH",
+"t": "Use case hệ gợi ý",
+"q": "Use case dự đoán điểm đánh giá cho hệ gợi ý ở slide trang 22 thuộc loại học nào và vì sao?",
+"o": [
+"Supervised, vì điểm đánh giá đóng vai trò nhãn",
+"Unsupervised, vì lời nhận xét là văn bản không có cấu trúc",
+"Unsupervised, vì hệ gợi ý chia sản phẩm thành các cụm",
+"Reinforcement, vì hệ gợi ý học từ phản hồi Top-K"
+],
+"w": "Đây là supervised learning vì điểm đánh giá đóng vai trò nhãn. Quy trình: thu dữ liệu điểm và nhận xét → tiền xử lý → sinh điểm hiệu chỉnh từ điểm gốc và nội dung nhận xét → đánh giá độ chính xác điểm và chất lượng danh sách Top-K.",
+"x": [
+"Dữ liệu phi cấu trúc vẫn có thể dùng trong bài toán có nhãn.",
+"Slide không mô tả phân cụm sản phẩm.",
+"Slide không nói về reinforcement learning."
+],
+"trap": "Thấy văn bản thô liền chọn unsupervised.",
+"mem": "Có nhãn (điểm sao) ⇒ supervised."
+},
+{
+"lv": "VD",
+"t": "Phân loại thuật toán",
+"q": "Thuật toán nào sau đây là <b>supervised</b>?",
+"o": [
+"C4.5",
+"K-Means",
+"DBSCAN",
+"K-Medoids"
+],
+"w": "ID3, C4.5, Naive Bayes là supervised (học từ dữ liệu có nhãn). K-Means, K-Medoids, DBSCAN là unsupervised (phân cụm không nhãn).",
+"x": [
+"K-Means là phân cụm không nhãn.",
+"DBSCAN là phân cụm theo mật độ, không nhãn.",
+"K-Medoids là phân cụm không nhãn."
+],
+"trap": "Nghĩ thuật toán có tham số k là có giám sát.",
+"mem": "Cây quyết định, Naive Bayes: supervised. K-Means, DBSCAN: unsupervised."
+}
+]
+}

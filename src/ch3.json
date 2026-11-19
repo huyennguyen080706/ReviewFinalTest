@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "ETL và ELT",
+"q": "Khác biệt cốt lõi giữa ETL và ELT là gì?",
+"o": [
+"Vị trí và thời điểm biến đổi: trước khi nạp trên máy trung gian, hay sau khi nạp ngay trong kho",
+"ETL chỉ dùng cho dữ liệu có cấu trúc, còn ELT chỉ dùng cho dữ liệu bán cấu trúc",
+"ETL nạp dữ liệu theo thời gian thực, còn ELT chỉ nạp được theo lô mỗi đêm",
+"ETL không cần bước trích xuất, còn ELT bắt buộc phải trích xuất từ nguồn"
+],
+"w": "ETL: Extract → Transform trên máy chủ ETL trung gian → Load dữ liệu đã sạch. ELT: Extract → Load dữ liệu thô vào kho → Transform bằng SQL với compute của kho. Khác biệt là biến đổi diễn ra trước hay sau khi nạp, và ở đâu.",
+"x": [
+"Cả hai xử lý được nhiều loại dữ liệu; slide không phân biệt theo loại dữ liệu.",
+"Độ trễ phụ thuộc cách nạp (batch hay streaming), không phải thứ tự T và L.",
+"Cả hai đều bắt đầu bằng Extract."
+],
+"trap": "Chỉ nhìn chữ cái mà không hiểu hệ quả: ELT giữ được dữ liệu thô và dùng compute của kho.",
+"mem": "ETL: biến đổi trước, ở máy trung gian. ELT: nạp thô trước, biến đổi trong kho."
+},
+{
+"lv": "TH",
+"t": "Hạn chế ETL",
+"q": "Vì sao ETL truyền thống tạo <b>nút thắt cổ chai</b> khi dữ liệu lớn?",
+"o": [
+"Toàn bộ dữ liệu phải đi qua một máy chủ ETL trung gian có năng lực giới hạn",
+"Kho dữ liệu đích không cho phép nạp nhiều bảng cùng một lúc",
+"Dữ liệu thô được giữ lại ở Bronze làm kho đích đầy quá nhanh",
+"ETL dùng SQL nên không tận dụng được xử lý song song của máy trung gian"
+],
+"w": "Mọi biến đổi chạy trên máy chủ ETL, năng lực bị giới hạn bởi máy đó. Khi dữ liệu tăng, tất cả phải chen qua một điểm, gây độ trễ cao và khó mở rộng.",
+"x": [
+"Giới hạn nằm ở máy trung gian, không ở khả năng nạp của kho.",
+"ETL truyền thống thường không giữ dữ liệu thô; giữ thô ở Bronze là đặc điểm của ELT.",
+"ETL truyền thống thường dùng công cụ kéo thả độc quyền; SQL và xử lý song song là thế mạnh của ELT trong kho."
+],
+"trap": "Gán đặc điểm của ELT (giữ thô, SQL) cho ETL.",
+"mem": "ETL: nút thắt ở máy chủ trung gian, khó mở rộng, bảo trì tốn."
+},
+{
+"lv": "VD",
+"t": "Lợi ích ELT",
+"q": "Đội Data Science muốn dùng cột ghi chú tự do của khách hàng, nhưng quy trình ETL cũ đã bỏ cột này khi biến đổi cho BI. Nếu đã chuyển sang ELT với Medallion, họ lấy dữ liệu ở đâu?",
+"o": [
+"Tầng Bronze, nơi giữ nguyên dữ liệu thô từ nguồn",
+"Tầng Gold, nơi chứa KPI đã tổng hợp cho BI",
+"Máy chủ ETL trung gian, nơi lưu bản sao tạm",
+"Data mart của phòng kinh doanh ở tầng Gold"
+],
+"w": "ELT nạp dữ liệu thô vào kho trước khi biến đổi, nên Bronze giữ toàn bộ dữ liệu nguyên bản. Slide nêu ELT giữ dữ liệu thô, hỗ trợ tối đa cho AI/ML: Data Scientist dùng được thông tin mà biến đổi cho BI đã bỏ đi.",
+"x": [
+"Gold đã tổng hợp, cột ghi chú không còn.",
+"ELT không có máy chủ ETL trung gian.",
+"Data mart là một phần của Gold, đã được lọc theo nhu cầu phòng ban."
+],
+"trap": "Nghĩ dữ liệu bị loại ở bước biến đổi là mất hẳn. Trong ELT bản thô vẫn ở Bronze.",
+"mem": "ELT + Medallion: Bronze giữ thô ⇒ phục vụ AI/ML và chạy lại pipeline."
+},
+{
+"lv": "TH",
+"t": "Bảo mật ELT",
+"q": "Slide nêu ELT <b>tăng bảo mật</b> so với ETL. Lý do là:",
+"o": [
+"Dữ liệu không đi qua máy chủ ETL trung gian nên ít điểm bị lộ hơn",
+"ELT mã hóa toàn bộ dữ liệu thô trước khi nạp vào tầng Bronze",
+"ELT chỉ nạp dữ liệu đã ẩn danh hóa nên không còn thông tin nhạy cảm",
+"ELT không cho người dùng truy cập tầng Bronze dưới bất kỳ hình thức nào"
+],
+"w": "Trong ETL, dữ liệu phải chép sang máy chủ trung gian để biến đổi, tạo thêm một nơi dữ liệu nằm và có thể bị lộ. ELT biến đổi tại chỗ trong kho, nên ít điểm dữ liệu bị lộ hơn.",
+"x": [
+"Mã hóa là biện pháp chung, không phải lý do slide nêu cho ELT.",
+"ELT nạp dữ liệu thô nguyên bản, chưa ẩn danh hóa.",
+"Bronze vẫn phục vụ Data Scientist khám phá dữ liệu."
+],
+"trap": "Gán cho ELT những biện pháp bảo mật không liên quan đến kiến trúc.",
+"mem": "ELT an toàn hơn vì bỏ máy trung gian: dữ liệu ở yên trong kho."
+},
+{
+"lv": "NB",
+"t": "Log-based CDC",
+"q": "Log-based CDC lấy thông tin thay đổi từ đâu?",
+"o": [
+"Nhật ký giao dịch của CSDL như redo log, binlog, WAL",
+"Truy vấn định kỳ theo cột updated_at trên bảng nguồn",
+"Ảnh chụp toàn bộ bảng nguồn được so sánh mỗi ngày",
+"Trigger ghi bản sao từng dòng vào một bảng phụ"
+],
+"w": "Mọi CSDL quan hệ ghi mọi thay đổi vào nhật ký giao dịch trước khi áp vào bảng. Oracle gọi là redo log, MySQL là binlog, PostgreSQL là WAL, SQL Server là transaction log. Log-based CDC đọc nhật ký này.",
+"x": [
+"Đây là query-based CDC.",
+"So sánh ảnh chụp toàn bảng là full load, rất nặng với bảng lớn.",
+"Slide không trình bày cách dùng trigger; log-based không cần sửa bảng nguồn."
+],
+"trap": "Nhầm log-based với query-based vì cả hai đều “tìm dòng đã thay đổi”.",
+"mem": "Log-based = đọc nhật ký giao dịch (redo log / binlog / WAL)."
+},
+{
+"lv": "VD",
+"t": "Query-based CDC",
+"q": "Pipeline dùng <code>SELECT * FROM orders WHERE updated_at > :lan_truoc</code> mỗi giờ. Trong một giờ có: 120 đơn mới, 30 đơn được sửa (trong đó 5 đơn bị sửa 2 lần), và 8 đơn bị <b>hard delete</b>. Lần quét kế tiếp nhận được bao nhiêu dòng?",
+"o": [
+"150 dòng; 8 đơn bị xóa không được phát hiện",
+"158 dòng gồm cả 8 dòng đánh dấu đã xóa",
+"155 dòng vì 5 đơn sửa hai lần được lấy hai lần",
+"120 dòng vì chỉ đơn mới có updated_at thay đổi"
+],
+"w": "Truy vấn chỉ thấy các dòng còn tồn tại có updated_at mới: 120 đơn mới + 30 đơn đã sửa = 150. Đơn sửa hai lần chỉ hiện trạng thái cuối, lấy một lần. Đơn bị hard delete không còn trong bảng nên không truy vấn ra.",
+"x": [
+"Hard delete xóa hẳn dòng, query-based không thấy được.",
+"Giữa hai lần quét chỉ thấy trạng thái cuối, nên mỗi đơn xuất hiện một lần.",
+"Khi sửa đơn thì updated_at cũng được cập nhật."
+],
+"trap": "Quên hai điểm yếu của query-based: không bắt hard delete, mất trạng thái trung gian.",
+"mem": "Query-based: không thấy hard delete, chỉ thấy trạng thái cuối giữa hai lần quét."
+},
+{
+"lv": "VDC",
+"t": "Chọn kiểu CDC",
+"q": "Ngân hàng cần đồng bộ bảng giao dịch 500 triệu dòng sang kho với độ trễ dưới 1 giây, phải ghi nhận cả giao dịch bị xóa để kiểm toán, và không được làm chậm core banking. Lựa chọn đúng là:",
+"o": [
+"Log-based CDC, ví dụ Debezium đọc nhật ký giao dịch",
+"Query-based CDC quét cột updated_at mỗi 1 giây",
+"Full load toàn bộ bảng mỗi giờ vào tầng Bronze",
+"Zero-ETL với bước làm sạch dữ liệu bẩn phức tạp"
+],
+"w": "Log-based CDC đọc nhật ký: rất nhẹ cho nguồn, bắt được DELETE chính xác, độ trễ mili giây. Đáp ứng cả ba yêu cầu. Đổi lại cấu hình ban đầu khó hơn vì cần quyền đọc nhật ký.",
+"x": [
+"Quét mỗi giây trên bảng 500 triệu dòng gây tải rất nặng và vẫn không bắt được hard delete.",
+"Full load mỗi giờ không đạt độ trễ dưới 1 giây và cực nặng cho nguồn.",
+"Zero-ETL không hợp với làm sạch phức tạp; đề cũng không yêu cầu biến đổi."
+],
+"trap": "Nghĩ chỉ cần quét dày hơn là đạt real-time. Tải lên nguồn tăng theo tần suất quét.",
+"mem": "Real-time + bắt DELETE + nhẹ cho nguồn ⇒ log-based CDC."
+},
+{
+"lv": "TH",
+"t": "So sánh CDC",
+"q": "Nhận định nào về <b>query-based CDC</b> là đúng?",
+"o": [
+"Dễ triển khai ban đầu nhưng tải nặng cho nguồn và kém ổn định khi dữ liệu lớn",
+"Khó cấu hình ban đầu vì cần quyền đọc nhật ký giao dịch của CSDL nguồn",
+"Ghi nhận chính xác mọi thao tác DELETE ngay khi xảy ra ở nguồn",
+"Có độ trễ mili giây vì đọc trực tiếp từ redo log của CSDL"
+],
+"w": "Query-based chỉ cần viết SQL nên dễ bắt đầu. Nhưng nó liên tục chạy truy vấn quét bảng (nặng cho nguồn), có độ trễ theo chu kỳ quét, khó bắt hard delete, kém ổn định khi dữ liệu lớn.",
+"x": [
+"Đây là đặc điểm của log-based.",
+"Query-based rất khó phát hiện hard delete.",
+"Đọc redo log là log-based; query-based có độ trễ theo chu kỳ."
+],
+"trap": "Đảo đặc điểm của hai kiểu CDC.",
+"mem": "Query-based: dễ làm, nặng nguồn, sót DELETE. Log-based: khó làm, nhẹ nguồn, đầy đủ."
+},
+{
+"lv": "VD",
+"t": "Ứng dụng CDC",
+"q": "Công ty chuyển CSDL Oracle on-premise lên cloud nhưng hệ thống bán hàng không được dừng quá vài phút. Cách dùng CDC phù hợp là:",
+"o": [
+"Chép toàn bộ một lần, rồi dùng CDC đồng bộ liên tục phần thay đổi đến lúc chuyển hẳn",
+"Dừng hệ thống cả cuối tuần để chép toàn bộ dữ liệu sang cloud một lần",
+"Dùng query-based CDC quét toàn bảng mỗi đêm trong suốt quá trình chuyển",
+"Chỉ chép dữ liệu mới phát sinh sau ngày chuyển và bỏ dữ liệu lịch sử"
+],
+"w": "Đây là ứng dụng cloud migration zero-downtime của CDC: chép toàn bộ một lần, sau đó CDC liên tục đồng bộ phần thay đổi cho tới lúc chuyển hẳn, hệ cũ không phải dừng.",
+"x": [
+"Dừng cả cuối tuần vi phạm yêu cầu chỉ dừng vài phút.",
+"Quét mỗi đêm để lại độ chênh tới một ngày khi chuyển.",
+"Bỏ dữ liệu lịch sử làm mất thông tin nghiệp vụ."
+],
+"trap": "Nghĩ CDC chỉ dùng cho dashboard thời gian thực.",
+"mem": "Migration không gián đoạn = full copy một lần + CDC liên tục."
+},
+{
+"lv": "NB",
+"t": "Công cụ CDC",
+"q": "Debezium có đặc điểm nào sau đây?",
+"o": [
+"Mã nguồn mở, chạy trên Kafka Connect, đẩy thay đổi thành sự kiện vào Kafka",
+"Dịch vụ SaaS thương mại, cấu hình hoàn toàn qua giao diện web",
+"Tính năng theo dõi thay đổi của bảng bên trong Snowflake",
+"Dịch vụ di chuyển CSDL do Amazon cung cấp"
+],
+"w": "Debezium là công cụ CDC mã nguồn mở, chạy trên Apache Kafka Connect, đọc nhật ký CSDL và đẩy thay đổi thành sự kiện vào Kafka.",
+"x": [
+"Đây là Fivetran.",
+"Đây là Snowflake Streams.",
+"Đây là AWS DMS."
+],
+"trap": "Nhầm giữa các công cụ CDC có tên gần giống nhau.",
+"mem": "Debezium = open-source + Kafka Connect. Fivetran = SaaS. Snowflake Streams = trong Snowflake. AWS DMS = Amazon."
+},
+{
+"lv": "NB",
+"t": "Zero-ETL",
+"q": "Zero-ETL là:",
+"o": [
+"Nhà cung cấp cloud nối sẵn hai dịch vụ, dữ liệu tự chảy mà không phải viết pipeline",
+"Quy trình ETL chạy với chi phí bằng không nhờ dùng phần mềm mã nguồn mở",
+"Việc bỏ hoàn toàn kho phân tích và truy vấn thẳng vào CSDL nghiệp vụ",
+"Kỹ thuật nạp dữ liệu đã làm sạch hoàn toàn trước khi đưa vào kho"
+],
+"w": "Zero-ETL là tích hợp trực tiếp do nhà cung cấp cloud dựng sẵn, ví dụ Amazon Aurora tự đồng bộ sang Redshift, Microsoft Fabric Mirroring vào OneLake. Hệ thống tự ánh xạ và đồng bộ, kỹ sư không xây pipeline.",
+"x": [
+"“Zero” nói về pipeline, không phải chi phí.",
+"Dữ liệu vẫn được chép sang kho phân tích.",
+"Zero-ETL chủ yếu nhân bản nguyên trạng, không làm sạch."
+],
+"trap": "Hiểu “zero” là miễn phí hoặc không có dữ liệu di chuyển.",
+"mem": "Zero-ETL: không viết pipeline, cùng hãng nối sẵn, gần real-time."
+},
+{
+"lv": "VD",
+"t": "Hạn chế Zero-ETL",
+"q": "Dữ liệu nguồn chứa nhiều bản ghi trùng, định dạng ngày lẫn lộn và cần ghép với dữ liệu từ máy chủ on-premise. Vì sao Zero-ETL <b>không</b> phải lựa chọn tốt ở đây?",
+"o": [
+"Zero-ETL chủ yếu nhân bản nguyên trạng và khó áp dụng với hệ on-premise",
+"Zero-ETL không đồng bộ được dữ liệu có cấu trúc từ CSDL quan hệ",
+"Zero-ETL có độ trễ hàng ngày nên không đáp ứng được nhu cầu",
+"Zero-ETL bắt buộc phải viết pipeline Python để ánh xạ cấu trúc"
+],
+"w": "Slide nêu hạn chế: không hợp với dữ liệu bẩn cần làm sạch và biến đổi phức tạp (Zero-ETL nhân bản nguyên trạng), và rào cản hybrid (chạy tốt giữa các dịch vụ cloud, khó với on-premise). Tình huống vướng cả hai.",
+"x": [
+"Zero-ETL vốn đồng bộ từ CSDL nghiệp vụ quan hệ như Aurora.",
+"Zero-ETL gần như tức thời.",
+"Zero-ETL tự ánh xạ cấu trúc, không cần viết pipeline."
+],
+"trap": "Nghĩ Zero-ETL thay được mọi pipeline.",
+"mem": "Hạn chế Zero-ETL: dữ liệu bẩn, vendor lock-in, khó hybrid/on-premise, chi phí truyền tải ẩn."
+},
+{
+"lv": "TH",
+"t": "Zero-ETL",
+"q": "Vì sao Zero-ETL được xem là <b>ổn định</b> hơn pipeline tự xây?",
+"o": [
+"Bỏ khâu trung gian nên giảm số failure point, và SLA do nhà cung cấp bảo đảm",
+"Zero-ETL chạy trên máy chủ on-premise của doanh nghiệp nên dễ kiểm soát",
+"Zero-ETL làm sạch dữ liệu trước khi nạp nên không có bản ghi lỗi",
+"Zero-ETL cho phép kết nối mọi nhà cung cấp cloud với nhau tự do"
+],
+"w": "Mỗi bước pipeline là một điểm có thể hỏng. Zero-ETL bỏ khâu trung gian nên giảm failure point; việc vận hành và SLA do nhà cung cấp cloud đảm bảo.",
+"x": [
+"Zero-ETL là dịch vụ cloud, khó áp dụng on-premise.",
+"Zero-ETL không làm sạch dữ liệu.",
+"Zero-ETL thường chỉ nối được dịch vụ cùng hãng (vendor lock-in)."
+],
+"trap": "Gán cho Zero-ETL khả năng liên thông mọi hãng.",
+"mem": "Zero-ETL ổn định vì ít failure point; cái giá là vendor lock-in."
+},
+{
+"lv": "VDC",
+"t": "Chọn phương án tích hợp",
+"q": "Công ty dùng Amazon Aurora làm CSDL bán hàng và Redshift làm kho. Yêu cầu: dashboard tồn kho cập nhật gần thời gian thực, dữ liệu nguồn đã sạch, đội dữ liệu chỉ có 1 kỹ sư. Phương án phù hợp nhất là:",
+"o": [
+"Zero-ETL từ Aurora sang Redshift, sau đó biến đổi nhẹ bằng SQL trong kho",
+"Tự xây pipeline ETL với máy chủ Informatica chạy mỗi giờ",
+"Query-based CDC tự viết, quét toàn bảng tồn kho mỗi phút",
+"Batch full load mỗi đêm bằng script Python tự viết và cron"
+],
+"w": "Hai dịch vụ cùng hãng AWS, dữ liệu đã sạch, cần gần real-time và ít nhân lực: đúng hoàn cảnh Zero-ETL phát huy (giảm nỗ lực kỹ thuật, giảm TCO, gần tức thời). Vướng mắc chính của Zero-ETL là dữ liệu bẩn và khác hãng, ở đây không có.",
+"x": [
+"Máy chủ ETL trung gian tốn công bảo trì cho 1 kỹ sư và chỉ chạy mỗi giờ.",
+"Quét toàn bảng mỗi phút tốn tải nguồn và không bắt hard delete.",
+"Nạp mỗi đêm không đáp ứng gần real-time."
+],
+"trap": "Bỏ qua Zero-ETL vì nghĩ nó “quá đơn giản”. Khi điều kiện phù hợp, nó là lựa chọn tối ưu TCO.",
+"mem": "Cùng hãng + dữ liệu sạch + cần nhanh + ít người ⇒ Zero-ETL."
+},
+{
+"lv": "NB",
+"t": "DAG",
+"q": "Chữ <b>Acyclic</b> trong DAG nghĩa là:",
+"o": [
+"Không có vòng lặp phụ thuộc giữa các tác vụ",
+"Các tác vụ được chạy theo chu kỳ hằng ngày",
+"Mỗi tác vụ chỉ được phụ thuộc vào đúng một tác vụ",
+"Mọi tác vụ phải chạy song song với nhau"
+],
+"w": "Acyclic là không chu trình: không bao giờ có A chờ B, B chờ C, C lại chờ A. Nếu có vòng như vậy pipeline sẽ treo mãi.",
+"x": [
+"Lịch chạy là việc của scheduling, không liên quan đến “acyclic”.",
+"Một tác vụ có thể phụ thuộc nhiều tác vụ (ví dụ bước JOIN chờ hai bước nạp).",
+"Chỉ các tác vụ không phụ thuộc nhau mới chạy song song."
+],
+"trap": "Nhầm “cyclic” với “chạy định kỳ”.",
+"mem": "DAG: Directed (một chiều) + Acyclic (không vòng lặp)."
+},
+{
+"lv": "VDC",
+"t": "DAG song song",
+"q": "Một DAG có các tác vụ và thời gian chạy: nạp_A (10 phút), nạp_B (15 phút), nạp_C (5 phút); silver_AB chạy sau nạp_A và nạp_B (20 phút); silver_C chạy sau nạp_C (10 phút); gold chạy sau silver_AB và silver_C (5 phút). Tài nguyên đủ để chạy song song mọi tác vụ độc lập. Thời gian tối thiểu hoàn tất pipeline là:",
+"o": [
+"40 phút",
+"65 phút",
+"35 phút",
+"30 phút"
+],
+"w": "Tính đường dài nhất (đường găng):<br>• nạp_B (15) → silver_AB (20) → gold (5) = 40 phút.<br>• nạp_A (10) → silver_AB: silver_AB phải chờ nạp_B xong ở phút 15, nên không ngắn hơn.<br>• nạp_C (5) → silver_C (10) = xong ở phút 15, sớm hơn silver_AB (phút 35).<br>gold bắt đầu ở phút 35, xong ở phút 40.",
+"x": [
+"65 là cộng tất cả các tác vụ như chạy tuần tự.",
+"35 là thời điểm silver_AB xong, quên cộng gold.",
+"30 là khi lấy nạp_A (10) thay cho nạp_B (15), quên rằng silver_AB phải chờ cả hai."
+],
+"trap": "Lấy nhánh của tác vụ nạp nhanh hơn. Tác vụ chờ nhiều đầu vào phải chờ đầu vào chậm nhất.",
+"mem": "Thời gian DAG chạy song song = đường dài nhất từ đầu đến cuối."
+},
+{
+"lv": "TH",
+"t": "Orchestration",
+"q": "Phát biểu nào đúng về vai trò của công cụ orchestration như Airflow?",
+"o": [
+"Nó ra lệnh cho dbt, Spark, script nạp chạy đúng thứ tự, đúng lịch, retry và cảnh báo khi lỗi",
+"Nó tự xử lý và biến đổi dữ liệu thay cho dbt, Spark nên không cần thêm công cụ khác",
+"Nó thay thế kho dữ liệu bằng cách lưu toàn bộ kết quả trung gian của pipeline",
+"Nó chỉ lập lịch chạy theo giờ và không quản lý phụ thuộc giữa các tác vụ"
+],
+"w": "Orchestration là “nhạc trưởng”: không tự xử lý dữ liệu mà điều khiển các công cụ khác chạy đúng thứ tự và điều kiện, tự retry, gửi cảnh báo, ghi lịch sử chạy để kiểm toán.",
+"x": [
+"Slide nhấn mạnh công cụ orchestration không tự xử lý dữ liệu.",
+"Orchestration không phải nơi lưu dữ liệu.",
+"Quản lý phụ thuộc bằng DAG là chức năng cốt lõi, không chỉ lập lịch."
+],
+"trap": "Nghĩ Airflow là công cụ biến đổi dữ liệu.",
+"mem": "Orchestrator điều phối, không xử lý: thứ tự, lịch, retry, cảnh báo, audit."
+},
+{
+"lv": "VD",
+"t": "Retry",
+"q": "Tác vụ gọi API đối tác thỉnh thoảng thất bại do mạng chập chờn, chạy lại sau vài phút thì thành công. Cấu hình hợp lý trong orchestrator là:",
+"o": [
+"Đặt retry tự động vài lần với khoảng chờ, và cảnh báo nếu vẫn thất bại",
+"Bỏ tác vụ này khỏi DAG để pipeline không bị dừng mỗi khi có lỗi",
+"Cho các tác vụ phía sau chạy tiếp dù tác vụ gọi API thất bại",
+"Chuyển tác vụ sang chạy thủ công mỗi khi kỹ sư thấy dữ liệu thiếu"
+],
+"w": "Nhiều lỗi chỉ là tạm thời (mạng, nguồn quá tải). Retry tự động (ví dụ 3 lần, cách nhau 5 phút) xử lý được phần lớn, và cảnh báo khi hết số lần thử để người trực can thiệp.",
+"x": [
+"Bỏ tác vụ làm mất dữ liệu.",
+"Chạy tiếp khi đầu vào lỗi vi phạm quản lý phụ thuộc, tạo dữ liệu sai ở phía sau.",
+"Chạy thủ công đi ngược mục tiêu tự động hóa."
+],
+"trap": "Chọn cách “cho pipeline chạy xong” thay vì đảm bảo dữ liệu đúng.",
+"mem": "Lỗi tạm thời ⇒ retry có khoảng chờ + cảnh báo khi vẫn lỗi."
+},
+{
+"lv": "TH",
+"t": "Task-centric và asset-centric",
+"q": "Điểm khác giữa Airflow (task-centric) và Dagster (asset-centric) là:",
+"o": [
+"Airflow theo dõi tác vụ chạy thành công hay thất bại; Dagster theo dõi tài sản dữ liệu tạo ra mới hay cũ",
+"Airflow chỉ chạy trên cloud; Dagster chỉ chạy trên máy chủ nội bộ của doanh nghiệp",
+"Airflow không dùng DAG; Dagster dùng DAG để quản lý phụ thuộc giữa các bước",
+"Airflow viết bằng SQL; Dagster viết bằng công cụ kéo thả không cần lập trình"
+],
+"w": "Task-centric tập trung vào tác vụ: đã chạy chưa, thành công hay thất bại. Asset-centric tập trung vào tài sản dữ liệu (bảng silver_orders, gold_daily_sales, mô hình ML): cái nào mới, cái nào cũ, tạo từ tài sản nào. Ví dụ Dagster báo “bảng Gold doanh thu cập nhật lần cuối lúc 2h15, phụ thuộc bảng Silver đơn hàng”.",
+"x": [
+"Slide không phân biệt theo nơi chạy.",
+"Cả hai đều dùng DAG.",
+"Airflow viết DAG bằng Python; Dagster cũng tối ưu cho Python."
+],
+"trap": "Nghĩ khác biệt nằm ở công nghệ. Khác biệt là đơn vị được theo dõi: tác vụ hay dữ liệu.",
+"mem": "Airflow = task-centric. Dagster = asset-centric (lineage, độ mới của bảng)."
+},
+{
+"lv": "VDC",
+"t": "Asset-centric",
+"q": "Mọi tác vụ trong Airflow đều báo xanh, nhưng dashboard vẫn hiện số của hai ngày trước vì một tác vụ đã “thành công” mà không ghi dữ liệu mới vào bảng Gold. Cách tiếp cận nào phát hiện vấn đề này trực tiếp nhất?",
+"o": [
+"Asset-centric: theo dõi thời điểm cập nhật của chính bảng Gold và các bảng nó phụ thuộc",
+"Thêm retry cho mọi tác vụ trong DAG để chắc chắn chúng đều chạy lại thành công",
+"Tăng tần suất lập lịch chạy DAG từ mỗi ngày lên mỗi giờ để dữ liệu mới hơn",
+"Chuyển từ batch sang streaming để không còn tình trạng dữ liệu bị cũ trên dashboard"
+],
+"w": "Task-centric chỉ biết tác vụ chạy thành công, không biết dữ liệu có thật sự mới. Asset-centric theo dõi trạng thái của tài sản dữ liệu: bảng Gold cập nhật lần cuối khi nào, phụ thuộc bảng nào. Bảng cũ hai ngày sẽ lộ ra ngay. Đây cũng là trụ cột Freshness của observability.",
+"x": [
+"Retry không giúp khi tác vụ đã báo thành công.",
+"Chạy dày hơn vẫn “thành công” mà không có dữ liệu mới.",
+"Đổi kiến trúc nạp không giải quyết việc thiếu giám sát trạng thái dữ liệu."
+],
+"trap": "Tin trạng thái “xanh” của tác vụ là dữ liệu đúng.",
+"mem": "Tác vụ thành công ≠ dữ liệu mới. Theo dõi tài sản (asset) và Freshness."
+},
+{
+"lv": "NB",
+"t": "Batch và streaming",
+"q": "Nhận định nào đúng khi so sánh batch và streaming?",
+"o": [
+"Batch rẻ và đơn giản hơn nhưng chấp nhận độ trễ; streaming độ trễ thấp nhưng đắt và phức tạp",
+"Batch đắt hơn vì tài nguyên chạy 24/7; streaming rẻ hơn vì chỉ chạy khi cần",
+"Batch phù hợp chống gian lận thẻ; streaming phù hợp tính lương cuối tháng",
+"Batch cần cơ chế chịu lỗi chặt chẽ hơn streaming vì xử lý khối lượng lớn"
+],
+"w": "Batch gom lô rồi xử lý theo chu kỳ, dùng tối đa máy trong thời gian ngắn rồi tắt, dễ triển khai và sửa lỗi; hợp báo cáo cuối ngày, tính lương. Streaming xử lý liên tục từng sự kiện, tài nguyên chạy 24/7, cần fault tolerance chặt; bắt buộc khi cần độ trễ rất thấp như chống gian lận.",
+"x": [
+"Đảo ngược chi phí: streaming mới chạy 24/7.",
+"Đảo ngược ứng dụng.",
+"Streaming mới đòi hỏi chịu lỗi chặt chẽ và hạ tầng mạnh."
+],
+"trap": "Đảo đặc điểm hai phương thức.",
+"mem": "Batch: rẻ, đơn giản, trễ. Streaming: đắt, phức tạp, gần tức thời."
+},
+{
+"lv": "VD",
+"t": "Chọn batch/streaming",
+"q": "Nghiệp vụ nào <b>bắt buộc</b> dùng streaming theo tiêu chí của slide?",
+"o": [
+"Chặn giao dịch thẻ nghi gian lận trước khi được chấp thuận",
+"Tính bảng lương nhân viên vào cuối mỗi tháng",
+"Báo cáo doanh thu tổng hợp của ngày hôm trước",
+"Cập nhật bảng xếp hạng chi nhánh theo từng quý"
+],
+"w": "Streaming bắt buộc khi cần độ trễ rất thấp. Chặn gian lận phải quyết định trong vài trăm mili giây khi giao dịch đang diễn ra; dữ liệu trễ một giờ là vô dụng.",
+"x": [
+"Tính lương chấp nhận dữ liệu trễ, batch là đủ và rẻ hơn.",
+"Báo cáo ngày hôm trước là bài toán batch điển hình.",
+"Xếp hạng theo quý không cần dữ liệu tức thời."
+],
+"trap": "Chọn streaming cho mọi thứ “quan trọng”. Tiêu chí là yêu cầu độ trễ, không phải tầm quan trọng.",
+"mem": "Độ trễ cho phép quyết định batch hay streaming."
+},
+{
+"lv": "TH",
+"t": "Snowpipe",
+"q": "Snowpipe hoạt động theo cơ chế nào?",
+"o": [
+"Khi file mới xuất hiện trên cloud storage, thông báo qua hàng đợi kích hoạt nạp file theo micro-batch",
+"Một virtual warehouse của người dùng chạy liên tục để quét thư mục storage mỗi giây",
+"Ứng dụng gửi từng dòng qua hàm insertRows() mà không cần ghi file trung gian",
+"Kỹ sư chạy lệnh COPY thủ công theo lịch hằng đêm để nạp toàn bộ thư mục"
+],
+"w": "Khi file mới ghi vào S3, S3 gửi thông báo qua message queue (AWS SQS, Azure Event Grid); Snowpipe nhận thông báo và nạp file đó. Snowpipe là serverless, không dùng warehouse của người dùng, nạp theo micro-batch, tính phí theo lượng dữ liệu nạp thực tế.",
+"x": [
+"Snowpipe là serverless, không dùng warehouse của người dùng.",
+"Đây là Snowpipe Streaming.",
+"Đây là lệnh COPY theo lô."
+],
+"trap": "Lẫn Snowpipe (theo file) với Snowpipe Streaming (theo dòng).",
+"mem": "Snowpipe: file mới → thông báo (SQS/Event Grid) → nạp tự động, serverless, micro-batch."
+},
+{
+"lv": "VD",
+"t": "Snowpipe và Snowpipe Streaming",
+"q": "Ứng dụng di động gửi sự kiện click với tần suất thất thường, cần vào Snowflake với độ trễ thấp nhất và không muốn ghi file trung gian. Lựa chọn phù hợp là:",
+"o": [
+"Snowpipe Streaming, nạp từng rowset qua insertRows()",
+"Snowpipe, nạp tự động khi file xuất hiện trên S3",
+"Lệnh COPY chạy theo lịch mỗi 15 phút",
+"Batch full load hằng đêm qua orchestrator"
+],
+"w": "Slide trang 23: Snowpipe Streaming nạp từng dòng qua insertRows(), không cần file trung gian, hợp dữ liệu đến thất thường, độ trễ và chi phí thấp hơn, giữ thứ tự trong mỗi channel.",
+"x": [
+"Snowpipe cần dữ liệu được ghi thành file trước.",
+"COPY theo lịch có độ trễ theo chu kỳ.",
+"Hằng đêm không đáp ứng độ trễ thấp."
+],
+"trap": "Chọn Snowpipe vì tên quen thuộc mà bỏ qua yêu cầu “không ghi file”.",
+"mem": "Có file ⇒ Snowpipe. Không file, từng dòng, độ trễ thấp ⇒ Snowpipe Streaming."
+},
+{
+"lv": "VD",
+"t": "Chi phí Snowpipe",
+"q": "Mỗi ngày chỉ có khoảng 40 file nhỏ đến rải rác vào S3. Phương án A: bật một warehouse chạy liên tục để nạp. Phương án B: dùng Snowpipe. Vì sao B tiết kiệm hơn?",
+"o": [
+"Snowpipe serverless, chỉ tính phí theo lượng dữ liệu nạp thực tế, hợp với tải rải rác",
+"Snowpipe miễn phí hoàn toàn với khách hàng dưới 100 file mỗi ngày",
+"Snowpipe nén file trước khi nạp nên không phát sinh phí lưu trữ",
+"Snowpipe chạy trên warehouse của người dùng nhưng tự tắt sau mỗi file"
+],
+"w": "Slide nêu Snowpipe tối ưu chi phí vì chỉ tính trên lượng dữ liệu nạp thực tế, hợp với tải rải rác. Không phải bật cả một warehouse chỉ để nạp vài file lẻ.",
+"x": [
+"Snowpipe có tính phí, không có ngưỡng miễn phí như vậy trong slide.",
+"Dữ liệu sau khi nạp vẫn tốn phí lưu trữ.",
+"Snowpipe không dùng warehouse của người dùng."
+],
+"trap": "Nghĩ serverless là miễn phí.",
+"mem": "Snowpipe: trả theo dữ liệu nạp, không nuôi warehouse ⇒ rẻ với tải rải rác."
+},
+{
+"lv": "TH",
+"t": "Exactly-once",
+"q": "Trong Spark Structured Streaming, đảm bảo <b>exactly-once</b> nghĩa là:",
+"o": [
+"Mỗi sự kiện được xử lý đúng một lần, không lặp cũng không mất",
+"Mỗi sự kiện được xử lý ít nhất một lần, có thể bị lặp lại",
+"Mỗi sự kiện được xử lý nhiều nhất một lần, có thể bị mất",
+"Mỗi sự kiện chỉ được đọc một lần duy nhất từ nguồn Kafka"
+],
+"w": "Exactly-once: mỗi sự kiện được xử lý đúng một lần. So với at-least-once (có thể xử lý trùng) và at-most-once (có thể mất).",
+"x": [
+"Đây là at-least-once.",
+"Đây là at-most-once.",
+"Exactly-once nói về kết quả xử lý; sự kiện vẫn có thể được đọc lại khi phục hồi, nhưng kết quả không bị trùng."
+],
+"trap": "Nhầm ba mức đảm bảo.",
+"mem": "Exactly-once = không trùng, không mất. At-least-once = có thể trùng. At-most-once = có thể mất."
+},
+{
+"lv": "VDC",
+"t": "Watermark",
+"q": "Luồng đếm giao dịch theo khung 5 phút, watermark là 10 phút. Sự kiện thứ nhất xảy ra lúc 9h02, đến hệ thống lúc 9h09. Sự kiện thứ hai xảy ra lúc 9h03, đến lúc 9h21. Giả sử thời điểm sự kiện mới nhất hệ thống đã thấy luôn xấp xỉ giờ đến. Hai sự kiện được xử lý thế nào?",
+"o": [
+"Sự kiện 1 vào khung 9h00–9h05; sự kiện 2 bị bỏ vì trễ quá ngưỡng",
+"Cả hai sự kiện đều được đưa vào khung 9h00–9h05 vì cùng xảy ra trong khung",
+"Sự kiện 1 vào khung 9h05–9h10, sự kiện 2 vào khung 9h20–9h25 theo giờ đến",
+"Cả hai đều bị bỏ vì đến sau khi khung 9h00–9h05 đã kết thúc"
+],
+"w": "Watermark = thời điểm mới nhất đã thấy − 10 phút. Khung 9h00–9h05 còn nhận sự kiện tới khi watermark vượt 9h05, tức khi đã thấy sự kiện khoảng 9h15.<br>• Sự kiện 1 đến 9h09: watermark ≈ 8h59 < 9h05, khung còn mở → được tính vào đúng khung theo thời điểm xảy ra.<br>• Sự kiện 2 đến 9h21: watermark ≈ 9h11 > 9h05, khung đã đóng → bị bỏ.<br>Watermark giúp hệ thống không phải giữ trạng thái mọi khung cũ mãi mãi.",
+"x": [
+"Sự kiện 2 trễ 18 phút, vượt ngưỡng chờ 10 phút.",
+"Windowing tính theo thời điểm xảy ra, không theo giờ đến.",
+"Sự kiện 1 chỉ trễ 7 phút, vẫn trong ngưỡng."
+],
+"trap": "Gán sự kiện vào khung theo giờ đến thay vì thời điểm xảy ra.",
+"mem": "Watermark: sự kiện trễ trong ngưỡng vẫn vào đúng khung; trễ quá ngưỡng bị bỏ."
+},
+{
+"lv": "TH",
+"t": "Checkpointing",
+"q": "Checkpointing trong Spark Structured Streaming giúp gì?",
+"o": [
+"Khi máy chết và khởi động lại, đọc checkpoint để chạy tiếp từ điểm đã xử lý",
+"Tự chia luồng thành các khung thời gian 5 phút để tính tổng hợp",
+"Bỏ các sự kiện đến trễ quá ngưỡng cho phép để giải phóng bộ nhớ",
+"Dùng chung một đoạn mã cho cả dữ liệu lịch sử và dữ liệu đang đến"
+],
+"w": "Checkpoint định kỳ ghi lại đã xử lý tới đâu. Khi sự cố, hệ thống đọc checkpoint và chạy tiếp từ đó, phục hồi đúng tại điểm xảy ra sự cố: đây là cơ chế fault tolerance.",
+"x": [
+"Đây là windowing.",
+"Đây là watermark.",
+"Đây là Unified API."
+],
+"trap": "Lẫn bốn tính năng của Structured Streaming.",
+"mem": "Exactly-once, windowing, watermark (trễ), checkpoint (phục hồi), Unified API."
+},
+{
+"lv": "VDC",
+"t": "Exactly-once và checkpoint",
+"q": "Luồng streaming cộng doanh thu từng giao dịch vào bảng tổng. Checkpoint cuối ghi nhận đã xử lý xong tới sự kiện #5.000. Máy chết khi đã xử lý và ghi kết quả tới sự kiện #5.600. Khởi động lại, hệ thống đọc checkpoint và chạy tiếp. Nếu đích ghi chỉ đảm bảo <b>at-least-once</b> (không loại trùng), bao nhiêu sự kiện bị cộng hai lần?",
+"o": [
+"600",
+"0",
+"5.600",
+"1.000"
+],
+"w": "Hệ thống phục hồi từ checkpoint #5.000 nên xử lý lại các sự kiện #5.001 đến #5.600: 5.600 − 5.000 = 600 sự kiện. Kết quả của chúng đã được ghi trước khi máy chết, nên với at-least-once chúng bị cộng lần thứ hai. Với exactly-once (checkpoint kết hợp đích ghi loại trùng), số trùng là 0.",
+"x": [
+"0 chỉ đúng với exactly-once.",
+"5.600 là khi nghĩ hệ thống chạy lại từ đầu, bỏ qua checkpoint.",
+"1.000 là khi nhầm khoảng giữa hai checkpoint với phần đã xử lý sau checkpoint."
+],
+"trap": "Nghĩ checkpoint một mình đã đảm bảo không trùng. Phần xử lý sau checkpoint cuối luôn bị chạy lại.",
+"mem": "Phục hồi từ checkpoint chạy lại phần sau checkpoint; exactly-once cần thêm cơ chế loại trùng ở đích."
+},
+{
+"lv": "VD",
+"t": "Lambda và Kappa",
+"q": "Công ty đang duy trì hai bộ mã cho cùng một logic doanh thu: một chạy batch hằng đêm, một chạy streaming. Số liệu hai bên thường lệch. Họ muốn một bộ mã duy nhất, và khi sửa logic thì tính lại lịch sử bằng cách phát lại nhật ký sự kiện. Kiến trúc nên chuyển sang là:",
+"o": [
+"Kappa, với một luồng streaming và event log như Kafka giữ toàn bộ sự kiện",
+"Lambda, bổ sung thêm serving layer để gộp kết quả hai luồng chính xác hơn",
+"Lambda, tăng tần suất batch layer lên mỗi giờ để giảm độ lệch số liệu",
+"Batch thuần, bỏ hẳn luồng streaming và chấp nhận độ trễ một ngày"
+],
+"w": "Hệ thống hiện tại là Lambda: hai luồng, hai bộ mã, rủi ro lệch. Kappa chỉ có một luồng streaming xử lý cả dữ liệu mới và lịch sử (phát lại từ event log). Kappa cần nhật ký giữ lại toàn bộ sự kiện như Kafka.",
+"x": [
+"Serving layer chỉ gộp view, vẫn còn hai bộ mã.",
+"Vẫn là Lambda với hai bộ mã.",
+"Bỏ streaming đáp ứng yêu cầu một bộ mã nhưng mất khả năng thời gian thực."
+],
+"trap": "Nghĩ sửa Lambda bằng cách gộp tốt hơn. Gốc vấn đề là hai bộ mã.",
+"mem": "Lambda = 2 luồng, 2 bộ mã. Kappa = 1 luồng streaming + event log phát lại."
+},
+{
+"lv": "NB",
+"t": "Lambda và Kappa",
+"q": "Trong kiến trúc Lambda, tầng nào gộp kết quả của batch layer và speed layer để trả lời truy vấn?",
+"o": [
+"Serving layer",
+"Stream processing layer",
+"Event log",
+"Bronze layer"
+],
+"w": "Lambda có batch layer (batch view), speed layer (real-time view) và serving layer gộp hai loại view (merged views) để query engine trả lời người dùng.",
+"x": [
+"Stream processing layer là tầng duy nhất của Kappa.",
+"Event log là nhật ký sự kiện của Kappa.",
+"Bronze là tầng của Medallion, không phải Lambda."
+],
+"trap": "Lẫn thuật ngữ của Lambda và Kappa.",
+"mem": "Lambda: batch layer + speed layer → serving layer."
+},
+{
+"lv": "TH",
+"t": "dbt ref()",
+"q": "Trong dbt, hàm <code>ref()</code> có vai trò gì?",
+"o": [
+"Tham chiếu model khác, để dbt dựng DAG và chạy các model đúng thứ tự",
+"Khai báo bảng nguồn thô ở tầng Bronze mà model sẽ đọc vào",
+"Định nghĩa một macro tái sử dụng được gọi ở nhiều model khác",
+"Khai báo test not_null và unique cho một cột trong file YAML"
+],
+"w": "Model sau tham chiếu model trước bằng ref(). dbt dựa vào các ref() để dựng DAG phụ thuộc và chạy đúng thứ tự. Ví dụ fct_daily_sales gọi ref('stg_orders') nên stg_orders chạy trước.",
+"x": [
+"Bảng nguồn được khai báo bằng source(), như source('bronze','orders').",
+"Macro được định nghĩa bằng Jinja {% macro %}.",
+"Test được khai báo trong YAML, không phải bằng ref()."
+],
+"trap": "Lẫn ref() với source().",
+"mem": "ref() = phụ thuộc giữa model ⇒ DAG. source() = bảng nguồn thô."
+},
+{
+"lv": "VD",
+"t": "dbt thứ tự chạy",
+"q": "Dự án dbt có: <i>stg_orders</i> đọc <code>source('bronze','orders')</code>; <i>stg_customers</i> đọc <code>source('bronze','customers')</code>; <i>dim_customer</i> gọi <code>ref('stg_customers')</code>; <i>fct_sales</i> gọi <code>ref('stg_orders')</code> và <code>ref('dim_customer')</code>. Model nào chạy <b>cuối cùng</b> khi chạy dbt build?",
+"o": [
+"fct_sales",
+"dim_customer",
+"stg_orders",
+"stg_customers"
+],
+"w": "Từ các ref(): stg_customers → dim_customer → fct_sales, và stg_orders → fct_sales. fct_sales phụ thuộc cả hai nhánh nên chạy cuối. stg_orders và stg_customers không phụ thuộc nhau, có thể chạy song song.",
+"x": [
+"dim_customer phải xong trước fct_sales.",
+"stg_orders là đầu vào của fct_sales, chạy sớm.",
+"stg_customers là điểm đầu của một nhánh."
+],
+"trap": "Nghĩ dbt chạy theo thứ tự tên file. dbt chạy theo DAG suy ra từ ref().",
+"mem": "Model có nhiều ref() nhất về phía cuối DAG chạy sau cùng."
+},
+{
+"lv": "VD",
+"t": "Jinja",
+"q": "Cho đoạn model dbt:<pre>SELECT * FROM {{ ref('stg_orders') }}\n{% if target.name == 'dev' %} LIMIT 1000 {% endif %}</pre>Khi chạy ở môi trường <b>prod</b>, câu SQL sau khi biên dịch là gì?",
+"o": [
+"SELECT * FROM bảng stg_orders của prod, không có LIMIT",
+"SELECT * FROM bảng stg_orders của prod, LIMIT 1000",
+"Lỗi biên dịch vì target.name không bằng 'dev'",
+"SELECT * FROM bảng stg_orders của dev, không có LIMIT"
+],
+"w": "Jinja được thay bằng văn bản thật trước khi chạy. Ở prod điều kiện target.name == 'dev' sai, nên phần LIMIT 1000 bị bỏ. ref() được biên dịch thành tên bảng đầy đủ theo schema của môi trường đang chạy.",
+"x": [
+"LIMIT 1000 chỉ chèn khi chạy ở dev.",
+"Điều kiện sai thì khối if đơn giản là không sinh ra gì, không lỗi.",
+"ref() trỏ tới bảng của môi trường đang chạy, ở đây là prod."
+],
+"trap": "Nghĩ Jinja chạy lúc truy vấn. Jinja được biên dịch thành SQL tĩnh trước.",
+"mem": "Jinja trong dbt: biên dịch trước → SQL thuần; target đổi theo Dev/Test/Prod."
+},
+{
+"lv": "TH",
+"t": "Macro",
+"q": "Một đoạn SQL chuyển đổi tiền tệ bị chép lại ở 20 model. Theo nguyên tắc DRY trong dbt, nên làm gì?",
+"o": [
+"Đóng gói đoạn SQL thành macro Jinja rồi gọi ở 20 model",
+"Gộp 20 model thành một model lớn duy nhất",
+"Chuyển đoạn SQL sang một singular test để kiểm tra",
+"Tạo 20 view riêng, mỗi view chứa một bản sao đoạn SQL"
+],
+"w": "Macro đóng gói đoạn SQL lặp lại thành hàm để gọi lại. Sửa logic chỉ cần sửa một nơi; đây là nguyên tắc DRY (Don't Repeat Yourself).",
+"x": [
+"Gộp model làm mất tính module hóa và khó bảo trì.",
+"Test dùng để kiểm tra dữ liệu, không để tái sử dụng logic biến đổi.",
+"Vẫn chép logic 20 lần."
+],
+"trap": "Nhầm mục đích của test với macro.",
+"mem": "Logic lặp ⇒ macro. Phụ thuộc giữa bảng ⇒ ref()."
+},
+{
+"lv": "NB",
+"t": "dbt test",
+"q": "Bốn schema test (generic test) có sẵn của dbt là:",
+"o": [
+"not_null, unique, accepted_values, relationships",
+"not_null, unique, freshness, volume",
+"primary_key, foreign_key, check, default",
+"schema, lineage, distribution, freshness"
+],
+"w": "Bốn generic test có sẵn: not_null, unique, accepted_values (giá trị nằm trong danh sách cho phép), relationships (khóa ngoại phải tồn tại ở bảng kia). Khai báo trong YAML, dbt sinh SQL kiểm tra.",
+"x": [
+"Freshness và volume là trụ cột của data observability.",
+"Đây là ràng buộc của CSDL quan hệ, không phải test của dbt.",
+"Đây là các trụ cột observability."
+],
+"trap": "Lẫn test của dbt với năm trụ cột observability.",
+"mem": "dbt generic test: not_null, unique, accepted_values, relationships."
+},
+{
+"lv": "VD",
+"t": "Singular test",
+"q": "Quy tắc nghiệp vụ: “ngày giao hàng không được trước ngày đặt hàng”. Viết thành <b>singular test</b> trong dbt, câu SQL nào đúng và khi nào test đạt?",
+"o": [
+"SELECT * FROM orders WHERE ship_date < order_date; đạt khi trả về 0 dòng",
+"SELECT * FROM orders WHERE ship_date >= order_date; đạt khi trả về 0 dòng",
+"SELECT COUNT(*) FROM orders WHERE ship_date < order_date; đạt khi trả về 1 dòng",
+"SELECT * FROM orders WHERE ship_date < order_date; đạt khi trả về ít nhất 1 dòng"
+],
+"w": "Singular test là câu SQL trả về các dòng vi phạm; trả về 0 dòng là đạt. Dòng vi phạm là đơn có ship_date < order_date.",
+"x": [
+"Câu này lấy các dòng hợp lệ; dữ liệu đúng sẽ làm test thất bại.",
+"COUNT(*) luôn trả về đúng 1 dòng kể cả khi số vi phạm là 0, nên test sẽ luôn thất bại.",
+"Ngược quy ước: có dòng trả về nghĩa là có vi phạm."
+],
+"trap": "Viết điều kiện cho dòng đúng thay vì dòng sai.",
+"mem": "Singular test: SELECT dòng vi phạm; 0 dòng = đạt."
+},
+{
+"lv": "VDC",
+"t": "Relationships test",
+"q": "Test <code>relationships: {to: ref('dim_customer'), field: customer_id}</code> trên cột customer_id của stg_orders thất bại với 37 dòng. Diễn giải và xử lý nào đúng nhất?",
+"o": [
+"37 đơn có customer_id không tồn tại trong dim_customer; truy nguồn xem dữ liệu khách thiếu hay mã sai",
+"37 đơn có customer_id bị rỗng; thêm test not_null là đủ để tự động khắc phục lỗi",
+"37 khách hàng bị trùng trong dim_customer; thêm test unique sẽ xóa các dòng trùng",
+"37 dòng có customer_id ngoài danh sách cho phép; chuyển sang test accepted_values"
+],
+"w": "relationships kiểm tra khóa ngoại phải tồn tại ở bảng kia. 37 dòng thất bại nghĩa là 37 đơn trỏ tới khách không có trong dim_customer: có thể nguồn khách nạp thiếu, hoặc mã khách trong đơn bị sai. Slide nêu test giúp khoanh vùng nhanh lỗi do nguồn hay do mã biến đổi.",
+"x": [
+"Rỗng là việc của not_null; và test chỉ phát hiện, không tự sửa dữ liệu.",
+"Trùng là việc của unique; test không xóa dòng.",
+"accepted_values dành cho danh sách giá trị cố định nhỏ, không phải khóa khách hàng."
+],
+"trap": "Nghĩ test dbt tự sửa dữ liệu. Test chỉ phát hiện và chặn.",
+"mem": "relationships thất bại = khóa mồ côi (orphan) ⇒ truy nguồn."
+},
+{
+"lv": "TH",
+"t": "Data contract",
+"q": "Data contract trong dbt là gì?",
+"o": [
+"Cam kết về cấu trúc dữ liệu giữa đội cung cấp và đội phân tích, dbt chặn model không đúng cam kết",
+"Hợp đồng pháp lý về quyền sở hữu dữ liệu giữa doanh nghiệp và nhà cung cấp cloud",
+"Danh sách các chỉ số kinh doanh có định nghĩa chính thức trong semantic layer",
+"Thỏa thuận SLA về thời gian cập nhật dữ liệu giữa đội dữ liệu và nghiệp vụ"
+],
+"w": "Data contract là cam kết về cấu trúc dữ liệu (tên cột, kiểu, không rỗng) giữa đội cung cấp và đội phân tích. dbt kiểm tra và chặn nếu model không đúng cam kết.",
+"x": [
+"Đây không phải văn bản pháp lý mà là ràng buộc kỹ thuật.",
+"Đây là metric catalog.",
+"SLA về độ mới là khái niệm Freshness; data contract nói về cấu trúc."
+],
+"trap": "Hiểu “contract” theo nghĩa pháp lý.",
+"mem": "Data contract = cam kết schema, dbt kiểm tra và chặn."
+},
+{
+"lv": "VD",
+"t": "Phân tích tác động",
+"q": "Kỹ sư định đổi tên một cột ở bảng Silver <i>stg_orders</i>. Tính năng nào của dbt giúp biết trước những bảng và báo cáo nào bị ảnh hưởng?",
+"o": [
+"Đồ thị lineage tự sinh từ các ref(), dùng để phân tích tác động",
+"Singular test trả về số dòng vi phạm trên bảng stg_orders",
+"Macro Jinja đổi tên cột tự động trên mọi model phía sau",
+"Biến target.name để chạy thử trong môi trường dev"
+],
+"w": "dbt tự sinh tài liệu và đồ thị lineage từ các ref(). Phân tích tác động: biết những bảng, báo cáo nào phía sau (downstream) bị ảnh hưởng khi sửa một bảng gốc.",
+"x": [
+"Test kiểm tra dữ liệu hiện tại, không cho biết phụ thuộc.",
+"Macro không tự sửa tham chiếu ở các model khác.",
+"Chạy ở dev giúp thử nghiệm, không liệt kê được bảng bị ảnh hưởng."
+],
+"trap": "Nghĩ phải chạy thử rồi xem cái gì hỏng.",
+"mem": "Sửa bảng gốc ⇒ xem lineage để biết downstream bị ảnh hưởng."
+},
+{
+"lv": "TH",
+"t": "Silent loss",
+"q": "<b>Silent loss</b> trong schema drift là hiện tượng:",
+"o": [
+"Cột mới ở nguồn bị loại bỏ ngầm, pipeline vẫn báo thành công",
+"Pipeline dừng hẳn và báo lỗi khi nguồn thêm một cột mới",
+"Dữ liệu bị xóa khỏi tầng Bronze sau thời hạn lưu trữ",
+"Dashboard hiển thị lỗi vì kiểu dữ liệu của cột bị đổi"
+],
+"w": "Silent loss: dữ liệu mới bị loại bỏ ngầm vì kho không nhận diện được cột mới. Pipeline vẫn chạy “thành công”, không báo lỗi, nhưng cột mới không bao giờ vào kho.",
+"x": [
+"Dừng và báo lỗi là hậu quả gián đoạn, không “im lặng”.",
+"Xóa theo thời hạn lưu trữ là chính sách vòng đời, không phải schema drift.",
+"Dashboard lỗi là hậu quả có thể thấy được, ngược với “silent”."
+],
+"trap": "Nghĩ hậu quả nguy hiểm nhất là pipeline dừng. Mất dữ liệu mà không ai biết còn nguy hiểm hơn.",
+"mem": "Silent loss = mất cột mới mà không có cảnh báo."
+},
+{
+"lv": "VD",
+"t": "Type coercion",
+"q": "Thay đổi nào ở nguồn có thể được <b>type coercion</b> tự động xử lý an toàn?",
+"o": [
+"Cột số lượng đổi từ số nguyên 32 bit sang 64 bit",
+"Cột mã khách đổi từ chuỗi ký tự sang số nguyên",
+"Cột ngày bị đổi tên từ order_dt thành order_date",
+"Cột chiết khấu bị xóa hẳn khỏi bảng nguồn"
+],
+"w": "Type coercion tự nâng cấp kiểu dữ liệu cho thay đổi “mở rộng” không mất dữ liệu, ví dụ int32 → int64. Mọi giá trị cũ vẫn biểu diễn được trong kiểu mới.",
+"x": [
+"Chuỗi sang số có thể mất dữ liệu (mã có chữ cái); không tự làm được.",
+"Đổi tên cột đang dùng làm hỏng truy vấn hiện có; không áp dụng tự động.",
+"Xóa cột không phải thay đổi kiểu, và phá logic phía sau."
+],
+"trap": "Nghĩ hệ thống tự xử lý mọi thay đổi kiểu.",
+"mem": "Type coercion chỉ cho thay đổi mở rộng (int32→int64). Thêm cột an toàn; xóa/đổi tên thì không."
+},
+{
+"lv": "VDC",
+"t": "Tương thích schema (theo slide)",
+"q": "Theo <b>định nghĩa trên slide</b>, tình huống “mã xử lý cũ vẫn đọc được dữ liệu ghi theo cấu trúc mới” là loại tương thích nào? (Lưu ý: tài liệu Confluent định nghĩa ngược lại; câu này hỏi theo slide.)",
+"o": [
+"Backward compatibility",
+"Forward compatibility",
+"Full compatibility",
+"Schema versioning"
+],
+"w": "Slide trang 33: backward compatibility = mã xử lý cũ vẫn đọc được cấu trúc dữ liệu mới; forward compatibility = cấu trúc dữ liệu cũ vẫn hoạt động với mã mới; full = cả hai. Giáo trình giảng giải ghi chú định nghĩa này ngược với Confluent Schema Registry; đi thi trả lời theo slide.",
+"x": [
+"Theo slide, forward là dữ liệu cũ hoạt động với mã mới. (Theo Confluent thì tình huống trong đề mới là forward.)",
+"Full yêu cầu cả hai chiều; đề chỉ mô tả một chiều.",
+"Versioning là lưu lịch sử các phiên bản để rollback, không phải một loại tương thích."
+],
+"trap": "Hai nguồn định nghĩa ngược nhau. Đề thi theo slide; thực tế với Kafka dùng Confluent.",
+"mem": "Theo slide: Backward = mã cũ đọc dữ liệu mới; Forward = dữ liệu cũ chạy với mã mới; Full = cả hai."
+},
+{
+"lv": "TH",
+"t": "Công cụ schema evolution",
+"q": "Vì sao Apache Iceberg và Delta Lake đổi được cấu trúc bảng (thêm cột) mà <b>không phải ghi lại</b> toàn bộ dữ liệu?",
+"o": [
+"Chỉ cần sửa metadata của bảng, file dữ liệu cũ giữ nguyên",
+"Chúng lưu mọi cột dưới dạng VARIANT nên không có cấu trúc cố định",
+"Chúng tự động ghi lại toàn bộ bảng vào ban đêm khi hệ thống rảnh",
+"Chúng chỉ cho phép thêm cột vào bảng mới, không áp dụng bảng cũ"
+],
+"w": "Với định dạng bảng mở, cấu trúc nằm ở metadata. Thêm cột chỉ là sửa metadata; các file cũ khi đọc sẽ coi cột mới là rỗng. Không phải chép lại dữ liệu.",
+"x": [
+"Iceberg/Delta có schema rõ ràng, không lưu mọi thứ như VARIANT.",
+"Không có cơ chế ghi lại toàn bảng như vậy.",
+"Áp dụng được cho bảng đang có dữ liệu."
+],
+"trap": "Nghĩ thay đổi schema luôn phải ghi lại dữ liệu như trên file CSV.",
+"mem": "OTF đổi schema bằng metadata, không viết lại file."
+},
+{
+"lv": "VD",
+"t": "Công cụ schema evolution",
+"q": "Hàng nghìn file Parquet mới được đổ vào S3 mỗi ngày từ nhiều nguồn, cấu trúc thỉnh thoảng thay đổi. Đội dữ liệu cần danh mục dữ liệu tự cập nhật cấu trúc theo file. Công cụ phù hợp theo slide là:",
+"o": [
+"AWS Glue Crawler, định kỳ quét file trên S3 và suy ra cấu trúc",
+"Schema Registry, kiểm tra tương thích schema của các topic Kafka",
+"Snowflake Streams, theo dõi thay đổi dòng của một bảng Snowflake",
+"Debezium, đọc nhật ký giao dịch của CSDL nguồn"
+],
+"w": "Data catalog crawler như AWS Glue Crawler định kỳ quét các file trên S3, tự suy ra cấu trúc và cập nhật vào danh mục dữ liệu.",
+"x": [
+"Schema Registry quản lý schema của topic Kafka, không quét file S3.",
+"Snowflake Streams là CDC trong Snowflake.",
+"Debezium là CDC đọc nhật ký CSDL, không xử lý file trên S3."
+],
+"trap": "Chọn công cụ theo từ khóa “schema” mà không xét nguồn dữ liệu là file hay topic.",
+"mem": "File trên S3 ⇒ Glue Crawler. Topic Kafka ⇒ Schema Registry."
+},
+{
+"lv": "TH",
+"t": "Monitoring và observability",
+"q": "Điểm khác cốt lõi giữa monitoring và data observability là:",
+"o": [
+"Monitoring báo hệ thống có lỗi; observability giải thích lỗi gì, ở đâu, vì sao",
+"Monitoring theo dõi dữ liệu; observability chỉ theo dõi CPU và bộ nhớ của máy",
+"Monitoring dùng AI phát hiện bất thường; observability dùng ngưỡng cứng định trước",
+"Monitoring áp dụng cho streaming; observability chỉ áp dụng cho batch"
+],
+"w": "Monitoring kiểm tra các điều kiện định trước (job có chạy không, CPU có quá tải không). Observability thu thập đủ thông tin (số dòng, phân phối, schema, lineage) để truy ra nguyên nhân, kể cả lỗi không lường trước.",
+"x": [
+"Ngược lại: observability theo dõi bản thân dữ liệu.",
+"Ngược lại: observability mới dùng ML học mẫu bình thường.",
+"Slide không phân biệt theo batch hay streaming."
+],
+"trap": "Nghĩ hai khái niệm là tên khác của nhau.",
+"mem": "Monitoring: có lỗi không. Observability: lỗi gì, ở đâu, vì sao."
+},
+{
+"lv": "VD",
+"t": "Năm trụ cột",
+"q": "Tỷ lệ rỗng của cột email đột ngột tăng từ 1% lên 60%, số dòng nạp vẫn bình thường. Trụ cột observability nào phát hiện sự cố này?",
+"o": [
+"Distribution",
+"Volume",
+"Freshness",
+"Lineage"
+],
+"w": "Distribution kiểm tra các thống kê (trung bình, tỷ lệ rỗng, khoảng giá trị) có nằm trong ngưỡng an toàn. Slide lấy đúng ví dụ tỷ lệ rỗng email từ 1% lên 60%.",
+"x": [
+"Volume theo dõi số bản ghi; ở đây số dòng bình thường.",
+"Freshness theo dõi dữ liệu có cập nhật đúng hạn.",
+"Lineage truy nguồn gốc và phạm vi ảnh hưởng, không phát hiện thống kê bất thường."
+],
+"trap": "Nghĩ “có vấn đề với dữ liệu” là Volume.",
+"mem": "Freshness: đúng hạn. Volume: số dòng. Distribution: thống kê. Schema: cấu trúc. Lineage: nguồn gốc, ảnh hưởng."
+},
+{
+"lv": "VD",
+"t": "Năm trụ cột",
+"q": "Bảng doanh thu lẽ ra cập nhật lúc 6 giờ sáng nhưng đến 10 giờ vẫn là số hôm qua. Đồng thời phát hiện lỗi bắt nguồn từ một bảng Silver và ảnh hưởng 12 dashboard. Hai trụ cột lần lượt tương ứng là:",
+"o": [
+"Freshness và Lineage",
+"Volume và Schema",
+"Distribution và Freshness",
+"Schema và Volume"
+],
+"w": "Bảng không cập nhật đúng hạn theo SLA là Freshness. Truy ra lỗi phát sinh ở bảng Silver và liệt kê dashboard bị ảnh hưởng là Lineage.",
+"x": [
+"Volume là số dòng bất thường; Schema là cấu trúc đổi. Đều không khớp.",
+"Distribution là thống kê giá trị, không phải độ trễ cập nhật.",
+"Không có thay đổi cấu trúc hay số dòng trong mô tả."
+],
+"trap": "Gán “dữ liệu cũ” cho Volume.",
+"mem": "Dữ liệu cũ ⇒ Freshness. Truy nguồn và ảnh hưởng ⇒ Lineage."
+},
+{
+"lv": "VDC",
+"t": "MTTR",
+"q": "Trong một quý có 4 sự cố dữ liệu với thời gian từ lúc xảy ra đến lúc khắc phục là 30, 90, 45 và 75 giờ. Sau khi áp dụng observability, cũng 4 sự cố có thời gian 2, 6, 3 và 5 giờ. MTTR giảm bao nhiêu phần trăm?",
+"o": [
+"Khoảng 93,3%",
+"Khoảng 6,7%",
+"Khoảng 60,0%",
+"Khoảng 85,0%"
+],
+"w": "MTTR là thời gian trung bình từ khi sự cố xảy ra đến khi khắc phục xong.<br>• Trước: (30 + 90 + 45 + 75) / 4 = 240 / 4 = 60 giờ.<br>• Sau: (2 + 6 + 3 + 5) / 4 = 16 / 4 = 4 giờ.<br>• Mức giảm = (60 − 4) / 60 = 56 / 60 ≈ 93,3%.",
+"x": [
+"6,7% là tỉ lệ MTTR sau so với trước (4/60), không phải mức giảm.",
+"60 là MTTR trước tính bằng giờ, không phải phần trăm.",
+"85% không ứng với phép tính nào từ số liệu đã cho."
+],
+"trap": "Lấy tỉ lệ còn lại thay cho mức giảm.",
+"mem": "MTTR = tổng thời gian khắc phục / số sự cố. % giảm = (cũ − mới)/cũ."
+},
+{
+"lv": "VDC",
+"t": "Cảnh báo dựa trên AI",
+"q": "Bảng giao dịch thường nạp khoảng 2 triệu dòng ngày thường và 600 nghìn dòng Chủ nhật. Ngưỡng cứng “cảnh báo nếu dưới 1,5 triệu dòng” làm Chủ nhật nào cũng báo động giả. Giải pháp phù hợp theo slide là:",
+"o": [
+"Cảnh báo dựa trên ML học mẫu bình thường theo ngày trong tuần, chỉ báo khi lệch khỏi mẫu",
+"Hạ ngưỡng cứng xuống 500 nghìn dòng để Chủ nhật không còn bị báo động giả",
+"Tắt cảnh báo volume vào Chủ nhật vì đây là ngày ít giao dịch nhất tuần",
+"Chuyển cảnh báo volume sang kiểm tra Freshness vì dễ cấu hình hơn"
+],
+"w": "Slide trang 37: cảnh báo dựa trên AI dùng ML học mẫu bình thường (ví dụ thứ Hai nạp nhiều hơn Chủ nhật) và chỉ cảnh báo khi lệch khỏi mẫu đó, đồng thời học từ phản hồi để giảm cảnh báo giả.",
+"x": [
+"Hạ ngưỡng làm mất khả năng phát hiện sự cố thật ngày thường (ví dụ chỉ nạp 800 nghìn vào thứ Ba).",
+"Tắt cảnh báo bỏ sót sự cố thật vào Chủ nhật.",
+"Freshness đo độ mới, không thay thế được Volume."
+],
+"trap": "Chỉnh ngưỡng cứng để hết báo giả, đánh đổi bằng bỏ sót sự cố thật.",
+"mem": "Dữ liệu có chu kỳ ⇒ ML học mẫu bình thường thay cho ngưỡng cứng."
+}
+]
+}

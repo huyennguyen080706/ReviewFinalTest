@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --brand:#1d4ed8; --brand-soft:#e0e7ff;
+  --ok:#15803d; --ok-bg:#dcfce7; --ok-line:#86efac;
+  --bad:#b91c1c; --bad-bg:#fee2e2; --bad-line:#fca5a5;
+  --warn-bg:#fef9c3; --warn-line:#eab308;
+  --mem-bg:#e0f2fe; --mem-line:#0284c7;
+  --idle:#e5e7eb;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0f172a; --card:#111827; --ink:#e5e7eb; --muted:#9ca3af; --line:#1f2937;
+    --brand:#60a5fa; --brand-soft:#1e3a8a;
+    --ok:#4ade80; --ok-bg:#052e16; --ok-line:#166534;
+    --bad:#f87171; --bad-bg:#3f0d0d; --bad-line:#7f1d1d;
+    --warn-bg:#3a3205; --warn-line:#ca8a04;
+    --mem-bg:#082f49; --mem-line:#0369a1;
+    --idle:#374151;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Times New Roman",Times,serif;font-size:13pt;line-height:1.55}
+.ui{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif}
+.wrap{max-width:920px;margin:0 auto;padding:12px 16px 60px}
+header.top{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);box-shadow:0 1px 6px rgba(0,0,0,.05)}
+header.top .wrap{padding-top:10px;padding-bottom:10px}
+.titlebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.titlebar a.home{color:var(--brand);text-decoration:none;font-size:11pt}
+.titlebar h1{font-size:13.5pt;margin:0;flex:1;min-width:200px}
+.stats{display:flex;gap:12px;font-size:10.5pt;color:var(--muted);flex-wrap:wrap}
+.stats b{color:var(--ink)}
+.stats .ok b{color:var(--ok)} .stats .bad b{color:var(--bad)}
+.bar{height:8px;background:var(--idle);border-radius:6px;overflow:hidden;margin-top:8px}
+.bar>div{height:100%;background:var(--brand);width:0;transition:width .25s}
+.roundtag{font-size:9.5pt;background:var(--brand-soft);color:var(--brand);padding:2px 8px;border-radius:10px}
+
+.nav{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px;margin:14px 0}
+.nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;height:32px;font-size:10pt;cursor:pointer;padding:0}
+.nav button.ok{background:var(--ok-bg);border-color:var(--ok-line);color:var(--ok);font-weight:700}
+.nav button.bad{background:var(--bad-bg);border-color:var(--bad-line);color:var(--bad);font-weight:700}
+.nav button.cur{outline:2px solid var(--brand);outline-offset:1px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.qhead{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.qno{font-weight:700;color:var(--brand);font-size:11pt}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:9pt;padding:2px 8px;border-radius:10px;background:var(--idle);color:var(--muted)}
+.qtext{margin:4px 0 12px}
+.qtext table,.exp table{border-collapse:collapse;margin:8px 0;font-size:11.5pt;max-width:100%;display:block;overflow-x:auto}
+.qtext th,.qtext td,.exp th,.exp td{border:1px solid var(--line);padding:3px 9px;text-align:left}
+.qtext th,.exp th{background:var(--brand-soft)}
+code,pre{font-family:Consolas,"Courier New",monospace;font-size:10.5pt}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;overflow-x:auto;white-space:pre}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:10px 12px;font:inherit;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover:not([disabled]){border-color:var(--brand);background:var(--brand-soft)}
+.opt .L{flex:none;width:26px;height:26px;border-radius:50%;background:var(--idle);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:"Segoe UI",Arial,sans-serif;font-size:10.5pt}
+.opt[disabled]{cursor:default}
+.opt.right{border-color:var(--ok-line);background:var(--ok-bg)}
+.opt.right .L{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad-line);background:var(--bad-bg)}
+.opt.wrong .L{background:var(--bad);color:#fff}
+.opt.dim{opacity:.75}
+.verdict{margin:14px 0 6px;padding:8px 12px;border-radius:8px;font-weight:700}
+.verdict.ok{background:var(--ok-bg);color:var(--ok);border:1px solid var(--ok-line)}
+.verdict.bad{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad-line)}
+.exp h3{font-size:11.5pt;margin:14px 0 4px;color:var(--brand);font-family:"Segoe UI",Arial,sans-serif}
+.exp .why{border-left:4px solid var(--ok);padding:2px 0 2px 12px}
+.exp ul.wr{margin:4px 0;padding-left:0;list-style:none}
+.exp ul.wr li{margin:5px 0;padding-left:34px;position:relative}
+.exp ul.wr li .L{position:absolute;left:0;top:1px;width:24px;height:24px;border-radius:50%;background:var(--bad-bg);color:var(--bad);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10pt;font-family:"Segoe UI",Arial,sans-serif}
+.exp .trap{background:var(--warn-bg);border-left:4px solid var(--warn-line);padding:6px 12px;border-radius:4px}
+.exp .mem{background:var(--mem-bg);border-left:4px solid var(--mem-line);padding:6px 12px;border-radius:4px}
+.ctrl{display:flex;justify-content:space-between;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:8px 16px;font-size:11pt;cursor:pointer;font-family:"Segoe UI",Arial,sans-serif}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn[disabled]{opacity:.45;cursor:default}
+.summary h2{margin:0 0 6px}
+.score{font-size:30pt;font-weight:700;color:var(--brand);font-family:"Segoe UI",Arial,sans-serif}
+.lists{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media (max-width:640px){.lists{grid-template-columns:1fr}.card{padding:14px 13px}body{font-size:12.5pt}}
+.lists .box{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.lists .box h3{margin:0 0 6px;font-size:11.5pt;font-family:"Segoe UI",Arial,sans-serif}
+.lists .ok h3{color:var(--ok)} .lists .bad h3{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;padding:2px 9px;cursor:pointer;font-size:10.5pt}
+.lvtable{border-collapse:collapse;font-size:11pt;margin:8px 0}
+.lvtable td,.lvtable th{border:1px solid var(--line);padding:3px 10px}
+.hide{display:none!important}
+.hint{font-size:10pt;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top ui">
+  <div class="wrap">
+    <div class="titlebar">
+      <a class="home" href="index.html">← Danh sách chương</a>
+      <h1>__TITLE__</h1>
+      <span class="roundtag" id="roundtag">Lượt 1 · Toàn bộ</span>
+    </div>
+    <div class="stats">
+      <span>Đã trả lời: <b id="sAns">0</b>/<b id="sTot">0</b></span>
+      <span class="ok">Đúng: <b id="sOk">0</b></span>
+      <span class="bad">Sai: <b id="sBad">0</b></span>
+    </div>
+    <div class="bar"><div id="bar"></div></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="nav ui" id="nav"></div>
+
+  <section class="card" id="qcard">
+    <div class="qhead ui">
+      <span class="qno" id="qno"></span>
+      <span class="tags" id="qtags"></span>
+    </div>
+    <div class="qtext" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <div id="feedback"></div>
+    <div class="ctrl ui">
+      <button class="btn" id="prev">← Câu trước</button>
+      <button class="btn" id="toSum">Xem tổng kết</button>
+      <button class="btn primary" id="next">Câu tiếp →</button>
+    </div>
+  </section>
+
+  <section class="card summary hide" id="sumcard">
+    <h2 class="ui">Tổng kết lượt làm</h2>
+    <div class="score" id="score"></div>
+    <div id="sumtext" class="ui hint"></div>
+    <table class="lvtable ui" id="lvtable"></table>
+    <div class="lists">
+      <div class="box ok"><h3>Câu trả lời đúng</h3><div class="chips" id="okList"></div></div>
+      <div class="box bad"><h3>Câu trả lời sai</h3><div class="chips" id="badList"></div></div>
+    </div>
+    <p class="hint ui">Bấm vào số câu để xem lại lời giải.</p>
+    <div class="ctrl ui" style="justify-content:flex-start">
+      <button class="btn danger" id="retryWrong">Làm lại câu sai</button>
+      <button class="btn primary" id="retryAll">Làm lại toàn bộ</button>
+      <button class="btn" id="backQ">Quay lại câu hỏi</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var KEY = "__KEY__";
+  var RAW = "__DATA__";
+  function b64(s){var bin=atob(s);var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder("utf-8").decode(bytes);}
+  var Q = JSON.parse(b64(RAW));
+  var LV = {NB:"Nhận biết",TH:"Thông hiểu",VD:"Vận dụng",VDC:"Vận dụng cao"};
+  var LET = ["A","B","C","D"];
+
+  // state: round = {ids:[...], ans:{id:choice}, n:roundNumber, kind}
+  var S = null;
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+  function load(){ try{ var v = localStorage.getItem(KEY); if(v){ var o = JSON.parse(v); if(o && o.ids && o.ids.every(function(i){return i < Q.length;})) return o; } }catch(e){} return null; }
+  function newRound(ids, kind, n){ S = {ids:ids, ans:{}, n:n, kind:kind, cur:0}; save(); }
+
+  S = load();
+  if(!S){ newRound(Q.map(function(_,i){return i;}), "all", 1); }
+
+  var $ = function(id){return document.getElementById(id);};
+
+  function counts(){
+    var a=0,ok=0,bad=0;
+    S.ids.forEach(function(id){ if(S.ans[id]!==undefined){ a++; if(S.ans[id]===Q[id].a) ok++; else bad++; } });
+    return {a:a,ok:ok,bad:bad,t:S.ids.length};
+  }
+  function header(){
+    var c = counts();
+    $("sAns").textContent=c.a; $("sTot").textContent=c.t; $("sOk").textContent=c.ok; $("sBad").textContent=c.bad;
+    $("bar").style.width = (c.t? (100*c.a/c.t):0)+"%";
+    $("roundtag").textContent = "Lượt " + S.n + " · " + (S.kind==="all" ? "Toàn bộ" : "Làm lại câu sai");
+  }
+  function navRender(){
+    var nav = $("nav"); nav.innerHTML="";
+    S.ids.forEach(function(id,pos){
+      var b=document.createElement("button"); b.textContent = pos+1;
+      var ch=S.ans[id];
+      if(ch!==undefined) b.className = (ch===Q[id].a?"ok":"bad");
+      if(pos===S.cur && !$("qcard").classList.contains("hide")) b.className += " cur";
+      b.title = "Câu " + (pos+1);
+      b.onclick=function(){ S.cur=pos; save(); show(); };
+      nav.appendChild(b);
+    });
+  }
+  function esc(s){return String(s);}
+  function explain(q, chosen){
+    var h = "";
+    var right = chosen===q.a;
+    h += '<div class="verdict '+(right?"ok":"bad")+' ui">'+(right?"✔ Chính xác! ":"✘ Chưa đúng. ")+'Đáp án đúng: '+LET[q.a]+'</div>';
+    h += '<div class="exp">';
+    h += '<h3>Giải thích bản chất</h3><div class="why">'+q.w+'</div>';
+    h += '<h3>Vì sao các phương án khác chưa đúng</h3><ul class="wr">';
+    for(var i=0;i<4;i++){ if(i===q.a) continue; h += '<li><span class="L">'+LET[i]+'</span>'+q.x[i]+'</li>'; }
+    h += '</ul>';
+    h += '<h3>Điểm dễ nhầm lẫn</h3><div class="trap">'+q.trap+'</div>';
+    h += '<h3>Kiến thức cần ghi nhớ</h3><div class="mem">'+q.mem+'</div>';
+    h += '</div>';
+    return h;
+  }
+  function show(){
+    $("sumcard").classList.add("hide"); $("qcard").classList.remove("hide");
+    var pos = S.cur, id = S.ids[pos], q = Q[id];
+    $("qno").textContent = "Câu " + (pos+1) + " / " + S.ids.length;
+    var chosen = S.ans[id];
+    $("qtags").innerHTML = '<span class="tag">'+LV[q.lv]+'</span>' + (chosen!==undefined ? '<span class="tag">'+q.t+'</span>' : '');
+    $("qtext").innerHTML = q.q;
+    var box = $("opts"); box.innerHTML="";
+    q.o.forEach(function(txt,i){
+      var b=document.createElement("button"); b.className="opt";
+      b.innerHTML='<span class="L">'+LET[i]+'</span><span>'+txt+'</span>';
+      if(chosen!==undefined){
+        b.disabled=true;
+        if(i===q.a) b.classList.add("right");
+        else if(i===chosen) b.classList.add("wrong");
+        else b.classList.add("dim");
+      } else {
+        b.onclick=function(){ if(S.ans[id]!==undefined) return; S.ans[id]=i; save(); show(); };
+      }
+      box.appendChild(b);
+    });
+    $("feedback").innerHTML = chosen!==undefined ? explain(q, chosen) : "";
+    $("prev").disabled = pos===0;
+    $("next").textContent = pos===S.ids.length-1 ? "Xem tổng kết →" : "Câu tiếp →";
+    header(); navRender();
+  }
+  function summary(){
+    $("qcard").classList.add("hide"); $("sumcard").classList.remove("hide");
+    var c = counts();
+    $("score").textContent = c.ok + " / " + c.t + "  (" + (c.t? (10*c.ok/c.t).toFixed(1):"0") + " điểm)";
+    var un = c.t - c.a;
+    $("sumtext").textContent = "Đã trả lời " + c.a + "/" + c.t + " câu" + (un? (" · còn " + un + " câu chưa làm") : " · đã hoàn thành lượt này") + ".";
+    var lv = {}; ["NB","TH","VD","VDC"].forEach(function(k){lv[k]={t:0,ok:0};});
+    var okL=$("okList"), badL=$("badList"); okL.innerHTML=""; badL.innerHTML="";
+    S.ids.forEach(function(id,pos){
+      var q=Q[id]; lv[q.lv].t++;
+      var ch=S.ans[id]; if(ch===undefined) return;
+      var b=document.createElement("button"); b.textContent=pos+1;
+      b.onclick=function(){S.cur=pos; save(); show(); window.scrollTo(0,0);};
+      if(ch===q.a){ lv[q.lv].ok++; okL.appendChild(b);} else badL.appendChild(b);
+    });
+    if(!okL.children.length) okL.innerHTML='<span class="hint">Chưa có</span>';
+    if(!badL.children.length) badL.innerHTML='<span class="hint">Không có câu sai</span>';
+    var t='<tr><th>Mức độ</th><th>Đúng / Số câu</th></tr>';
+    ["NB","TH","VD","VDC"].forEach(function(k){ if(lv[k].t) t+='<tr><td>'+LV[k]+'</td><td>'+lv[k].ok+' / '+lv[k].t+'</td></tr>'; });
+    $("lvtable").innerHTML=t;
+    var wrongIds = S.ids.filter(function(id){return S.ans[id]!==undefined && S.ans[id]!==Q[id].a;});
+    $("retryWrong").disabled = wrongIds.length===0;
+    header(); navRender();
+  }
+  $("prev").onclick=function(){ if(S.cur>0){S.cur--; save(); show(); window.scrollTo(0,0);} };
+  $("next").onclick=function(){ if(S.cur<S.ids.length-1){S.cur++; save(); show(); window.scrollTo(0,0);} else summary(); };
+  $("toSum").onclick=function(){ summary(); window.scrollTo(0,0); };
+  $("backQ").onclick=function(){ show(); };
+  $("retryWrong").onclick=function(){
+    var w = S.ids.filter(function(id){return S.ans[id]!==undefined && S.ans[id]!==Q[id].a;});
+    if(!w.length) return; newRound(w, "wrong", S.n+1); show(); window.scrollTo(0,0);
+  };
+  $("retryAll").onclick=function(){ newRound(Q.map(function(_,i){return i;}), "all", S.n+1); show(); window.scrollTo(0,0); };
+  if(S.cur>=S.ids.length) S.cur=0;
+  show();
+})();
+</script>
+</body>
+</html>

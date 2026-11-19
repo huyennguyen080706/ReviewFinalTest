@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "Polyglot persistence",
+"q": "<b>Polyglot persistence</b> là:",
+"o": [
+"Dùng đồng thời nhiều công nghệ lưu trữ SQL và NoSQL, mỗi loại dữ liệu đặt vào nơi hợp nhất",
+"Dùng một cơ sở dữ liệu quan hệ duy nhất cho mọi loại dữ liệu của doanh nghiệp",
+"Sao chép cùng một dữ liệu sang nhiều vùng địa lý để chống mất dữ liệu",
+"Viết một câu SQL lấy dữ liệu từ nhiều nguồn mà không chuyển dữ liệu thô"
+],
+"w": "Polyglot persistence: dùng đồng thời nhiều công nghệ lưu trữ (SQL và NoSQL) trong cùng hệ thống, mỗi loại dữ liệu đặt vào nơi hợp nhất. Triết lý “one size does not fit all”.",
+"x": [
+"Ngược với triết lý polyglot.",
+"Đây là multi-region replication.",
+"Đây là federated querying."
+],
+"trap": "Lẫn polyglot với federated query.",
+"mem": "Polyglot = mỗi loại dữ liệu một công nghệ phù hợp."
+},
+{
+"lv": "VD",
+"t": "Chọn loại CSDL",
+"q": "Ghép đúng nhu cầu với loại cơ sở dữ liệu: (1) chuyển tiền và cập nhật số dư; (2) hồ sơ khách hàng có thêm trường mới liên tục; (3) lưu phiên đăng nhập, đọc ghi theo khóa cực nhanh.",
+"o": [
+"(1) RDBMS; (2) Document store; (3) Key-value",
+"(1) Document store; (2) RDBMS; (3) Key-value",
+"(1) Key-value; (2) Document store; (3) RDBMS",
+"(1) RDBMS; (2) Key-value; (3) Document store"
+],
+"w": "Giao dịch cốt lõi cần ACID → RDBMS (PostgreSQL, Oracle). Schema thay đổi liên tục → Document store (MongoDB, mỗi bản ghi là JSON). Cache, session → Key-value (Redis, thường nằm trong RAM).",
+"x": [
+"Document store không phải lựa chọn chính cho giao dịch cần toàn vẹn tuyệt đối.",
+"Key-value không bảo đảm ACID cho chuyển tiền.",
+"Đảo document và key-value."
+],
+"trap": "Đảo document và key-value.",
+"mem": "ACID → RDBMS; schema-less → document; cache → key-value."
+},
+{
+"lv": "NB",
+"t": "CAP theorem",
+"q": "Ba thuộc tính trong định lý CAP là:",
+"o": [
+"Consistency, Availability, Partition tolerance",
+"Concurrency, Atomicity, Persistence",
+"Consistency, Atomicity, Performance",
+"Capacity, Availability, Partitioning"
+],
+"w": "CAP: Consistency (mọi nút thấy cùng dữ liệu), Availability (luôn trả lời), Partition tolerance (vẫn chạy khi mạng giữa các nút bị đứt). Hệ phân tán không thể cùng lúc bảo đảm cả ba; khi mạng đứt phải chọn giữa C và A.",
+"x": [
+"Atomicity thuộc ACID, không thuộc CAP.",
+"Performance không phải chữ P trong CAP.",
+"Capacity và Partitioning không phải thuật ngữ CAP."
+],
+"trap": "Lẫn CAP với ACID.",
+"mem": "CAP: C, A, P; mạng đứt ⇒ chọn C hoặc A."
+},
+{
+"lv": "TH",
+"t": "Eventual và strong consistency",
+"q": "Trong kiến trúc polyglot của slide, mức nhất quán được bố trí thế nào?",
+"o": [
+"NoSQL vệ tinh chấp nhận eventual consistency; kho trung tâm giữ strong consistency",
+"NoSQL vệ tinh giữ strong consistency; kho trung tâm chấp nhận eventual consistency",
+"Mọi thành phần đều giữ strong consistency để không bao giờ lệch dữ liệu",
+"Mọi thành phần đều chấp nhận eventual consistency để tối đa tốc độ"
+],
+"w": "Các NoSQL vệ tinh chấp nhận eventual consistency (bản sao có thể lệch trong chốc lát rồi khớp lại) để đổi lấy tốc độ và tính sẵn sàng; kho trung tâm giữ strong consistency (đọc lúc nào cũng thấy bản ghi mới nhất).",
+"x": [
+"Đảo ngược.",
+"Không thể cùng lúc tối đa C và A khi mạng đứt (CAP).",
+"Kho trung tâm cần strong consistency."
+],
+"trap": "Đảo vị trí hai mức nhất quán.",
+"mem": "Vệ tinh: eventual. Trung tâm: strong."
+},
+{
+"lv": "TH",
+"t": "Hybrid schema mapping",
+"q": "Hybrid Schema Mapping trong tích hợp NoSQL vào kho dữ liệu là:",
+"o": [
+"Pipeline trích xuất và làm phẳng các trường động của NoSQL thành bảng phục vụ OLAP",
+"Ép mọi bản ghi NoSQL theo một schema cố định ngay khi ghi vào nguồn",
+"Chuyển toàn bộ kho dữ liệu sang mô hình document để bỏ schema",
+"Ánh xạ mỗi bảng quan hệ thành một nút trong knowledge graph"
+],
+"w": "Hybrid Schema Mapping: pipeline trích xuất và làm phẳng các trường động của NoSQL thành bảng để phục vụ OLAP, giống FLATTEN dữ liệu VARIANT ở Chương 2. Ví dụ NKDL_TH_9.1 ghép orders (SQLite) với hồ sơ JSON theo user_id thành bảng phẳng.",
+"x": [
+"NoSQL vẫn schema-less ở nguồn.",
+"Kho trung tâm vẫn là bảng quan hệ.",
+"Đây không phải nội dung của schema mapping."
+],
+"trap": "Nghĩ phải ép schema ngay tại nguồn.",
+"mem": "Hybrid mapping = làm phẳng JSON thành bảng cho OLAP."
+},
+{
+"lv": "NB",
+"t": "Knowledge graph",
+"q": "Trong knowledge graph, thực thể và quan hệ được biểu diễn lần lượt bằng:",
+"o": [
+"Node và edge",
+"Bảng và cột",
+"Topic và partition",
+"Khóa và giá trị"
+],
+"w": "Knowledge graph biểu diễn thực thể là node (khách hàng, tài khoản, công ty) và quan hệ là edge (sở hữu, làm việc tại, chuyển tiền cho).",
+"x": [
+"Đây là mô hình quan hệ.",
+"Đây là Kafka.",
+"Đây là key-value store."
+],
+"trap": "Lẫn với mô hình khác.",
+"mem": "Node = thực thể; edge = quan hệ."
+},
+{
+"lv": "TH",
+"t": "Relationship-first",
+"q": "Vì sao truy vấn quan hệ nhiều tầng trên graph database thường hiệu quả hơn SQL?",
+"o": [
+"Quan hệ được lưu sẵn, đi sang nút kề chỉ là theo con trỏ thay vì JOIN lại hai bảng lớn",
+"Graph database lưu toàn bộ dữ liệu trong RAM nên mọi truy vấn đều nhanh hơn SQL",
+"Graph database tự nén dữ liệu bằng Product Quantization nên ít dữ liệu cần đọc",
+"Graph database không cần chỉ mục nên bỏ qua bước tối ưu truy vấn của SQL"
+],
+"w": "Tư duy relationship-first: quan hệ được lưu sẵn như dữ liệu hạng nhất; đi từ nút sang nút kề chỉ là theo con trỏ. Với SQL, tìm liên kết 3 bước phải tự JOIN 3 lần; càng sâu càng dài và chậm.",
+"x": [
+"Slide không nói lưu toàn bộ trong RAM.",
+"PQ là kỹ thuật nén vector, không phải graph.",
+"Không phải lý do được nêu."
+],
+"trap": "Gán lý do phần cứng.",
+"mem": "Graph: quan hệ là dữ liệu hạng nhất ⇒ không JOIN lặp."
+},
+{
+"lv": "TH",
+"t": "Ba kỹ thuật knowledge graph",
+"q": "Nhận ra “Nguyễn Văn A” trong CRM và “NGUYEN VAN A” trong hệ thống thẻ là cùng một người rồi hợp nhất thành một nút. Đây là kỹ thuật:",
+"o": [
+"Entity Disambiguation",
+"Semantic Labeling",
+"Graph Traversal",
+"Data Anchoring"
+],
+"w": "Entity Disambiguation: nhận ra và hợp nhất thực thể trùng hoặc ghi sai định dạng giữa các nguồn (cùng ý với entity resolution, Chương 4).",
+"x": [
+"Semantic Labeling đặt tên quan hệ theo ontology.",
+"Graph Traversal duyệt sâu N cấp tìm liên kết ngầm.",
+"Data Anchoring là ghi mã băm lên blockchain."
+],
+"trap": "Lẫn với Semantic Labeling.",
+"mem": "Hợp nhất thực thể trùng → Entity Disambiguation."
+},
+{
+"lv": "VD",
+"t": "Semantic labeling",
+"q": "Ontology quy định khách hàng nối với tổ chức bằng quan hệ WORKS_AT. Việc đặt nhãn <code>(Customer)-[WORKS_AT]->(Organization)</code> thuộc kỹ thuật:",
+"o": [
+"Semantic Labeling",
+"Entity Disambiguation",
+"Graph Traversal",
+"Predicate Pushdown"
+],
+"w": "Semantic Labeling dùng ontology (bộ quy định loại nút nào nối với loại nút nào bằng quan hệ gì) để đặt tên quan hệ, ví dụ (Customer)-[WORKS_AT]->(Organization).",
+"x": [
+"Disambiguation hợp nhất thực thể trùng.",
+"Traversal là duyệt quan hệ, không đặt nhãn.",
+"Pushdown là kỹ thuật federated query."
+],
+"trap": "Lẫn ba kỹ thuật.",
+"mem": "Ontology + đặt tên quan hệ → Semantic Labeling."
+},
+{
+"lv": "VD",
+"t": "Graph traversal",
+"q": "Câu Cypher <code>MATCH (a:Account {id:'A1'})-[:SHARES_PHONE|SHARES_DEVICE*1..3]-(b:Account) RETURN DISTINCT b.id</code> trả về gì?",
+"o": [
+"Các tài khoản nối với A1 trong 1–3 bước qua điện thoại hoặc thiết bị chung",
+"Các tài khoản dùng chung đúng 3 số điện thoại với tài khoản A1",
+"Ba tài khoản đầu tiên có cùng thiết bị với A1, sắp theo mã số",
+"Các tài khoản chuyển tiền cho A1 nhiều hơn 3 lần trong tháng qua"
+],
+"w": "*1..3 là độ dài đường đi từ 1 đến 3 cạnh; quan hệ là SHARES_PHONE hoặc SHARES_DEVICE; không có mũi tên nên vô hướng. Đây là Graph Traversal N cấp để tìm liên kết ngầm, phục vụ phát hiện gian lận.",
+"x": [
+"*1..3 là số bước, không phải số điện thoại.",
+"Không có LIMIT 3 hay ORDER BY.",
+"Không có quan hệ chuyển tiền trong câu."
+],
+"trap": "Đọc *1..3 thành số lượng.",
+"mem": "[:R*1..3] = đường đi 1–3 bước."
+},
+{
+"lv": "NB",
+"t": "BFS và DFS",
+"q": "BFS và DFS lần lượt dùng cấu trúc dữ liệu nào?",
+"o": [
+"BFS dùng hàng đợi (FIFO); DFS dùng ngăn xếp (LIFO) hoặc đệ quy",
+"BFS dùng ngăn xếp (LIFO); DFS dùng hàng đợi (FIFO)",
+"Cả hai đều dùng hàng đợi ưu tiên theo trọng số cạnh",
+"Cả hai đều dùng bảng băm để lưu thứ tự duyệt"
+],
+"w": "BFS duyệt theo từng cấp, dùng hàng đợi (vào trước ra trước). DFS đi sâu tới khi cụt rồi quay lui, dùng ngăn xếp (vào sau ra trước) hoặc đệ quy.",
+"x": [
+"Đảo ngược.",
+"Hàng đợi ưu tiên dùng cho Dijkstra, không phải BFS/DFS.",
+"Không phải cấu trúc quyết định thứ tự duyệt."
+],
+"trap": "Đảo queue và stack.",
+"mem": "BFS ↔ queue; DFS ↔ stack."
+},
+{
+"lv": "VD",
+"t": "BFS trên đồ thị slide",
+"q": "Đồ thị vô hướng: A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C. Duyệt BFS từ A, đỉnh kề xét theo bảng chữ cái, đánh dấu đã thăm khi đưa vào hàng đợi. Thứ tự lấy ra là:",
+"o": [
+"A, B, D, G, E, F, C",
+"A, B, E, G, F, C, D",
+"A, B, D, G, F, E, C",
+"A, B, E, F, D, G, C"
+],
+"w": "Lấy A → đưa B, D, G. Lấy B → đưa E, F. Lấy D → F đã có. Lấy G → E đã có. Lấy E → không có gì. Lấy F → đưa C. Lấy C. Thứ tự: A, B, D, G, E, F, C.",
+"x": [
+"Đây là thứ tự DFS.",
+"E vào hàng đợi trước F (khi xử lý B) nên ra trước F.",
+"Đi sâu từ B trước khi xét hết đỉnh cấp 1 là sai BFS."
+],
+"trap": "Nhầm thứ tự E, F trong hàng đợi.",
+"mem": "BFS: hết cấp 1 rồi mới tới cấp 2, theo thứ tự vào hàng đợi."
+},
+{
+"lv": "VD",
+"t": "DFS trên đồ thị slide",
+"q": "Cùng đồ thị A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C. Duyệt DFS từ A, chọn đỉnh kề chưa thăm nhỏ nhất theo bảng chữ cái. Thứ tự thăm là:",
+"o": [
+"A, B, E, G, F, C, D",
+"A, B, D, G, E, F, C",
+"A, B, E, F, C, D, G",
+"A, B, F, C, D, E, G"
+],
+"w": "A → B (nhỏ nhất) → E (kề B chưa thăm: E, F) → G (kề E) → G cụt, quay về E, về B → F → C (kề F chưa thăm: C, D) → C cụt, về F → D. Thứ tự: A, B, E, G, F, C, D.",
+"x": [
+"Đây là thứ tự BFS.",
+"Từ E phải đi tiếp sang G trước khi quay lui.",
+"Từ B phải chọn E trước F."
+],
+"trap": "Quay lui quá sớm.",
+"mem": "DFS: đi tới khi cụt rồi mới quay lui."
+},
+{
+"lv": "VDC",
+"t": "BFS – đồ thị mới",
+"q": "Đồ thị vô hướng: A–C, A–E, B–C, B–E, B–D, E–F, D–F. Duyệt BFS từ A, đỉnh kề xét theo bảng chữ cái. Thứ tự lấy ra là:",
+"o": [
+"A, C, E, B, F, D",
+"A, C, B, D, F, E",
+"A, C, E, B, D, F",
+"A, B, C, D, E, F"
+],
+"w": "Kề: A{C,E}; B{C,D,E}; C{A,B}; D{B,F}; E{A,B,F}; F{D,E}.<br>Lấy A → đưa C, E. Lấy C → đưa B. Lấy E → B đã có, đưa F. Lấy B → đưa D. Lấy F → D đã có. Lấy D.<br>Thứ tự: A, C, E, B, F, D.",
+"x": [
+"Đây là thứ tự DFS.",
+"F vào hàng đợi (khi xử lý E) trước D (khi xử lý B) nên ra trước D.",
+"Không phải thứ tự duyệt; B không kề A."
+],
+"trap": "Xếp đỉnh cùng cấp theo chữ cái thay vì theo thứ tự vào hàng đợi.",
+"mem": "BFS lấy ra theo thứ tự đưa vào hàng đợi."
+},
+{
+"lv": "VDC",
+"t": "DFS – đồ thị mới",
+"q": "Cùng đồ thị A–C, A–E, B–C, B–E, B–D, E–F, D–F. Duyệt DFS từ A, chọn đỉnh kề chưa thăm nhỏ nhất theo bảng chữ cái. Thứ tự thăm là:",
+"o": [
+"A, C, B, D, F, E",
+"A, C, E, B, F, D",
+"A, C, B, E, F, D",
+"A, E, F, D, B, C"
+],
+"w": "A → C (kề A: C, E) → B (kề C chưa thăm) → D (kề B chưa thăm: D, E → chọn D) → F (kề D) → E (kề F chưa thăm). E không còn kề chưa thăm; quay lui hết. Thứ tự: A, C, B, D, F, E.",
+"x": [
+"Đây là thứ tự BFS.",
+"Từ B phải chọn D trước E theo bảng chữ cái.",
+"Từ A phải chọn C trước E."
+],
+"trap": "Bỏ quy ước chữ cái ở bước giữa.",
+"mem": "DFS: mỗi bước chọn kề chưa thăm nhỏ nhất."
+},
+{
+"lv": "VDC",
+"t": "BFS – đường ngắn nhất",
+"q": "Trên đồ thị A–C, A–E, B–C, B–E, B–D, E–F, D–F, dùng BFS từ A để tìm số cạnh ít nhất. Những đỉnh nào cách A đúng 2 cạnh, và khoảng cách ngắn nhất từ A tới D là bao nhiêu?",
+"o": [
+"B và F; 3 cạnh",
+"C và E; 2 cạnh",
+"B, D và F; 2 cạnh",
+"B và F; 4 cạnh"
+],
+"w": "BFS theo cấp: cấp 1 = {C, E}; cấp 2 = {B (qua C), F (qua E)}; cấp 3 = {D (qua B hoặc F)}. Vậy B, F cách 2 cạnh; D cách 3 cạnh (ví dụ A–C–B–D). BFS cho đường đi ít cạnh nhất trên đồ thị không trọng số.",
+"x": [
+"C, E cách 1 cạnh.",
+"D không kề C hay E nên không thể cách 2 cạnh.",
+"Có đường A–C–B–D dài 3 cạnh."
+],
+"trap": "Đếm theo thứ tự thăm của DFS.",
+"mem": "BFS: cấp k = khoảng cách k cạnh."
+},
+{
+"lv": "TH",
+"t": "Ứng dụng BFS và DFS",
+"q": "Theo bảng ứng dụng ở slide 12, nhiệm vụ nào phù hợp với <b>DFS</b>?",
+"o": [
+"Xây cây phân cấp (taxonomy) và tìm chuỗi liên kết dài giữa các thực thể",
+"Tìm đường đi ít cạnh nhất giữa hai thực thể trong đồ thị",
+"Gợi ý kết bạn qua các quan hệ gần với người dùng gốc",
+"Mở rộng tìm kiếm ra các lân cận theo từng cấp"
+],
+"w": "DFS: khám phá quan hệ sâu, duyệt ontology tìm khái niệm con, xây taxonomy, tìm chuỗi liên kết dài, thu thập trọn một nhánh. BFS: thực thể gần nhất, gợi ý sản phẩm, đường đi ngắn nhất, gợi ý kết bạn, mở rộng theo cấp.",
+"x": [
+"Đường ngắn nhất là BFS.",
+"Gợi ý kết bạn là BFS.",
+"Mở rộng theo cấp là BFS."
+],
+"trap": "Gán đường ngắn nhất cho DFS.",
+"mem": "Gần, ngắn nhất, theo cấp → BFS; sâu, nhánh, taxonomy → DFS."
+},
+{
+"lv": "VD",
+"t": "Cypher – demo Neo4j",
+"q": "Trong demo Neo4j mạng bầu chọn Wikipedia, câu <code>MATCH (u:WikiUser)-[:VOTED_FOR]->(candidate:WikiUser) RETURN candidate.id, COUNT(u) AS votes ORDER BY votes DESC LIMIT 5</code> trả về:",
+"o": [
+"5 ứng viên nhận nhiều phiếu bầu nhất và số phiếu của mỗi người",
+"5 người dùng bỏ phiếu nhiều lần nhất cho các ứng viên khác",
+"Tổng số quan hệ VOTED_FOR trong toàn bộ đồ thị",
+"5 người dùng đầu tiên theo mã định danh tăng dần"
+],
+"w": "Mẫu (u)-[:VOTED_FOR]->(candidate): đếm số người u bầu cho mỗi candidate, sắp giảm dần, lấy 5. Kết quả slide: ứng viên 4037 nhận 457 phiếu, 15 nhận 361…",
+"x": [
+"Đếm theo candidate (đầu mũi tên), không theo người bầu.",
+"Có nhóm theo candidate nên ra 5 dòng, không phải tổng.",
+"ORDER BY votes DESC, không theo mã."
+],
+"trap": "Đảo chiều mũi tên.",
+"mem": "(u)-[:R]->(c): c nhận quan hệ từ u."
+},
+{
+"lv": "NB",
+"t": "ANN",
+"q": "ANN (Approximate Nearest Neighbor) trong vector search là:",
+"o": [
+"Chấp nhận kết quả gần đúng, có thể sót vài láng giềng, để tìm nhanh hơn nhiều",
+"Tính khoảng cách chính xác tới mọi vector để không bỏ sót láng giềng nào",
+"Nén mỗi đoạn của vector thành mã 1 byte để cả chỉ mục vừa trong RAM",
+"Phân loại vector bằng mạng nơ-ron trước khi lưu chúng vào kho dữ liệu"
+],
+"w": "Vét cạn tính khoảng cách tới mọi vector quá tốn khi có hàng triệu vector nhiều chiều. ANN chấp nhận kết quả gần đúng để nhanh hơn hàng trăm lần (HNSW, IVF, kết hợp quantization).",
+"x": [
+"Đây là vét cạn (exact search).",
+"Đây là Product Quantization.",
+"Không phải định nghĩa ANN."
+],
+"trap": "Nghĩ ANN luôn chính xác tuyệt đối.",
+"mem": "ANN: đổi một chút độ chính xác lấy tốc độ."
+},
+{
+"lv": "TH",
+"t": "HNSW, IVF, PQ",
+"q": "Ghép đúng kỹ thuật với cơ chế: HNSW – IVF – PQ.",
+"o": [
+"Đồ thị nhiều tầng – phân cụm thành vùng Voronoi – nén vector theo đoạn",
+"Phân cụm thành vùng Voronoi – đồ thị nhiều tầng – nén vector theo đoạn",
+"Nén vector theo đoạn – đồ thị nhiều tầng – phân cụm vùng Voronoi",
+"Đồ thị nhiều tầng – nén vector theo đoạn – phân cụm vùng Voronoi"
+],
+"w": "HNSW: đồ thị nhiều tầng, tầng trên thưa nhảy xa, tầng dưới dày đi chi tiết. IVF: phân cụm K-Means thành vùng Voronoi, chỉ so với vài vùng gần câu hỏi nhất. PQ: chia vector thành đoạn con, mỗi đoạn thay bằng mã 1 byte.",
+"x": [
+"Đảo HNSW và IVF.",
+"Sai cả ba.",
+"Đảo IVF và PQ."
+],
+"trap": "Lẫn IVF và HNSW.",
+"mem": "HNSW ↔ đồ thị phân cấp; IVF ↔ Voronoi; PQ ↔ nén."
+},
+{
+"lv": "TH",
+"t": "HNSW",
+"q": "Quá trình tìm kiếm trên chỉ mục HNSW diễn ra thế nào?",
+"o": [
+"Bắt đầu ở tầng trên thưa để nhảy xa, rồi lần xuống tầng dưới dày để đi chi tiết",
+"Bắt đầu ở tầng dưới dày nhất rồi đi lên tầng trên để mở rộng phạm vi tìm",
+"So câu hỏi với tâm của mọi vùng Voronoi rồi quét toàn bộ các vùng",
+"Giải nén toàn bộ vector về dạng gốc rồi tính khoảng cách vét cạn"
+],
+"w": "HNSW dựng đồ thị nhiều tầng nối các vector gần nhau. Tìm kiếm bắt đầu ở tầng trên (thưa, nhảy xa), lần xuống dần (dày, chi tiết), như phóng to bản đồ.",
+"x": [
+"Ngược chiều.",
+"Đây là IVF, và IVF chỉ quét vài vùng gần nhất.",
+"Không phải cơ chế HNSW."
+],
+"trap": "Đảo chiều tìm kiếm.",
+"mem": "HNSW: trên xuống, thưa → dày."
+},
+{
+"lv": "VD",
+"t": "IVF – số phép tính",
+"q": "Kho có 2 triệu vector, chia IVF thành 2.000 vùng (mỗi vùng khoảng 1.000 vector). Mỗi câu hỏi chỉ xét 5 vùng gần nhất. Số phép tính khoảng cách mỗi câu hỏi khoảng bao nhiêu, ít hơn vét cạn bao nhiêu lần?",
+"o": [
+"5.000 phép tính; ít hơn khoảng 400 lần",
+"10.000 phép tính; ít hơn khoảng 200 lần",
+"2.000 phép tính; ít hơn khoảng 1.000 lần",
+"5.000 phép tính; ít hơn khoảng 2.000 lần"
+],
+"w": "Xét 5 vùng × 1.000 vector = 5.000 phép tính (chưa kể so với 2.000 tâm vùng). Vét cạn: 2.000.000. Tỷ lệ: 2.000.000/5.000 = 400 lần.",
+"x": [
+"10.000 là khi xét 10 vùng.",
+"2.000 là số vùng (số tâm), không phải số vector được xét.",
+"Tỷ lệ sai: 2.000.000/5.000 = 400."
+],
+"trap": "Lấy số vùng làm số phép tính.",
+"mem": "IVF: số vùng xét × kích thước vùng."
+},
+{
+"lv": "VD",
+"t": "PQ – bộ nhớ",
+"q": "Vector 1.536 chiều, mỗi số 4 byte. PQ chia vector thành 64 đoạn, mỗi đoạn mã 1 byte. Kích thước mỗi vector trước và sau nén, và tỷ lệ nén là:",
+"o": [
+"6.144 byte → 64 byte; nhỏ hơn 96 lần",
+"1.536 byte → 64 byte; nhỏ hơn 24 lần",
+"6.144 byte → 256 byte; nhỏ hơn 24 lần",
+"6.144 byte → 64 byte; nhỏ hơn 48 lần"
+],
+"w": "Trước: 1.536 × 4 = 6.144 byte. Sau: 64 đoạn × 1 byte = 64 byte. Tỷ lệ: 6.144/64 = 96 lần.",
+"x": [
+"Quên nhân 4 byte mỗi số.",
+"64 × 4 = 256 là coi mỗi mã 4 byte, sai.",
+"6.144/64 = 96, không phải 48."
+],
+"trap": "Quên 4 byte/số hoặc coi mã PQ là số thực.",
+"mem": "Gốc = chiều × 4 byte; PQ = số đoạn × 1 byte."
+},
+{
+"lv": "VDC",
+"t": "Vector index – thiết kế",
+"q": "Có 1 triệu vector 1.536 chiều (4 byte/số), máy chủ có 2 GB RAM cho chỉ mục. Phương án nào làm chỉ mục vừa RAM theo đúng tinh thần slide?",
+"o": [
+"Dùng PQ 128 đoạn: 128 byte/vector, khoảng 128 MB cho 1 triệu vector",
+"Giữ nguyên vector gốc: khoảng 1,5 GB cho 1 triệu vector, vừa RAM",
+"Dùng IVF 1.000 vùng để giảm dung lượng xuống 1.000 lần",
+"Dùng HNSW vì đồ thị nhiều tầng tự nén vector còn 1 byte"
+],
+"w": "Gốc: 1.536 × 4 = 6.144 byte/vector → khoảng 6,1 GB, vượt 2 GB RAM. PQ 128 đoạn × 1 byte = 128 byte/vector → khoảng 128 MB, nhỏ hơn 48 lần, vừa RAM. Quantization chính là kỹ thuật nén để cả chỉ mục vừa trong RAM.",
+"x": [
+"Quên nhân 4 byte: thực tế khoảng 6,1 GB.",
+"IVF giảm số phép tính, không giảm dung lượng lưu vector.",
+"HNSW thêm cấu trúc đồ thị, không nén vector."
+],
+"trap": "Nghĩ IVF/HNSW giảm bộ nhớ.",
+"mem": "Giảm bộ nhớ → PQ; giảm phép tính → IVF/HNSW."
+},
+{
+"lv": "NB",
+"t": "Wei và Ether",
+"q": "Trên Ethereum, 1 Ether bằng bao nhiêu Wei?",
+"o": [
+"10<sup>18</sup>",
+"10<sup>6</sup>",
+"10<sup>9</sup>",
+"10<sup>12</sup>"
+],
+"w": "Ethereum lưu số tiền bằng Wei: 1 Ether = 10<sup>18</sup> Wei. Bước Data Normalization đổi số nguyên rất lớn này sang đơn vị dùng được.",
+"x": [
+"10<sup>6</sup> là số thập phân của USDT.",
+"10<sup>9</sup> là Gwei, không phải Ether.",
+"Không phải quy đổi của Ether."
+],
+"trap": "Lẫn với 6 chữ số thập phân của USDT.",
+"mem": "1 ETH = 10^18 Wei; USDT: 10^6."
+},
+{
+"lv": "VD",
+"t": "Data normalization – Wei",
+"q": "Một giao dịch ghi value = 350000000000000000 Wei (35 theo sau 16 chữ số 0). Giá trị bằng Ether là:",
+"o": [
+"0,35 Ether",
+"3,5 Ether",
+"35 Ether",
+"0,035 Ether"
+],
+"w": "350000000000000000 = 3,5 × 10<sup>17</sup>. Chia 10<sup>18</sup>: 3,5 × 10<sup>17</sup>/10<sup>18</sup> = 0,35 Ether.",
+"x": [
+"3,5 là khi chia 10<sup>17</sup>.",
+"35 là khi chia 10<sup>16</sup>.",
+"0,035 là khi chia 10<sup>19</sup>."
+],
+"trap": "Đếm sai số chữ số 0.",
+"mem": "Ether = Wei / 10^18."
+},
+{
+"lv": "VD",
+"t": "Data normalization – USDT",
+"q": "Token USDT có 6 chữ số thập phân. Giá trị thô trong log là 2750000. Số USDT thực là:",
+"o": [
+"2,75 USDT",
+"27,5 USDT",
+"0,275 USDT",
+"2.750.000 USDT"
+],
+"w": "2.750.000/10<sup>6</sup> = 2,75 USDT. Slide khuyên lưu dưới dạng số nguyên rồi chia khi phân tích để tránh sai số làm tròn của số thực.",
+"x": [
+"Chia 10<sup>5</sup> là sai số chữ số thập phân.",
+"Chia 10<sup>7</sup> là sai.",
+"Chưa chuẩn hóa."
+],
+"trap": "Áp 10^18 của Ether cho USDT.",
+"mem": "USDT = raw / 10^6."
+},
+{
+"lv": "TH",
+"t": "Blockchain ETL",
+"q": "Thứ tự ba bước của Blockchain ETL theo slide là:",
+"o": [
+"Node Ingestion (RPC) → Event Decoding (ABI) → Data Normalization",
+"Event Decoding (ABI) → Node Ingestion (RPC) → Data Normalization",
+"Data Normalization → Node Ingestion (RPC) → Event Decoding (ABI)",
+"Node Ingestion (RPC) → Data Normalization → Event Decoding (ABI)"
+],
+"w": "Node Ingestion: kết nối nút Ethereum/Bitcoin qua RPC để bắt khối mới. Event Decoding: dùng ABI dịch chuỗi hex trong log thành tên hàm và tham số. Data Normalization: đổi Wei → Ether, timestamp về UTC.",
+"x": [
+"Phải bắt khối trước mới giải mã được.",
+"Chuẩn hóa là bước cuối.",
+"Phải giải mã hex trước mới có số tiền để chuẩn hóa."
+],
+"trap": "Đảo Decoding và Normalization.",
+"mem": "RPC → ABI → Normalize."
+},
+{
+"lv": "TH",
+"t": "Event decoding",
+"q": "File ABI được dùng trong Blockchain ETL để làm gì?",
+"o": [
+"Dịch chuỗi hex trong log thành tên hàm và tham số như người gửi, người nhận, số tiền",
+"Kết nối liên tục tới nút Ethereum để bắt các khối mới được sinh ra",
+"Đổi số tiền từ Wei sang Ether và đổi timestamp về múi giờ UTC",
+"Băm từng bản ghi log bằng SHA-256 trước khi ghi lên blockchain"
+],
+"w": "ABI (Application Binary Interface) mô tả các hàm và sự kiện của smart contract; Event Decoding dùng nó để dịch hex thành tên hàm và tham số cụ thể.",
+"x": [
+"Đây là Node Ingestion qua RPC.",
+"Đây là Data Normalization.",
+"Đây là Data Anchoring (mục 9.5)."
+],
+"trap": "Lẫn ABI với RPC.",
+"mem": "ABI = từ điển giải mã smart contract."
+},
+{
+"lv": "VDC",
+"t": "Phân tích on-chain",
+"q": "Câu SQL trên bảng token_transfers dùng <code>SUM(CAST(value AS FLOAT64)) / 1000000</code> cho USDT. Một ngày có tổng value thô bằng 4,2 × 10<sup>12</sup>. Kết quả và lý do phải CAST là:",
+"o": [
+"4,2 triệu USDT; vì value lưu dạng chuỗi số nguyên rất lớn",
+"4,2 × 10<sup>−6</sup> Ether; vì value lưu bằng Wei",
+"4,2 tỷ USDT; vì cột value đã ở đơn vị USDT",
+"4.200 USDT; vì USDT có 9 chữ số thập phân"
+],
+"w": "4,2 × 10<sup>12</sup>/10<sup>6</sup> = 4,2 × 10<sup>6</sup> = 4,2 triệu USDT. Cột value lưu dạng chuỗi số nguyên rất lớn nên phải CAST sang số thực rồi chia 10<sup>6</sup> theo 6 chữ số thập phân của USDT.",
+"x": [
+"Đây là token USDT, không phải Ether; và không chia 10<sup>18</sup>.",
+"Nếu đã là USDT thì không cần chia 10<sup>6</sup>; 4,2 × 10<sup>12</sup>/10<sup>6</sup> ≠ 4,2 tỷ.",
+"USDT có 6 chữ số thập phân."
+],
+"trap": "Chia nhầm 10^18 hoặc 10^9.",
+"mem": "USDT: chia 10^6; value là chuỗi ⇒ CAST."
+},
+{
+"lv": "TH",
+"t": "Audit log trên blockchain",
+"q": "Vì sao slide đề xuất dùng blockchain để lưu bằng chứng audit log thay vì để trong cơ sở dữ liệu nội bộ?",
+"o": [
+"DBA có quyền cao nhất có thể sửa hoặc xóa audit log; blockchain là bên độc lập không ai thao túng được",
+"Blockchain truy vấn nhanh hơn cơ sở dữ liệu nội bộ khi tìm kiếm log theo thời gian",
+"Blockchain lưu được dữ liệu thô với chi phí thấp hơn cơ sở dữ liệu nội bộ",
+"Blockchain tự mã hóa dữ liệu nên không cần cấp quyền truy cập cho ai"
+],
+"w": "Trong hệ thống truyền thống, DBA có thể sửa hoặc xóa chính audit log để xóa dấu vết. Blockchain là bên thứ ba độc lập, không ai thao túng được. Giá trị: non-repudiation và minh bạch tuyệt đối cho metadata.",
+"x": [
+"Tốc độ không phải lý do.",
+"Đưa dữ liệu thô lên chuỗi tốn phí; slide chỉ đưa mã băm.",
+"Blockchain công khai và minh bạch, không phải “tự mã hóa”."
+],
+"trap": "Nghĩ blockchain để lưu dữ liệu thô.",
+"mem": "Blockchain cho audit: chống DBA sửa log."
+},
+{
+"lv": "TH",
+"t": "Data anchoring",
+"q": "Trong Data Anchoring, thứ được ghi lên blockchain là:",
+"o": [
+"Merkle root của lô mã băm log trong ngày",
+"Toàn bộ bản ghi log thô của ngày đó",
+"Danh sách người dùng đã truy cập dữ liệu",
+"File sao lưu cơ sở dữ liệu nén lại"
+],
+"w": "Không đưa dữ liệu thô lên chuỗi (tốn phí, lộ thông tin). Mỗi log được băm SHA-256, gom thành Merkle tree; chỉ Merkle root được ghi lên blockchain qua smart contract.",
+"x": [
+"Dữ liệu thô không được đưa lên.",
+"Cũng là dữ liệu thô nhạy cảm.",
+"Không phải cách làm trong slide."
+],
+"trap": "Nghĩ đưa log thô lên chuỗi.",
+"mem": "Chỉ root lên chuỗi."
+},
+{
+"lv": "VD",
+"t": "Merkle tree",
+"q": "Ngày có 4 log L1..L4, root = SHA256(H12 ∥ H34) đã ghi lên blockchain. Một tháng sau, DBA sửa L3. Khi băm lại, những giá trị nào thay đổi?",
+"o": [
+"H3, H34 và root",
+"Chỉ H3",
+"H1, H2, H3, H4 và root",
+"H12, H34 và root"
+],
+"w": "Sửa L3 → H3 = SHA256(L3) đổi → H34 = SHA256(H3 ∥ H4) đổi → root = SHA256(H12 ∥ H34) đổi. H1, H2, H4, H12 không đổi. Root mới khác root trên chuỗi → phát hiện sửa đổi, và lần theo cây biết nhánh H34 bị sửa.",
+"x": [
+"Hàm băm lan truyền thay đổi lên tới root.",
+"H1, H2, H4 không liên quan tới L3.",
+"H12 chỉ phụ thuộc L1, L2."
+],
+"trap": "Nghĩ mọi nút đều đổi hoặc chỉ lá đổi.",
+"mem": "Sửa 1 lá ⇒ đổi đường từ lá lên root."
+},
+{
+"lv": "VDC",
+"t": "Merkle tree – 8 log",
+"q": "Merkle tree xây trên 8 log L1..L8 (cây nhị phân đầy đủ). Có tổng cộng bao nhiêu mã băm trong cây, và nếu sửa L5 thì bao nhiêu mã băm thay đổi?",
+"o": [
+"15 mã băm; 4 mã băm thay đổi",
+"15 mã băm; 8 mã băm thay đổi",
+"8 mã băm; 1 mã băm thay đổi",
+"7 mã băm; 3 mã băm thay đổi"
+],
+"w": "Số nút: 8 lá + 4 + 2 + 1 root = 15. Sửa L5: H5 đổi → H56 đổi → H5678 đổi → root đổi = 4 mã băm (đường từ lá lên gốc, log<sub>2</sub>8 + 1).",
+"x": [
+"Chỉ các nút trên đường từ H5 lên root đổi.",
+"Bỏ qua các tầng trên; root chắc chắn đổi.",
+"Thiếu tầng lá trong cả tổng số lẫn số nút đổi."
+],
+"trap": "Quên tính lá hoặc nghĩ cả cây đổi.",
+"mem": "n lá ⇒ 2n − 1 nút; sửa 1 lá ⇒ log₂n + 1 nút đổi."
+},
+{
+"lv": "TH",
+"t": "Hàm băm",
+"q": "Tính chất nào của hàm băm SHA-256 làm cho Data Anchoring phát hiện được sửa đổi mà không lộ dữ liệu?",
+"o": [
+"Đổi một ký tự đầu vào làm mã băm đổi hoàn toàn, và không thể suy ngược ra đầu vào",
+"Mã băm có cùng độ dài với dữ liệu đầu vào nên khôi phục được khi cần",
+"Hai đầu vào gần giống nhau luôn cho hai mã băm gần giống nhau",
+"Mã băm thay đổi theo thời gian nên mỗi lần băm lại cho kết quả khác"
+],
+"w": "Hàm băm: đổi một ký tự đầu vào là mã băm đổi hoàn toàn (phát hiện sửa), và không thể suy ngược ra đầu vào (không lộ). SHA-256 cho chuỗi 256 bit cố định.",
+"x": [
+"Mã băm có độ dài cố định 256 bit và không khôi phục được.",
+"Ngược lại: gần giống vẫn cho mã khác hoàn toàn.",
+"Hàm băm tất định: cùng đầu vào cho cùng mã."
+],
+"trap": "Nhầm hàm băm với mã hóa có thể giải mã.",
+"mem": "Băm: nhạy thay đổi, một chiều, tất định."
+},
+{
+"lv": "NB",
+"t": "Federated querying",
+"q": "Federated querying là:",
+"o": [
+"Một câu SQL lấy và nối dữ liệu từ nhiều nền tảng mà không chuyển dữ liệu thô về một chỗ",
+"Sao chép dữ liệu từ mọi nguồn vào kho trung tâm mỗi đêm bằng ETL rồi mới truy vấn",
+"Dùng nhiều công nghệ lưu trữ khác nhau cho từng loại dữ liệu trong hệ thống",
+"Ghi mã băm của dữ liệu lên blockchain để chứng minh không bị sửa đổi"
+],
+"w": "Federated querying: viết một câu SQL nhưng lấy và nối dữ liệu từ nhiều nền tảng (SQL, graph, blockchain); dữ liệu nằm nguyên tại nguồn, chỉ lấy kết quả khi cần (query virtualization, giống Data Fabric).",
+"x": [
+"Đây là ETL truyền thống.",
+"Đây là polyglot persistence.",
+"Đây là data anchoring."
+],
+"trap": "Lẫn với polyglot.",
+"mem": "Federated = một SQL, nhiều nguồn, không ETL."
+},
+{
+"lv": "TH",
+"t": "Thành phần federated query",
+"q": "Trong federated query, <b>Global Catalog</b> đảm nhận vai trò gì?",
+"o": [
+"Từ điển chung cho biết cột nào nằm ở cơ sở dữ liệu nào",
+"Dịch phần việc của câu SQL sang Cypher hoặc RPC của từng nguồn",
+"Đẩy điều kiện WHERE xuống nguồn để nguồn tự lọc trước",
+"Lưu bản sao dữ liệu của mọi nguồn để truy vấn nhanh hơn"
+],
+"w": "Ba thành phần: Connector/Wrapper Engines (Presto, Trino, BigQuery Omni dịch phần việc sang ngôn ngữ từng nguồn), Global Catalog (từ điển chung cột nào ở đâu), Predicate Pushdown (đẩy WHERE xuống nguồn).",
+"x": [
+"Đây là connector/wrapper engine.",
+"Đây là predicate pushdown.",
+"Federated không sao chép dữ liệu."
+],
+"trap": "Lẫn ba thành phần.",
+"mem": "Connector, Global Catalog, Predicate Pushdown."
+},
+{
+"lv": "VD",
+"t": "Predicate pushdown",
+"q": "Câu Trino nối <code>bigquery.crm.users u</code> với <code>postgresql.public.orders o</code> và có <code>WHERE u.country = 'Vietnam'</code>. Predicate pushdown giúp gì?",
+"o": [
+"BigQuery tự lọc người dùng Việt Nam trước, chỉ gửi phần kết quả nhỏ qua mạng",
+"Trino tải toàn bộ bảng users về rồi mới lọc theo quốc gia tại máy chủ",
+"PostgreSQL tự sao chép bảng orders sang BigQuery trước khi nối",
+"Global Catalog tự tạo chỉ mục cho cột country trên cả hai nguồn"
+],
+"w": "Predicate Pushdown đẩy điều kiện WHERE xuống nguồn để nguồn tự lọc, chỉ gửi phần kết quả nhỏ qua mạng (đã gặp ở Chương 1).",
+"x": [
+"Đây là cách làm khi không có pushdown.",
+"Federated không sao chép bảng giữa các nguồn.",
+"Catalog không tạo chỉ mục."
+],
+"trap": "Nghĩ engine lọc sau khi kéo hết dữ liệu.",
+"mem": "Pushdown = lọc tại nguồn, giảm dữ liệu qua mạng."
+},
+{
+"lv": "VD",
+"t": "Demo NKDL_TH_9.2",
+"q": "Demo NKDL_TH_9.2 lấy loại tài khoản và quốc gia từ BigQuery, số phiếu từ Neo4j AuraDB, rồi pd.merge theo user_id. Nhận định đúng theo slide là:",
+"o": [
+"Ghép ở tầng ứng dụng Python, không qua engine như Trino, nhưng cùng ý tưởng dữ liệu nằm tại nguồn",
+"Đây là ETL truyền thống vì toàn bộ dữ liệu Neo4j được sao chép vào BigQuery",
+"Đây là polyglot persistence vì dùng predicate pushdown giữa hai nguồn",
+"Đây là federated query qua Trino vì có câu SQL tổng nối hai nguồn"
+],
+"w": "Slide lưu ý: demo nối dữ liệu ở tầng ứng dụng Python, không qua engine federated như Trino; ý tưởng giống nhau (dữ liệu nằm tại nguồn, chỉ lấy kết quả về ghép). Dòng đầu: người dùng 2237, Moderator, Đức, 241 phiếu.",
+"x": [
+"Không sao chép toàn bộ Neo4j vào BigQuery.",
+"Polyglot là cách lưu trữ; pushdown không phải đặc điểm của demo.",
+"Demo không dùng Trino."
+],
+"trap": "Nghĩ demo dùng Trino.",
+"mem": "Demo 9.2: ghép bằng pandas, tinh thần federated."
+},
+{
+"lv": "TH",
+"t": "Optimizer đa hệ thống",
+"q": "Vì sao optimizer của kho dữ liệu dễ chọn sai kế hoạch khi truy vấn đi qua nhiều hệ thống?",
+"o": [
+"Thường thiếu thống kê của hệ thống đối tác, dễ gây nghẽn mạng hoặc tràn RAM máy chủ trung tâm",
+"Các hệ thống đối tác luôn chạy chậm hơn kho dữ liệu chính vì không có chỉ mục nào",
+"SQL không hỗ trợ JOIN giữa các bảng nằm trên những nền tảng khác nhau",
+"Optimizer chỉ tính chi phí mạng mà bỏ qua chi phí CPU và đọc ghi đĩa"
+],
+"w": "Optimizer chọn cách chạy dựa trên thống kê (số dòng, chỉ mục). Khi truy vấn đi qua nhiều hệ thống, optimizer thường không có thống kê của hệ thống đối tác nên dễ chọn sai, gây nghẽn mạng hoặc tràn RAM.",
+"x": [
+"Không phải lý do được nêu.",
+"Federated engine vẫn JOIN được xuyên nền tảng.",
+"Cost-based optimizer tính cả CPU/IO và mạng."
+],
+"trap": "Nghĩ vấn đề là tốc độ của nguồn.",
+"mem": "Đa hệ thống: thiếu statistics ⇒ plan tệ."
+},
+{
+"lv": "VD",
+"t": "Broadcast và hash join",
+"q": "Bảng giao dịch 20 GB nằm trên 8 máy; bảng danh mục sản phẩm 100 MB ở hệ thống khác. Lượng dữ liệu qua mạng của broadcast join khoảng bao nhiêu, và nên chọn chiến lược nào?",
+"o": [
+"Khoảng 800 MB; chọn broadcast join",
+"Khoảng 20,1 GB; chọn broadcast join",
+"Khoảng 800 MB; chọn hash join",
+"Khoảng 160 GB; chọn hash join"
+],
+"w": "Broadcast: gửi bảng 100 MB tới 8 máy → 8 × 100 MB = 800 MB. Hash join: chia lại cả hai bảng → gần 20 GB + 100 MB qua mạng. Bảng nhỏ nối bảng lớn → broadcast.",
+"x": [
+"20,1 GB là của hash join.",
+"800 MB ít hơn nhiều so với hash join nên chọn broadcast.",
+"160 GB là khi broadcast bảng 20 GB, sai bảng."
+],
+"trap": "Broadcast nhầm bảng lớn.",
+"mem": "Bảng nhỏ + bảng lớn ⇒ broadcast bảng nhỏ."
+},
+{
+"lv": "VDC",
+"t": "Broadcast và hash join",
+"q": "Bảng A 12 GB và bảng B 9 GB, A nằm trên 6 máy. So sánh lượng dữ liệu qua mạng giữa broadcast B và hash join phân tán, chiến lược nên chọn là:",
+"o": [
+"Hash join, vì broadcast tốn khoảng 54 GB còn hash join khoảng 21 GB",
+"Broadcast, vì broadcast tốn khoảng 9 GB còn hash join khoảng 21 GB",
+"Broadcast, vì B nhỏ hơn A nên luôn được ưu tiên gửi đi",
+"Hash join, vì broadcast tốn khoảng 72 GB còn hash join khoảng 12 GB"
+],
+"w": "Broadcast B: 9 GB × 6 máy = 54 GB. Hash join: chia lại cả hai bảng → khoảng 12 + 9 = 21 GB. 21 < 54 → hash join. Slide: cả hai bảng đều lớn thì hash join rẻ hơn.",
+"x": [
+"Broadcast phải gửi B tới từng máy, không phải một lần.",
+"B nhỏ hơn A nhưng vẫn quá lớn để broadcast.",
+"72 GB là broadcast A; hash join phải chia lại cả hai bảng."
+],
+"trap": "Nghĩ bảng nào nhỏ hơn thì luôn broadcast.",
+"mem": "Hai bảng lớn ⇒ hash join."
+},
+{
+"lv": "VD",
+"t": "Query hints",
+"q": "Engine federated thiếu thống kê về bảng ở hệ thống đối tác và cứ chọn hash join dù bảng đó chỉ 20 MB. Theo slide, kỹ sư có thể làm gì ngay trong câu lệnh?",
+"o": [
+"Thêm query hint ép engine dùng broadcast join",
+"Xóa bảng 20 MB và tạo lại trong kho trung tâm",
+"Tắt cost-based optimizer cho toàn bộ hệ thống",
+"Tăng RAM máy chủ trung tâm lên gấp đôi"
+],
+"w": "Query Hints: chỉ thị viết kèm trong câu lệnh để ép engine chạy theo cách mình muốn khi engine thiếu thống kê.",
+"x": [
+"Không cần di chuyển dữ liệu.",
+"Tắt optimizer ảnh hưởng mọi truy vấn khác.",
+"Tăng RAM không sửa kế hoạch sai."
+],
+"trap": "Sửa bằng hạ tầng thay vì bằng câu lệnh.",
+"mem": "Thiếu statistics ⇒ query hint."
+},
+{
+"lv": "NB",
+"t": "RTO và RPO",
+"q": "<b>RPO</b> (Recovery Point Objective) là:",
+"o": [
+"Lượng dữ liệu tối đa chấp nhận mất, đo bằng thời gian từ bản sao lưu gần nhất tới lúc sự cố",
+"Thời gian ngừng hoạt động tối đa chấp nhận được từ lúc sự cố tới lúc chạy lại",
+"Số lần sao lưu dữ liệu tối thiểu mỗi ngày theo cam kết với khách hàng",
+"Thời gian tối đa để chuyển truy cập sang vùng dự phòng khi mất tín hiệu"
+],
+"w": "RPO: lượng dữ liệu tối đa chấp nhận mất, đo bằng khoảng thời gian tính ngược từ lúc sự cố tới bản sao lưu gần nhất. RTO: thời gian ngừng hoạt động tối đa chấp nhận được.",
+"x": [
+"Đây là RTO.",
+"Không phải định nghĩa RPO.",
+"Đây là ngưỡng failover 30 giây."
+],
+"trap": "Đảo RPO và RTO.",
+"mem": "RPO = mất bao nhiêu dữ liệu; RTO = chết bao lâu."
+},
+{
+"lv": "VD",
+"t": "Tính RTO và RPO",
+"q": "Bản sao lưu gần nhất lúc 14:00. Sự cố lúc 14:25. Hệ thống chạy lại lúc 15:10. Lượng dữ liệu mất (theo thời gian) và thời gian ngừng hoạt động lần lượt là:",
+"o": [
+"25 phút; 45 phút",
+"45 phút; 25 phút",
+"25 phút; 70 phút",
+"70 phút; 45 phút"
+],
+"w": "Dữ liệu mất: 14:25 − 14:00 = 25 phút (so với RPO). Thời gian ngừng: 15:10 − 14:25 = 45 phút (so với RTO).",
+"x": [
+"Đảo hai giá trị.",
+"70 phút là tính từ bản sao lưu tới lúc chạy lại.",
+"Đảo và cộng sai."
+],
+"trap": "Tính thời gian ngừng từ lúc sao lưu.",
+"mem": "Mất dữ liệu: sao lưu → sự cố. Ngừng: sự cố → chạy lại."
+},
+{
+"lv": "VDC",
+"t": "Kiểm tra SLA",
+"q": "Kho sao lưu mỗi 30 phút (09:00, 09:30, …). Sự cố lúc 09:50, hệ thống chạy lại lúc 11:05. SLA cam kết RPO = 15 phút, RTO = 2 giờ. Kết luận đúng là:",
+"o": [
+"Vi phạm RPO (mất 20 phút > 15), đạt RTO (ngừng 75 phút ≤ 120)",
+"Đạt RPO (mất 20 phút ≤ 30), vi phạm RTO (ngừng 125 phút > 120)",
+"Vi phạm cả hai cam kết vì sự cố xảy ra giữa hai lần sao lưu",
+"Đạt cả hai cam kết vì hệ thống chạy lại trước 2 giờ"
+],
+"w": "Bản sao lưu gần nhất 09:30 → mất 09:50 − 09:30 = 20 phút > RPO 15 → vi phạm. Ngừng 11:05 − 09:50 = 75 phút ≤ 120 → đạt RTO. Lịch sao lưu 30 phút vốn không thể bảo đảm RPO 15 phút; muốn RPO nhỏ hơn phải sao lưu hoặc nhân bản dày hơn.",
+"x": [
+"So RPO với chu kỳ sao lưu thay vì cam kết; ngừng 75 phút, không phải 125.",
+"RTO vẫn đạt.",
+"RPO 20 phút vượt 15 phút."
+],
+"trap": "So mất dữ liệu với chu kỳ sao lưu thay vì RPO cam kết.",
+"mem": "Lịch sao lưu phải dày hơn RPO cam kết."
+},
+{
+"lv": "TH",
+"t": "Nhân bản đồng bộ và bất đồng bộ",
+"q": "Vì sao nhân bản bất đồng bộ (asynchronous sync) xuyên quốc gia có RPO lớn hơn 0?",
+"o": [
+"Ghi xong ở vùng chính là trả lời ngay; thay đổi chưa kịp gửi sẽ mất nếu vùng chính sập",
+"Mỗi lần ghi phải chờ vùng dự phòng xác nhận nên hệ thống ngừng lâu hơn",
+"Health check chỉ chạy 30 giây một lần nên luôn bỏ sót dữ liệu",
+"Vùng dự phòng xóa dữ liệu cũ sau mỗi lần nhận bản sao mới"
+],
+"w": "Bất đồng bộ: ghi xong ở vùng chính trả lời ngay, gửi sang vùng dự phòng sau. Ghi nhanh, nhưng thay đổi chưa kịp gửi sẽ mất nếu vùng chính sập, tức RPO > 0. Đồng bộ: RPO ≈ 0 nhưng mỗi lần ghi phải chờ vùng xa xác nhận.",
+"x": [
+"Đây là đặc điểm của nhân bản đồng bộ, và ảnh hưởng tốc độ ghi chứ không phải RTO.",
+"30 giây là ngưỡng failover, không phải nguyên nhân mất dữ liệu.",
+"Không phải cơ chế nhân bản."
+],
+"trap": "Đảo đồng bộ và bất đồng bộ.",
+"mem": "Async: nhanh, RPO > 0. Sync: RPO ≈ 0, ghi chậm."
+},
+{
+"lv": "VD",
+"t": "Automated failover",
+"q": "Health check phát hiện vùng chính mất tín hiệu 45 giây. Theo kiến trúc HA/DR trên slide, điều gì xảy ra?",
+"o": [
+"Tự động chuyển toàn bộ truy cập sang vùng dự phòng vì đã quá ngưỡng 30 giây",
+"Chờ quản trị viên xác nhận thủ công rồi mới chuyển sang vùng dự phòng",
+"Khôi phục từ bản sao lưu đêm qua ngay tại vùng chính",
+"Không làm gì vì mất tín hiệu dưới 1 giờ vẫn trong RTO"
+],
+"w": "Automated Failover: health check theo dõi sức khỏe; vùng chính mất tín hiệu quá 30 giây thì tự chuyển toàn bộ truy cập sang vùng dự phòng (DR region), nhờ Multi-Region Replication.",
+"x": [
+"Failover là tự động.",
+"Vùng chính đang mất tín hiệu; dùng vùng dự phòng đã nhân bản.",
+"RTO là giới hạn cam kết, không phải lý do để chờ."
+],
+"trap": "Nghĩ failover cần thao tác thủ công.",
+"mem": "> 30 giây mất tín hiệu ⇒ tự failover."
+},
+{
+"lv": "VDC",
+"t": "Thiết kế HA/DR",
+"q": "Ngân hàng có (1) sổ cái số dư khách hàng, không được mất giao dịch nào; (2) cache gợi ý sản phẩm trên NoSQL, chấp nhận mất vài giây dữ liệu nhưng cần ghi cực nhanh. Chiến lược nhân bản phù hợp là:",
+"o": [
+"(1) Nhân bản đồng bộ, RPO ≈ 0; (2) nhân bản bất đồng bộ, RPO > 0 nhưng ghi nhanh",
+"(1) Nhân bản bất đồng bộ cho ghi nhanh; (2) nhân bản đồng bộ để RPO ≈ 0",
+"Cả hai dùng nhân bản bất đồng bộ vì luôn nhanh và đủ an toàn",
+"Cả hai chỉ sao lưu đêm vì đã có automated failover sau 30 giây"
+],
+"w": "Sổ cái cần không mất dữ liệu → đồng bộ (RPO ≈ 0), chấp nhận ghi chậm hơn. Cache gợi ý chấp nhận mất vài giây, ưu tiên tốc độ → bất đồng bộ, khớp với nguyên tắc vệ tinh NoSQL chấp nhận eventual consistency.",
+"x": [
+"Đảo ngược.",
+"Bất đồng bộ có RPO > 0, không phù hợp cho sổ cái.",
+"Sao lưu đêm cho RPO tới 24 giờ; failover không cứu dữ liệu chưa nhân bản."
+],
+"trap": "Áp một chiến lược cho mọi dữ liệu.",
+"mem": "Dữ liệu tối quan trọng ⇒ sync; dữ liệu phụ ưu tiên tốc độ ⇒ async."
+},
+{
+"lv": "VDC",
+"t": "Kiến trúc đa mô hình tổng hợp",
+"q": "Fintech cần: (a) phát hiện nhóm tài khoản gian lận liên kết qua thiết bị dùng chung tới 3 bước; (b) tìm đánh giá cùng ý “thẻ hết tiền” trong 5 triệu đánh giá; (c) chứng minh audit log không bị DBA sửa. Ghép công nghệ đúng là:",
+"o": [
+"(a) Graph + traversal N cấp; (b) Vector index ANN; (c) Merkle root ghi lên blockchain",
+"(a) Vector index ANN; (b) Graph + traversal N cấp; (c) Key-value store trong RAM",
+"(a) RDBMS với JOIN 3 lần; (b) Keyword search; (c) Audit log trong RDBMS",
+"(a) Graph + traversal N cấp; (b) Keyword search; (c) Document store JSON"
+],
+"w": "(a) Liên kết nhiều tầng → knowledge graph, Graph Traversal (MATCH …*1..3). (b) Tìm theo nghĩa trên lượng lớn → embedding + vector index ANN (HNSW/IVF). (c) Chống sửa log → băm, Merkle root, anchoring lên blockchain.",
+"x": [
+"Đảo (a) và (b); key-value không chống DBA sửa.",
+"JOIN 3 lần chậm; keyword không khớp nghĩa; log trong RDBMS DBA sửa được.",
+"Keyword không khớp nghĩa; document store không bất biến."
+],
+"trap": "Dùng một công nghệ cho mọi nhu cầu.",
+"mem": "Quan hệ sâu → graph; theo nghĩa → vector; bất biến → blockchain."
+}
+]
+}

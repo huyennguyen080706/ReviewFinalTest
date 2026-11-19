@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "Chiều chất lượng dữ liệu",
+"q": "Nhiều hồ sơ khách hàng bị trống cột thu nhập. Lỗi này vi phạm chiều chất lượng nào?",
+"o": [
+"Completeness",
+"Accuracy",
+"Consistency",
+"Timeliness"
+],
+"w": "Completeness là tỷ lệ dữ liệu không bị khuyết (Null/Missing), đo bằng số ô có giá trị chia tổng số ô.",
+"x": [
+"Accuracy là giá trị có mô tả đúng thực tế; ô trống không phải giá trị sai.",
+"Consistency là đồng bộ định dạng, đơn vị giữa các nguồn.",
+"Timeliness là độ trễ của dữ liệu."
+],
+"trap": "Gộp mọi lỗi dữ liệu vào Accuracy.",
+"mem": "Thiếu → Completeness; sai → Accuracy; lệch đơn vị/định dạng → Consistency; muộn → Timeliness."
+},
+{
+"lv": "TH",
+"t": "Consistency",
+"q": "Hệ thống thẻ lưu số tiền theo VNĐ, hệ thống vay lưu theo nghìn VNĐ. Khi gộp, khoản vay 500 (nghìn) bị hiểu là 500 đồng. Đây là vấn đề của chiều nào và vì sao?",
+"o": [
+"Consistency, vì hai nguồn không đồng bộ đơn vị dù mỗi nguồn tự nó đều đúng",
+"Accuracy, vì hệ thống vay đã ghi sai số tiền thực tế của từng khoản vay",
+"Completeness, vì thông tin đơn vị tiền tệ bị khuyết trong bảng nguồn",
+"Timeliness, vì dữ liệu từ hệ thống vay đến kho muộn hơn hệ thống thẻ"
+],
+"w": "Consistency là đồng bộ về logic và định dạng giữa các nguồn, tránh xung đột đơn vị. Slide lấy đúng ví dụ VNĐ và nghìn VNĐ. Mỗi nguồn riêng lẻ vẫn chính xác; lỗi chỉ xuất hiện khi gộp.",
+"x": [
+"Trong hệ thống vay, 500 nghìn là số đúng; sai chỉ xảy ra khi đọc lẫn đơn vị.",
+"Không có ô trống nào; giá trị đều có.",
+"Không có yếu tố thời gian trong tình huống."
+],
+"trap": "Thấy số sai liền chọn Accuracy, bỏ qua nguyên nhân là lệch quy ước giữa nguồn.",
+"mem": "Mỗi nguồn đúng nhưng gộp ra sai ⇒ Consistency."
+},
+{
+"lv": "TH",
+"t": "Cross-field validation",
+"q": "Quy tắc nào là ví dụ của <b>cross-field validation</b>?",
+"o": [
+"ngay_tat_toan phải lớn hơn hoặc bằng ngay_giai_ngan",
+"Cột ngay_tat_toan phải có kiểu DATE ở mọi bảng",
+"Cột so_dien_thoai không được để trống",
+"Cột ma_khach_hang không được trùng lặp"
+],
+"w": "Cross-field validation là quy tắc logic liên thuộc tính: kiểm tra quan hệ giữa hai cột trở lên, ví dụ ngay_tat_toan >= ngay_giai_ngan, hoặc tuổi phải khớp với năm sinh.",
+"x": [
+"Đây là kiểm tra schema dựa trên metadata.",
+"Đây là kiểm tra trên một cột (completeness).",
+"Đây là kiểm tra trên một cột (unique)."
+],
+"trap": "Chọn kiểm tra trên một cột duy nhất.",
+"mem": "Cross-field = quy tắc liên quan từ hai cột trở lên."
+},
+{
+"lv": "VDC",
+"t": "Chất lượng dữ liệu – chấm điểm tín dụng",
+"q": "Ngân hàng gộp dữ liệu Thẻ và Khoản vay để chấm điểm tín dụng. 18% hồ sơ thiếu thông tin, và ngày tất toán lưu dd/mm/yyyy ở hệ này, yyyy-mm-dd ở hệ kia. Cách xử lý nào đúng theo slide?",
+"o": [
+"Chuẩn hóa ngày bằng dbt ở tầng Silver, dùng mô hình ước lượng giá trị thiếu thay vì xóa hồ sơ",
+"Xóa toàn bộ 18% hồ sơ thiếu để mô hình chỉ học trên dữ liệu đầy đủ và chính xác",
+"Giữ nguyên hai định dạng ngày ở Bronze và để mô hình học máy tự nhận diện",
+"Chuyển ngày tất toán sang kiểu chuỗi ở tầng Gold để tránh lỗi khi gộp hai nguồn"
+],
+"w": "Tình huống vi phạm Completeness (thiếu thông tin) và Consistency (lệch định dạng ngày). Slide trang 6 đề xuất: dùng dbt chuẩn hóa ngày ở tầng Silver; dùng mô hình ML/DL ước lượng giá trị thiếu (imputation) thay vì xóa hồ sơ.",
+"x": [
+"Xóa 18% hồ sơ làm mất dữ liệu và có thể gây lệch mẫu, chấm sai nhóm khách thiếu hồ sơ.",
+"Mô hình không tự sửa được lệch định dạng; garbage in, garbage out.",
+"Chuỗi không so sánh được như ngày và làm hỏng kiểm tra cross-field."
+],
+"trap": "Xóa dữ liệu thiếu cho “sạch”. Slide khuyên imputation.",
+"mem": "Lệch định dạng → chuẩn hóa ở Silver; thiếu → imputation thay vì xóa."
+},
+{
+"lv": "TH",
+"t": "Noise và outlier",
+"q": "Phát biểu nào phân biệt đúng <b>noise</b> và <b>outlier</b>?",
+"o": [
+"Noise là sai số ngẫu nhiên nhỏ phủ lên mọi giá trị, xử lý bằng làm mượt; outlier là vài điểm rất xa, cần phát hiện",
+"Noise là vài điểm nằm rất xa phần còn lại; outlier là sai số nhỏ phủ lên toàn bộ chuỗi dữ liệu",
+"Noise và outlier đều phải xóa ngay khỏi dữ liệu vì chúng không mang thông tin nào hữu ích",
+"Noise được phát hiện bằng Z-score và IQR; outlier được xử lý bằng binning và regression"
+],
+"w": "Noise là sai số ngẫu nhiên hoặc biến động nhỏ che tín hiệu thật, xử lý bằng làm mượt (binning, regression, moving average). Outlier là một vài điểm nằm rất xa phần còn lại, xử lý bằng phát hiện (Z-score, IQR) rồi quyết định bỏ, sửa hay giữ để điều tra.",
+"x": [
+"Đảo ngược hai khái niệm.",
+"Trong phát hiện gian lận, outlier chính là thứ cần tìm, không xóa.",
+"Đảo ngược phương pháp xử lý."
+],
+"trap": "Đánh đồng hai khái niệm hoặc đảo phương pháp xử lý.",
+"mem": "Noise → làm mượt. Outlier → phát hiện (Z-score, IQR)."
+},
+{
+"lv": "VD",
+"t": "Binning",
+"q": "Dữ liệu đã sắp xếp: 3, 7, 8, 12, 14, 16, 20, 25, 30. Chia 3 bin, mỗi bin 3 giá trị, rồi làm mượt bằng trung bình bin. Giá trị 7 được thay bằng:",
+"o": [
+"6",
+"7",
+"14",
+"8"
+],
+"w": "Bin 1: 3, 7, 8 → trung bình (3 + 7 + 8)/3 = 18/3 = 6. Bin 2: 12, 14, 16 → 14. Bin 3: 20, 25, 30 → 25. Giá trị 7 thuộc bin 1 nên thay bằng 6.",
+"x": [
+"Giữ nguyên là chưa làm mượt.",
+"14 là trung bình của bin 2.",
+"8 là giá trị lớn nhất của bin 1, không phải trung bình."
+],
+"trap": "Lấy trung vị (7) thay vì trung bình của bin.",
+"mem": "Binning theo trung bình: mọi giá trị trong bin thay bằng mean của bin."
+},
+{
+"lv": "NB",
+"t": "Z-score",
+"q": "Theo slide, một điểm được coi là outlier tiềm năng theo Z-score khi:",
+"o": [
+"|Z| > 3",
+"|Z| > 1",
+"|Z| > 1,5",
+"|Z| > 0,5"
+],
+"w": "Z = (x − µ)/σ. Điểm có |Z| > 3 được coi là outlier tiềm năng, vì với phân phối chuẩn khoảng 99,7% giá trị nằm trong µ ± 3σ.",
+"x": [
+"Khoảng 32% điểm của phân phối chuẩn có |Z| > 1, quá nhiều để gọi là ngoại lai.",
+"1,5 là hệ số của phương pháp IQR.",
+"Ngưỡng 0,5 sẽ gắn cờ hơn nửa dữ liệu."
+],
+"trap": "Lẫn hệ số 1,5 của IQR với ngưỡng 3 của Z-score.",
+"mem": "Z-score: |Z| > 3. IQR: hệ số 1,5."
+},
+{
+"lv": "VD",
+"t": "Z-score",
+"q": "Chi tiêu hằng ngày của chủ thẻ có µ = 2,0 triệu, σ = 0,5 triệu. Một giao dịch 4,1 triệu có Z-score bằng bao nhiêu và có bị gắn cờ không?",
+"o": [
+"Z = 4,2; có bị gắn cờ",
+"Z = 4,2; không bị gắn cờ",
+"Z = 2,1; không bị gắn cờ",
+"Z = 8,2; có bị gắn cờ"
+],
+"w": "Z = (4,1 − 2,0)/0,5 = 2,1/0,5 = 4,2. Vì |Z| = 4,2 > 3 nên giao dịch là outlier tiềm năng và bị gắn cờ.",
+"x": [
+"Tính đúng Z nhưng so sai với ngưỡng 3.",
+"2,1 là hiệu x − µ, quên chia cho σ.",
+"8,2 là x/σ, quên trừ µ."
+],
+"trap": "Quên chia σ hoặc quên trừ µ.",
+"mem": "Z = (x − µ)/σ; |Z| > 3 ⇒ gắn cờ."
+},
+{
+"lv": "VD",
+"t": "IQR",
+"q": "Dữ liệu (đã sắp xếp, 9 giá trị): 10, 12, 13, 15, 16, 18, 20, 22, 60. Dùng quy ước Q1, Q3 là trung vị của nửa dưới và nửa trên (không tính trung vị). Ngưỡng trên của phương pháp IQR là:",
+"o": [
+"33,75",
+"34,50",
+"31,00",
+"21,00"
+],
+"w": "Trung vị là phần tử thứ 5 = 16.<br>Nửa dưới 10, 12, 13, 15 → Q1 = (12 + 13)/2 = 12,5.<br>Nửa trên 18, 20, 22, 60 → Q3 = (20 + 22)/2 = 21.<br>IQR = 21 − 12,5 = 8,5.<br>Ngưỡng trên = Q3 + 1,5 × IQR = 21 + 12,75 = 33,75. Giá trị 60 vượt ngưỡng nên là outlier.",
+"x": [
+"34,5 là khi lấy IQR = 9 (dùng Q1 = 12).",
+"31 là khi dùng hệ số 1 × IQR + Q3 rồi làm tròn sai, không theo công thức.",
+"21 là Q3, chưa cộng 1,5 × IQR."
+],
+"trap": "Quên nhân 1,5 hoặc tính sai Q1 khi nửa có số phần tử chẵn.",
+"mem": "Ngưỡng IQR: [Q1 − 1,5·IQR, Q3 + 1,5·IQR]."
+},
+{
+"lv": "VDC",
+"t": "Z-score và IQR",
+"q": "Chi tiêu 9 tháng (triệu đồng), đã sắp xếp: 2, 3, 3, 4, 4, 5, 5, 6, 25. Biết µ ≈ 6,33 và σ ≈ 6,70 (chia cho n). Với quy ước Q1, Q3 là trung vị của nửa dưới và nửa trên, kết luận nào đúng về giá trị 25?",
+"o": [
+"Z-score không gắn cờ (Z ≈ 2,79) nhưng IQR gắn cờ (ngưỡng trên 9,25)",
+"Cả Z-score (Z ≈ 2,79) và IQR (ngưỡng trên 9,25) đều gắn cờ giá trị 25",
+"Z-score gắn cờ (Z ≈ 3,73) nhưng IQR không gắn cờ (ngưỡng trên 27,5)",
+"Cả hai đều không gắn cờ vì 25 nằm trong khoảng µ ± 3σ của dữ liệu"
+],
+"w": "Z(25) = (25 − 6,33)/6,70 ≈ 2,79 < 3 → Z-score không gắn cờ.<br>IQR: trung vị = 4 (phần tử thứ 5). Nửa dưới 2, 3, 3, 4 → Q1 = 3. Nửa trên 5, 5, 6, 25 → Q3 = 5,5. IQR = 2,5. Ngưỡng trên = 5,5 + 3,75 = 9,25 → 25 là outlier.<br>Lý do khác biệt: chính giá trị 25 kéo µ lên và làm σ phình to, nên tự “che” mình; Q1, Q3 gần như không bị một điểm cực trị ảnh hưởng.",
+"x": [
+"Z ≈ 2,79 chưa vượt ngưỡng 3.",
+"Z ≈ 3,73 và ngưỡng 27,5 đều tính sai.",
+"Điều kiện µ ± 3σ chỉ là của Z-score; IQR vẫn gắn cờ."
+],
+"trap": "Nghĩ hai phương pháp luôn cho cùng kết luận.",
+"mem": "Outlier lớn làm σ phình ⇒ Z-score có thể bỏ sót; IQR bền vững hơn."
+},
+{
+"lv": "TH",
+"t": "IQR",
+"q": "Vì sao IQR ít bị chính outlier làm sai lệch hơn Z-score?",
+"o": [
+"Q1, Q3 dựa trên thứ hạng nên một giá trị cực lớn hầu như không làm chúng thay đổi",
+"IQR dùng hệ số 1,5 nhỏ hơn 3 nên nhạy hơn với mọi loại ngoại lai",
+"IQR loại bỏ trước 25% dữ liệu lớn nhất rồi mới tính trung bình",
+"IQR chỉ áp dụng cho dữ liệu có phân phối chuẩn nên không bị lệch"
+],
+"w": "µ và σ dùng mọi giá trị, nên một điểm cực trị kéo µ lên và làm σ phình to. Q1, Q3 là phân vị theo thứ hạng: đổi giá trị lớn nhất từ 30 thành 3.000 thì Q1, Q3 không đổi.",
+"x": [
+"So sánh 1,5 với 3 vô nghĩa vì hai hệ số nhân hai đại lượng khác nhau.",
+"IQR không loại dữ liệu rồi tính trung bình.",
+"Giả định phân phối chuẩn là của Z-score (lý do của con số 3)."
+],
+"trap": "Giải thích bằng con số hệ số thay vì bản chất thống kê.",
+"mem": "IQR bền vững vì dựa trên phân vị; Z-score nhạy vì dựa trên µ, σ."
+},
+{
+"lv": "NB",
+"t": "Jaccard",
+"q": "Công thức độ đo Jaccard giữa hai tập A và B là:",
+"o": [
+"|A ∩ B| / |A ∪ B|",
+"|A ∩ B| / |A|",
+"|A ∩ B| / (|A| + |B|)",
+"|A ∪ B| / |A ∩ B|"
+],
+"w": "J(A, B) = |A ∩ B| / |A ∪ B|: số phần tử chung chia số phần tử khác nhau có ở ít nhất một tập. J nằm trong [0, 1], càng gần 1 càng giống.",
+"x": [
+"Chia cho kích thước một tập là bẫy slide đã nêu.",
+"Chia cho tổng kích thước hai tập đếm trùng phần giao.",
+"Đảo ngược, cho giá trị ≥ 1."
+],
+"trap": "Mẫu số là hợp, không phải tổng.",
+"mem": "Jaccard = giao / hợp; |A ∪ B| = |A| + |B| − |A ∩ B|."
+},
+{
+"lv": "VD",
+"t": "Jaccard",
+"q": "Khách A mua {sữa, bánh, trứng, cà phê, đường}; khách B mua {trứng, cà phê, đường, trà}. J(A, B) bằng:",
+"o": [
+"0,500",
+"0,600",
+"0,333",
+"0,750"
+],
+"w": "A ∩ B = {trứng, cà phê, đường} → 3. A ∪ B = {sữa, bánh, trứng, cà phê, đường, trà} → 6 (= 5 + 4 − 3). J = 3/6 = 0,5.",
+"x": [
+"0,6 = 3/5, chia cho kích thước tập A.",
+"0,333 = 3/9, chia cho tổng kích thước hai tập.",
+"0,75 = 3/4, chia cho kích thước tập B."
+],
+"trap": "Chia cho kích thước một tập hoặc tổng hai tập.",
+"mem": "|A ∪ B| = |A| + |B| − |A ∩ B|."
+},
+{
+"lv": "NB",
+"t": "Golden Record",
+"q": "Kết quả của quá trình deduplication sau tích hợp là:",
+"o": [
+"Golden Record duy nhất cho mỗi thực thể",
+"Data cube tổng hợp theo nhiều chiều",
+"Bảng factless ghi nhận sự kiện",
+"Concept hierarchy từ cụ thể đến tổng quát"
+],
+"w": "Deduplication loại bản ghi trùng sau tích hợp, tạo Golden Record: bản ghi chuẩn duy nhất của một thực thể, tổng hợp từ mọi nguồn.",
+"x": [
+"Data cube là kết quả của aggregation cho OLAP.",
+"Factless fact là kỹ thuật mô hình hóa ở Chương 2.",
+"Concept hierarchy là kết quả của discretization/phân cấp."
+],
+"trap": "Nhầm thuật ngữ giữa các mục.",
+"mem": "Deduplication → Golden Record."
+},
+{
+"lv": "VDC",
+"t": "Conflict handling",
+"q": "Hồ sơ khách có số CMND khác nhau giữa hệ thống eKYC và form tự khai, đồng thời số điện thoại khác nhau giữa CRM (cập nhật tuần trước) và core (cập nhật 2 năm trước). Quy tắc chọn giá trị hợp lý lần lượt là:",
+"o": [
+"CMND theo Source Authority (eKYC); điện thoại theo Latest timestamp (CRM)",
+"CMND theo Latest timestamp; điện thoại theo Source Authority (core)",
+"Cả hai đều theo Latest timestamp vì giá trị mới luôn chính xác hơn",
+"Cả hai đều theo Source Authority, ưu tiên hệ thống core ngân hàng"
+],
+"w": "Source Authority: nguồn được tin hơn thắng, ví dụ CMND lấy từ eKYC thay vì form tự khai. Latest timestamp: giá trị cập nhật gần nhất thắng, ví dụ số điện thoại đổi gần đây. Mỗi trường chọn quy tắc phù hợp với bản chất của nó.",
+"x": [
+"CMND không đổi theo thời gian, độ tin cậy của nguồn quan trọng hơn; điện thoại thì hay đổi.",
+"Form tự khai mới hơn chưa chắc đúng hơn eKYC.",
+"Số điện thoại trên core đã cũ 2 năm."
+],
+"trap": "Áp một quy tắc cho mọi trường.",
+"mem": "Trường ổn định, cần tin cậy → Source Authority. Trường hay đổi → Latest timestamp."
+},
+{
+"lv": "VDC",
+"t": "Clustering trước khi dedup",
+"q": "Cần so khớp 10.000 hồ sơ để tìm trùng. So mọi cặp tốn n(n − 1)/2 phép so. Nếu chia trước thành 100 nhóm, mỗi nhóm 100 hồ sơ (cùng tỉnh, cùng năm sinh) rồi chỉ so trong nhóm, tổng số phép so là:",
+"o": [
+"495.000",
+"49.995.000",
+"4.950",
+"1.000.000"
+],
+"w": "Trong mỗi nhóm: 100 × 99 / 2 = 4.950 phép so. 100 nhóm: 100 × 4.950 = 495.000. So với so mọi cặp: 10.000 × 9.999 / 2 = 49.995.000, giảm khoảng 100 lần. Đây là lý do slide nêu clustering trước khi hợp nhất để tăng hiệu năng.",
+"x": [
+"49.995.000 là so mọi cặp, chưa chia nhóm.",
+"4.950 là số phép so của một nhóm.",
+"1.000.000 là 100 × 100 × 100, không theo công thức."
+],
+"trap": "Quên nhân số nhóm hoặc dùng n² thay vì n(n − 1)/2.",
+"mem": "Blocking/clustering trước khi so khớp: k nhóm cỡ m ⇒ k·m(m − 1)/2 phép so."
+},
+{
+"lv": "TH",
+"t": "Fuzzy matching",
+"q": "Sau sáp nhập, khách “Nguyen Van A” ở ngân hàng và “Nguyễn Văn A” ở công ty chứng khoán có địa chỉ ghi gần giống nhưng không trùng ký tự. Kỹ thuật phù hợp để nhận ra họ là một người là:",
+"o": [
+"Fuzzy matching, ví dụ đo khoảng cách Levenshtein",
+"So khớp chính xác từng ký tự của họ tên và địa chỉ",
+"Min-Max normalization trên cột họ tên của hai nguồn",
+"Equal-width binning trên cột địa chỉ của khách hàng"
+],
+"w": "Fuzzy matching đo hai chuỗi giống nhau bao nhiêu thay vì đòi khớp tuyệt đối, ví dụ đếm số ký tự phải sửa để biến chuỗi này thành chuỗi kia (Levenshtein). Kết quả là hồ sơ khách hàng 360 độ.",
+"x": [
+"Khớp chính xác sẽ bỏ sót vì có dấu và cách viết khác.",
+"Normalization dành cho thuộc tính số.",
+"Binning dành cho thuộc tính liên tục."
+],
+"trap": "Dùng kỹ thuật cho dữ liệu số với dữ liệu chuỗi.",
+"mem": "Chuỗi gần giống ⇒ fuzzy matching (Levenshtein)."
+},
+{
+"lv": "VD",
+"t": "SMA",
+"q": "Giá đóng cửa 6 phiên: 10, 12, 14, 13, 16, 18. Với k = 3, SMA tại phiên 6 là bao nhiêu?",
+"o": [
+"15,67",
+"14,33",
+"13,83",
+"17,00"
+],
+"w": "SMA tại n là trung bình k giá trị gần nhất tính đến n. Phiên 6: cửa sổ gồm phiên 4, 5, 6 = 13, 16, 18. SMA = 47/3 ≈ 15,67.",
+"x": [
+"14,33 là cửa sổ phiên 3–5 (14, 13, 16), lệch một phiên so với thời điểm n = 6.",
+"13,83 là trung bình của cả 6 phiên.",
+"17 là trung bình của hai phiên cuối."
+],
+"trap": "Lấy cửa sổ lệch một phiên hoặc lấy trung bình toàn chuỗi.",
+"mem": "SMA_n = (p_{n−k+1} + … + p_n)/k."
+},
+{
+"lv": "VD",
+"t": "SMA",
+"q": "Chuỗi giá có 30 ngày, tính SMA với cửa sổ k = 7. Có bao nhiêu giá trị SMA và ngày đầu tiên có SMA là ngày nào?",
+"o": [
+"24 giá trị; ngày thứ 7",
+"30 giá trị; ngày thứ 1",
+"23 giá trị; ngày thứ 8",
+"24 giá trị; ngày thứ 1"
+],
+"w": "Với n điểm và cửa sổ k có n − k + 1 = 30 − 7 + 1 = 24 giá trị SMA. Ngày đầu tiên đủ 7 điểm là ngày thứ k = 7.",
+"x": [
+"Sáu ngày đầu chưa đủ 7 điểm nên không tính.",
+"Quên cộng 1 trong n − k + 1.",
+"Số giá trị đúng nhưng ngày đầu sai."
+],
+"trap": "Quên “+1” hoặc nghĩ SMA có ngay từ ngày 1.",
+"mem": "Số giá trị SMA = n − k + 1; ngày đầu tiên = ngày thứ k."
+},
+{
+"lv": "NB",
+"t": "OLAP",
+"q": "Thao tác <b>Roll-up</b> trên data cube là:",
+"o": [
+"Đi lên mức tổng quát hơn, ví dụ ngày → tháng",
+"Đi xuống mức chi tiết hơn, ví dụ tháng → ngày",
+"Lọc dữ liệu theo một giá trị của một chiều",
+"Xoay trục để đổi chiều hiển thị của bảng"
+],
+"w": "Roll-up đi lên mức tổng quát hơn (ngày → tháng). Drill-down đi xuống chi tiết hơn (tháng → ngày).",
+"x": [
+"Đây là drill-down.",
+"Đây là slice, không nằm trong định nghĩa roll-up.",
+"Đây là pivot."
+],
+"trap": "Đảo roll-up và drill-down.",
+"mem": "Roll-up = lên (tổng quát). Drill-down = xuống (chi tiết)."
+},
+{
+"lv": "TH",
+"t": "Granularity",
+"q": "Chọn granularity cho bảng tổng hợp ở tầng Gold là đánh đổi giữa:",
+"o": [
+"Hiệu suất truy vấn và độ chi tiết trả lời được",
+"Dung lượng lưu trữ và mức độ bảo mật của dữ liệu",
+"Số lượng chiều và số lượng người dùng truy cập",
+"Tốc độ nạp dữ liệu và mức độ chuẩn hóa của bảng"
+],
+"w": "Bảng theo tháng truy vấn nhanh nhưng không trả lời được câu hỏi theo ngày. Granularity là chọn mức tập hợp cân bằng giữa hiệu suất và độ chi tiết.",
+"x": [
+"Bảo mật không phụ thuộc mức tổng hợp theo slide.",
+"Số người dùng không phải tiêu chí chọn granularity.",
+"Chuẩn hóa là vấn đề thiết kế bảng, không phải mức tổng hợp."
+],
+"trap": "Nghĩ tổng hợp càng cao càng tốt.",
+"mem": "Granularity: tổng hợp cao ⇒ nhanh nhưng mất chi tiết."
+},
+{
+"lv": "TH",
+"t": "PCA và feature selection",
+"q": "Điểm khác cơ bản giữa PCA và feature selection là:",
+"o": [
+"PCA tạo cột mới là tổ hợp tuyến tính của cột cũ; feature selection giữ nguyên một số cột gốc",
+"PCA giữ nguyên một số cột gốc; feature selection tạo cột mới từ tổ hợp các cột cũ",
+"PCA chỉ dùng cho dữ liệu rời rạc; feature selection chỉ dùng cho dữ liệu liên tục",
+"PCA giảm số dòng của bảng; feature selection giảm số cột của bảng"
+],
+"w": "PCA tạo các thành phần chính mới, mỗi thành phần là tổ hợp tuyến tính của các cột cũ (ví dụ PC1 = 0,6x1 + 0,5x2 + …), giữ tối đa phương sai. Feature selection (ví dụ bằng Information Gain) giữ nguyên các cột gốc tốt, chỉ bỏ cột kém.",
+"x": [
+"Đảo ngược hai kỹ thuật.",
+"PCA dùng cho dữ liệu số liên tục; Information Gain dùng cho thuộc tính rời rạc.",
+"Cả hai đều giảm số cột; giảm số dòng là numerosity reduction."
+],
+"trap": "Đảo ngược hai kỹ thuật vì cả hai đều giảm số chiều.",
+"mem": "PCA = cột mới (tổ hợp). Feature selection = giữ cột gốc."
+},
+{
+"lv": "TH",
+"t": "PCA",
+"q": "Thành phần chính trong PCA là:",
+"o": [
+"Các vector riêng ứng với trị riêng lớn nhất của ma trận hiệp phương sai",
+"Các cột gốc có giá trị trung bình lớn nhất trong tập dữ liệu",
+"Các cột gốc có Information Gain cao nhất với nhãn cần dự đoán",
+"Các centroid của cụm sau khi chạy KMeans trên dữ liệu"
+],
+"w": "Vector riêng của ma trận hiệp phương sai là các hướng mới; trị riêng cho biết lượng phương sai theo hướng đó. Giữ vài hướng có trị riêng lớn nhất là giữ tối đa thông tin.",
+"x": [
+"Trung bình lớn không nói lên lượng thông tin; phương sai mới quan trọng.",
+"Đây là feature selection, và PCA không dùng nhãn.",
+"Centroid là kỹ thuật numerosity reduction bằng clustering."
+],
+"trap": "Nghĩ PCA chọn cột gốc.",
+"mem": "PCA: vector riêng của ma trận hiệp phương sai, trị riêng lớn ⇒ nhiều phương sai."
+},
+{
+"lv": "TH",
+"t": "Curse of dimensionality",
+"q": "<b>Curse of dimensionality</b> mô tả hiện tượng gì?",
+"o": [
+"Khi số cột tăng, dữ liệu trở nên thưa và khoảng cách giữa các điểm mất ý nghĩa",
+"Khi số dòng tăng, mô hình học máy luôn bị overfitting trên tập huấn luyện",
+"Khi số cột giảm, mô hình mất hết khả năng phân biệt giữa các lớp dữ liệu",
+"Khi dữ liệu có nhiều giá trị thiếu, các thuật toán không thể hội tụ được"
+],
+"w": "Lời nguyền số chiều: khi số cột tăng, dữ liệu thưa dần, khoảng cách giữa các điểm mất ý nghĩa, mô hình cần nhiều dữ liệu hơn hẳn. PCA giảm số chiều để giảm vấn đề này.",
+"x": [
+"Nhiều dòng thường giúp giảm overfitting.",
+"Giảm cột hợp lý là giải pháp, không phải vấn đề.",
+"Dữ liệu thiếu là vấn đề Completeness."
+],
+"trap": "Nhầm “dimension” là số dòng.",
+"mem": "Số chiều = số thuộc tính. Nhiều chiều ⇒ thưa ⇒ khoảng cách vô nghĩa."
+},
+{
+"lv": "VD",
+"t": "Numerosity reduction",
+"q": "Một triệu cặp (x, y) gần như nằm trên một đường thẳng. Cách thu gọn nào theo slide giữ được thông tin mà chỉ cần lưu 2 con số?",
+"o": [
+"Regression model: thay dữ liệu bằng tham số a, b của y = a + bx",
+"Histogram: lưu tần suất của từng khoảng giá trị x",
+"Stratified sampling: lấy mẫu 1% theo từng nhóm",
+"PCA: giữ lại thành phần chính đầu tiên của dữ liệu"
+],
+"w": "Numerosity reduction bằng regression: thay tập dữ liệu khổng lồ bằng tham số của một mô hình đơn giản. Một triệu cặp gần thẳng hàng được thay bằng hai số a, b.",
+"x": [
+"Histogram cần lưu nhiều khoảng và không giữ quan hệ x–y.",
+"Mẫu 1% vẫn là 10.000 cặp.",
+"PCA giảm số cột, không giảm số dòng xuống hai con số."
+],
+"trap": "Chọn PCA vì nghĩ nó “nén” mọi thứ.",
+"mem": "Numerosity: regression, sampling, histogram, clustering."
+},
+{
+"lv": "TH",
+"t": "Stratified sampling",
+"q": "Vì sao lấy mẫu phân tầng (stratified sampling) được ưu tiên khi dữ liệu có nhóm thiểu số, ví dụ khách hàng doanh nghiệp chỉ chiếm 2%?",
+"o": [
+"Lấy mẫu trong từng nhóm theo đúng tỷ lệ nên nhóm nhỏ không bị sót",
+"Lấy toàn bộ nhóm thiểu số và bỏ qua nhóm đa số để cân bằng dữ liệu",
+"Chọn ngẫu nhiên hoàn toàn nên mọi nhóm luôn có đúng số lượng mong muốn",
+"Chỉ lấy các bản ghi gần centroid của mỗi nhóm để giảm nhiễu"
+],
+"w": "Lấy mẫu phân tầng chia dữ liệu theo nhóm (tầng) rồi lấy mẫu trong từng nhóm theo đúng tỷ lệ của nhóm, để nhóm nhỏ không bị sót, như có thể xảy ra với lấy mẫu ngẫu nhiên đơn giản.",
+"x": [
+"Bỏ nhóm đa số làm mẫu không còn đại diện.",
+"Lấy mẫu ngẫu nhiên đơn giản có thể thiếu hẳn nhóm 2%.",
+"Đây là ý tưởng của clustering, không phải sampling."
+],
+"trap": "Nghĩ ngẫu nhiên đơn giản luôn đại diện.",
+"mem": "Stratified: chia tầng, lấy mẫu theo tỷ lệ từng tầng."
+},
+{
+"lv": "NB",
+"t": "Equal-width",
+"q": "Công thức độ rộng mỗi bin trong equal-width binning với N nhóm là:",
+"o": [
+"(max − min) / N",
+"(max + min) / N",
+"N / (max − min)",
+"(max − min) / (N − 1)"
+],
+"w": "Width = (max − min)/N. Các khoảng: [min, min + W), [min + W, min + 2W), …",
+"x": [
+"Cộng max và min không cho độ rộng dải giá trị.",
+"Đảo ngược phân số.",
+"Chia cho N − 1 sẽ cho N + 1 điểm chia, không phải N khoảng."
+],
+"trap": "Nhầm số khoảng với số điểm chia.",
+"mem": "Equal-width: W = (max − min)/N."
+},
+{
+"lv": "VD",
+"t": "Equal-width",
+"q": "Điểm tín dụng từ min = 20 đến max = 100, chia equal-width thành 4 nhóm theo quy ước [a, b), giá trị max xếp vào nhóm cuối. Khách có điểm 60 thuộc nhóm nào?",
+"o": [
+"Nhóm 3: [60, 80)",
+"Nhóm 2: [40, 60)",
+"Nhóm 4: [80, 100]",
+"Nhóm 2: [45, 65)"
+],
+"w": "W = (100 − 20)/4 = 20. Các nhóm: [20, 40), [40, 60), [60, 80), [80, 100]. Theo quy ước [a, b), giá trị đúng biên 60 thuộc nhóm phía trên, tức nhóm 3.",
+"x": [
+"Theo [a, b), biên phải 60 không thuộc nhóm 2.",
+"80–100 là nhóm 4.",
+"Khoảng [45, 65) dùng sai độ rộng và sai điểm bắt đầu."
+],
+"trap": "Xếp giá trị biên vào nhóm phía dưới.",
+"mem": "Quy ước [a, b): giá trị đúng biên thuộc nhóm phía trên; max vào nhóm cuối."
+},
+{
+"lv": "VD",
+"t": "Equal-width và equal-frequency",
+"q": "Hạn mức thẻ (triệu): 10, 12, 15, 18, 20, 22, 25, 40, 70. Chia equal-width thành 3 nhóm (độ rộng 20). Số khách trong nhóm thấp nhất [10, 30) là bao nhiêu, và cách nào hợp hơn cho dữ liệu này?",
+"o": [
+"7 khách; equal-frequency hợp hơn vì dữ liệu lệch",
+"3 khách; equal-width đã chia đều nên phù hợp",
+"7 khách; equal-width hợp hơn vì khoảng giá trị bằng nhau",
+"5 khách; hai cách chia cho kết quả tương đương nhau"
+],
+"w": "Nhóm [10, 30) gồm 10, 12, 15, 18, 20, 22, 25 = 7 khách; [30, 50) có 40 (1 khách); [50, 70] có 70 (1 khách). Dữ liệu lệch nên equal-width để hai nhóm cao gần rỗng. Equal-frequency cho mỗi nhóm 3 khách, phù hợp hơn với dữ liệu lệch.",
+"x": [
+"3 khách mỗi nhóm là kết quả của equal-frequency, không phải equal-width.",
+"Phân bố 7 – 1 – 1 cho thấy equal-width không hợp với dữ liệu lệch.",
+"Đếm sai số giá trị dưới 30."
+],
+"trap": "Nhầm “chia đều khoảng” với “chia đều số bản ghi”.",
+"mem": "Dữ liệu lệch ⇒ equal-frequency."
+},
+{
+"lv": "TH",
+"t": "Concept hierarchy",
+"q": "Theo cách thống kê đơn giản để tự động tạo phân cấp khái niệm, thuộc tính nào nằm ở <b>tầng cao nhất</b>?",
+"o": [
+"Vùng (3 giá trị khác nhau)",
+"Tỉnh (63 giá trị khác nhau)",
+"Quận (700 giá trị khác nhau)",
+"Chi nhánh (300 giá trị khác nhau)"
+],
+"w": "Thuộc tính có ít giá trị khác nhau nằm ở tầng cao (tổng quát), thuộc tính có nhiều giá trị nằm ở tầng thấp (cụ thể). Vùng chỉ có 3 giá trị nên ở trên cùng.",
+"x": [
+"Tỉnh có nhiều giá trị hơn vùng, nằm thấp hơn.",
+"Quận có nhiều giá trị nhất trong các lựa chọn.",
+"Chi nhánh là mức cụ thể."
+],
+"trap": "Nghĩ thuộc tính nhiều giá trị “quan trọng” hơn nên đặt trên.",
+"mem": "Ít giá trị khác nhau ⇒ tầng cao (tổng quát)."
+},
+{
+"lv": "VDC",
+"t": "Multi-level mining",
+"q": "Khai phá luật kết hợp ở mức từng chi nhánh (300 chi nhánh) không tìm được luật nào đạt ngưỡng support. Khi gộp lên mức vùng, luật “mở thẻ tín dụng → mua bảo hiểm” xuất hiện rõ. Giải thích đúng là:",
+"o": [
+"Ở mức chi tiết, dữ liệu chia nhỏ khiến mỗi tổ hợp quá ít lần; gộp theo phân cấp khái niệm làm support tăng",
+"Ở mức vùng dữ liệu bị nhân bản nên số giao dịch tăng giả tạo và tạo ra luật sai",
+"Luật ở mức vùng chắc chắn đúng cho từng chi nhánh riêng lẻ nên không cần kiểm tra thêm",
+"Ngưỡng support tự động giảm khi chuyển từ mức chi nhánh lên mức vùng"
+],
+"w": "Multi-level mining khai phá luật ở nhiều mức trừu tượng. Ở mức chi nhánh, mỗi tổ hợp xuất hiện quá ít lần nên không luật nào đủ phổ biến; gộp lên mức vùng theo concept hierarchy làm số lần xuất hiện cộng dồn, luật vượt ngưỡng.",
+"x": [
+"Gộp theo phân cấp không nhân bản dữ liệu.",
+"Luật ở mức tổng quát chưa chắc đúng cho từng chi nhánh; cần drill-down kiểm tra.",
+"Ngưỡng do người phân tích đặt, không tự đổi."
+],
+"trap": "Suy luận ngược từ mức tổng quát xuống từng đơn vị chi tiết.",
+"mem": "Mức chi tiết thưa ⇒ gộp lên theo phân cấp để luật đủ support."
+},
+{
+"lv": "NB",
+"t": "Z-score normalization",
+"q": "Sau khi chuẩn hóa Z-score, một cột có:",
+"o": [
+"Trung bình 0 và độ lệch chuẩn 1",
+"Giá trị nhỏ nhất 0 và lớn nhất 1",
+"Mọi giá trị nằm trong khoảng (−1, 1)",
+"Trung bình 1 và độ lệch chuẩn 0"
+],
+"w": "v' = (v − µ)/σ. Sau chuẩn hóa, cột có trung bình 0 và độ lệch chuẩn 1; v' cho biết giá trị cách trung bình bao nhiêu lần độ lệch chuẩn.",
+"x": [
+"Đây là Min-Max về [0, 1].",
+"Đây là Decimal Scaling.",
+"Độ lệch chuẩn 0 nghĩa là mọi giá trị bằng nhau."
+],
+"trap": "Lẫn kết quả của ba phương pháp chuẩn hóa.",
+"mem": "Min-Max → [0,1]. Z-score → µ = 0, σ = 1. Decimal → (−1, 1)."
+},
+{
+"lv": "VD",
+"t": "Min-Max",
+"q": "Doanh thu chi nhánh có min = 200, max = 1.000 (triệu). Chuẩn hóa Min-Max về [0, 1], chi nhánh có doanh thu 440 triệu nhận giá trị:",
+"o": [
+"0,30",
+"0,44",
+"0,24",
+"0,55"
+],
+"w": "v' = (v − min)/(max − min) = (440 − 200)/(1.000 − 200) = 240/800 = 0,30.",
+"x": [
+"0,44 = 440/1.000, quên trừ min.",
+"0,24 = 240/1.000, chia cho max thay vì max − min.",
+"0,55 = 440/800, quên trừ min ở tử số."
+],
+"trap": "Quên trừ min ở tử hoặc mẫu.",
+"mem": "Min-Max [0,1]: (v − min)/(max − min)."
+},
+{
+"lv": "VD",
+"t": "Min-Max về khoảng khác",
+"q": "Tuổi có min = 0, max = 50 trong mẫu. Chuẩn hóa Min-Max về đoạn [−1, 1]. Giá trị 35 trở thành:",
+"o": [
+"0,4",
+"0,7",
+"0,35",
+"0,2"
+],
+"w": "v' = (v − min)/(max − min) × (new_max − new_min) + new_min = (35/50) × 2 + (−1) = 1,4 − 1 = 0,4.",
+"x": [
+"0,7 là kết quả cho đoạn [0, 1], chưa ánh xạ sang [−1, 1].",
+"0,35 là khi chia 35 cho 100 thay vì dùng max − min = 50.",
+"0,2 là khi quên nhân 2, lấy 0,7 − 0,5 hoặc tính (35 − 25)/50."
+],
+"trap": "Quên nhân độ rộng đoạn đích hoặc cộng new_min.",
+"mem": "v' = (v − min)/(max − min) · (new_max − new_min) + new_min."
+},
+{
+"lv": "VDC",
+"t": "Min-Max với giá trị mới",
+"q": "Mô hình đã chuẩn hóa thu nhập bằng Min-Max với min = 10, max = 110 triệu (đoạn [0, 1]). Khách mới có thu nhập 130 triệu. Giá trị chuẩn hóa và nhận xét đúng là:",
+"o": [
+"1,2; rơi ra ngoài [0, 1], đây là điểm yếu của Min-Max với giá trị ngoài khoảng cũ",
+"1,0; Min-Max luôn cắt giá trị về đúng đoạn [0, 1] cho mọi giá trị mới",
+"1,18; Min-Max tự cập nhật lại max bằng 130 ngay khi gặp khách mới",
+"0,2; vì giá trị vượt max nên được tính phần dư so với khoảng cũ"
+],
+"w": "v' = (130 − 10)/(110 − 10) = 120/100 = 1,2. Slide nêu: Min-Max giữ nguyên tỷ lệ khoảng cách nhưng nếu gặp giá trị mới ngoài [min, max] cũ thì v' rơi ra ngoài đoạn đích. Khi không biết trước min/max, Z-score phù hợp hơn.",
+"x": [
+"Công thức không tự cắt giá trị.",
+"Công thức dùng min, max đã cố định khi huấn luyện, không tự cập nhật.",
+"Không có phép lấy phần dư."
+],
+"trap": "Nghĩ Min-Max luôn cho kết quả trong [0, 1].",
+"mem": "Min-Max: giá trị ngoài [min, max] cũ ⇒ ra ngoài đoạn đích."
+},
+{
+"lv": "VD",
+"t": "Decimal scaling",
+"q": "Số dư tài khoản từ −2.450 đến 987 (nghìn đồng). Dùng Decimal Scaling, giá trị 987 sau chuẩn hóa là:",
+"o": [
+"0,0987",
+"0,987",
+"0,00987",
+"9,87"
+],
+"w": "Giá trị tuyệt đối lớn nhất = 2.450. j nhỏ nhất sao cho 10^j > 2.450 là j = 4. Mọi giá trị chia cho 10^4: 987/10.000 = 0,0987; −2.450 → −0,245.",
+"x": [
+"0,987 dùng j = 3, chỉ dựa vào 987 mà quên giá trị âm −2.450 có trị tuyệt đối lớn hơn.",
+"0,00987 dùng j = 5, lớn hơn cần thiết.",
+"9,87 chia cho 100, không thỏa |v'| < 1."
+],
+"trap": "Chỉ nhìn giá trị dương lớn nhất, quên giá trị âm có trị tuyệt đối lớn hơn.",
+"mem": "Decimal scaling: j theo max |v|, gồm cả số âm."
+},
+{
+"lv": "VDC",
+"t": "Decimal scaling – trường hợp biên",
+"q": "Dữ liệu có giá trị tuyệt đối lớn nhất đúng bằng 10.000. Theo điều kiện |v'| < 1 ở slide trang 25, j phải bằng bao nhiêu?",
+"o": [
+"5",
+"4",
+"3",
+"6"
+],
+"w": "Cần j nhỏ nhất sao cho 10^j > max|v| = 10.000. 10^4 = 10.000 không lớn hơn 10.000 (cho v' = 1, vi phạm |v'| < 1). Vậy j = 5, v' = 0,1. Giáo trình lưu ý slide trang 27 viết “≥”, trường hợp biên này phải lấy theo điều kiện “<1” ở trang 25.",
+"x": [
+"j = 4 cho v' = 1, vi phạm |v'| < 1. Đây là kết quả nếu áp dụng nhầm quy tắc “≥”.",
+"j = 3 cho v' = 10.",
+"j = 6 không phải số nhỏ nhất thỏa điều kiện."
+],
+"trap": "Áp quy tắc “10^j ≥ max” khi max đúng bằng lũy thừa của 10.",
+"mem": "Decimal scaling: 10^j > max|v| (chặt) để |v'| < 1."
+},
+{
+"lv": "VD",
+"t": "Z-score normalization",
+"q": "Thu nhập có µ = 40 triệu, σ = 5 triệu. Khách thu nhập 32 triệu có giá trị Z-score bằng:",
+"o": [
+"−1,6",
+"1,6",
+"−8,0",
+"−0,8"
+],
+"w": "v' = (32 − 40)/5 = −8/5 = −1,6. Khách thấp hơn trung bình 1,6 lần độ lệch chuẩn.",
+"x": [
+"Sai dấu: 32 nhỏ hơn µ nên Z âm.",
+"−8 là hiệu v − µ, quên chia σ.",
+"−0,8 là chia cho 10 (2σ)."
+],
+"trap": "Sai dấu hoặc quên chia σ.",
+"mem": "Z âm ⇒ dưới trung bình."
+},
+{
+"lv": "VD",
+"t": "Chọn phương pháp chuẩn hóa",
+"q": "Dữ liệu dự trữ ngoại hối có vài giá trị đột biến rất lớn, và trong tương lai có thể xuất hiện giá trị vượt mọi mức đã thấy. Phương pháp chuẩn hóa phù hợp theo slide là:",
+"o": [
+"Z-score",
+"Min-Max về [0, 1]",
+"Decimal Scaling",
+"Equal-width binning"
+],
+"w": "Slide: Z-score hiệu quả khi dữ liệu có ngoại lai hoặc không biết trước min/max. Với Min-Max, outlier rất lớn làm mọi giá trị khác dồn sát về 0, và giá trị mới vượt max sẽ ra ngoài [0, 1].",
+"x": [
+"Min-Max bị outlier làm dồn giá trị và không xử lý tốt giá trị vượt max cũ.",
+"Decimal scaling cũng phụ thuộc max|v| hiện có; outlier lớn làm mọi giá trị khác rất nhỏ.",
+"Binning là rời rạc hóa, không phải chuẩn hóa thang đo."
+],
+"trap": "Chọn Min-Max theo thói quen.",
+"mem": "Có ngoại lai / không biết min-max ⇒ Z-score."
+},
+{
+"lv": "VDC",
+"t": "Vì sao cần chuẩn hóa",
+"q": "Hai khách: A (thu nhập 30.000.000đ, tuổi 25), B (thu nhập 32.000.000đ, tuổi 60). Tính khoảng cách Euclid trên dữ liệu gốc cho KNN. Nhận định nào đúng?",
+"o": [
+"Khoảng cách ≈ 2.000.000, gần như chỉ do thu nhập; chênh 35 tuổi hầu như không ảnh hưởng",
+"Khoảng cách ≈ 35, chủ yếu do chênh lệch tuổi vì tuổi có ý nghĩa nghiệp vụ lớn hơn",
+"Khoảng cách ≈ 2.000.035, hai thuộc tính đóng góp ngang nhau vào khoảng cách",
+"Khoảng cách không tính được vì hai thuộc tính có đơn vị khác nhau"
+],
+"w": "d = √(2.000.000² + 35²) ≈ 2.000.000,0003. Thu nhập (hàng chục triệu) lấn át tuổi (vài chục), nên KNN gần như bỏ qua tuổi. Đây là lý do slide nêu thuật toán dựa trên khoảng cách cần chuẩn hóa về cùng thang đo.",
+"x": [
+"Trên dữ liệu gốc, tuổi đóng góp gần như bằng 0.",
+"Khoảng cách Euclid không phải tổng hai hiệu, và hai thuộc tính đóng góp chênh nhau rất xa.",
+"Công thức vẫn tính được về mặt số học; vấn đề là kết quả bị lệch."
+],
+"trap": "Nghĩ mô hình tự hiểu ý nghĩa của từng cột.",
+"mem": "Thang đo chênh lệch ⇒ thuộc tính lớn lấn át ⇒ cần chuẩn hóa."
+},
+{
+"lv": "NB",
+"t": "Entropy",
+"q": "Với bài toán 2 lớp, entropy của tập có tỷ lệ 50% Yes – 50% No là:",
+"o": [
+"1",
+"0",
+"0,5",
+"0,8113"
+],
+"w": "Info(D) = −(0,5 log2 0,5 + 0,5 log2 0,5) = −(0,5 × (−1) + 0,5 × (−1)) = 1. Đây là mức lẫn lộn tối đa với 2 lớp.",
+"x": [
+"0 là khi tập thuần một lớp.",
+"0,5 là tỷ lệ, không phải entropy.",
+"0,8113 là entropy của tỷ lệ 1/4 – 3/4."
+],
+"trap": "Nghĩ entropy bằng tỷ lệ.",
+"mem": "2 lớp: thuần → 0; 50/50 → 1; 1/4–3/4 → 0,8113; 1/3–2/3 → 0,9183."
+},
+{
+"lv": "VD",
+"t": "Entropy",
+"q": "Một nút có 8 hồ sơ vay: 2 được duyệt, 6 bị từ chối. Entropy của nút là:",
+"o": [
+"0,8113",
+"0,9183",
+"0,2500",
+"1,0000"
+],
+"w": "p1 = 2/8 = 0,25; p2 = 6/8 = 0,75.<br>Info = −(0,25 log2 0,25 + 0,75 log2 0,75) = −(0,25 × (−2) + 0,75 × (−0,415)) = 0,5 + 0,3113 = 0,8113.",
+"x": [
+"0,9183 là entropy của tỷ lệ 1/3 – 2/3.",
+"0,25 là tỷ lệ lớp duyệt.",
+"1 là entropy khi hai lớp cân bằng."
+],
+"trap": "Nhớ nhầm giá trị của các tỷ lệ thường gặp.",
+"mem": "1/4 – 3/4 ⇒ 0,8113."
+},
+{
+"lv": "VDC",
+"t": "Entropy nhiều lớp",
+"q": "Một nút có 3 lớp với số bản ghi bằng nhau (mỗi lớp 1/3). Entropy của nút là bao nhiêu?",
+"o": [
+"≈ 1,585",
+"1",
+"≈ 0,918",
+"≈ 0,333"
+],
+"w": "Info = −3 × (1/3) log2(1/3) = log2 3 ≈ 1,585. Với m lớp cân bằng, entropy = log2 m, nên entropy chỉ bị chặn trên bởi 1 khi có 2 lớp.",
+"x": [
+"1 là cực đại của trường hợp 2 lớp; với 3 lớp entropy có thể lớn hơn 1.",
+"0,918 là entropy 2 lớp tỷ lệ 1/3 – 2/3.",
+"1/3 là tỷ lệ, không phải entropy."
+],
+"trap": "Nghĩ entropy luôn nằm trong [0, 1].",
+"mem": "Entropy cực đại với m lớp = log2 m."
+},
+{
+"lv": "TH",
+"t": "Information Gain",
+"q": "Khi xây cây quyết định bằng Information Gain, thuộc tính được chọn để tách là thuộc tính:",
+"o": [
+"Có Gain lớn nhất, tức Info_A(D) nhỏ nhất",
+"Có Gain nhỏ nhất, tức Info_A(D) lớn nhất",
+"Có nhiều giá trị khác nhau nhất trong tập dữ liệu",
+"Có entropy ban đầu Info(D) lớn nhất trong các thuộc tính"
+],
+"w": "Gain(A) = Info(D) − Info_A(D). Info(D) như nhau với mọi thuộc tính, nên Gain lớn nhất tương đương Info_A(D) nhỏ nhất: các phần sau khi tách thuần nhất.",
+"x": [
+"Ngược lại.",
+"Số giá trị không phải tiêu chí trực tiếp.",
+"Info(D) là entropy của cả tập, không phụ thuộc thuộc tính."
+],
+"trap": "Chọn entropy lớn vì nghĩ “nhiều thông tin”.",
+"mem": "Chọn Gain max ⇔ Info_A(D) min."
+},
+{
+"lv": "VDC",
+"t": "Information Gain",
+"q": "Tập 10 hồ sơ: 5 Yes, 5 No. Thuộc tính X tách thành: X1 có 4 hồ sơ đều Yes; X2 có 6 hồ sơ gồm 1 Yes, 5 No. Biết entropy của tỷ lệ 1/6 – 5/6 ≈ 0,650. Gain(X) bằng:",
+"o": [
+"≈ 0,610",
+"≈ 0,390",
+"≈ 0,350",
+"≈ 0,650"
+],
+"w": "Info(D) = 1 (5/5).<br>Info(X1) = 0 (thuần Yes). Info(X2) ≈ 0,650.<br>Info_X(D) = (4/10) × 0 + (6/10) × 0,650 = 0,390.<br>Gain(X) = 1 − 0,390 = 0,610.",
+"x": [
+"0,390 là Info_X(D), chưa lấy 1 trừ đi.",
+"0,350 là 1 − 0,650, quên nhân trọng số 6/10.",
+"0,650 là entropy của riêng nhánh X2."
+],
+"trap": "Quên trọng số |Dj|/|D| khi tính entropy có điều kiện.",
+"mem": "Info_A(D) = Σ (|Dj|/|D|) · Info(Dj); Gain = Info(D) − Info_A(D)."
+},
+{
+"lv": "VD",
+"t": "Information Gain – ví dụ slide",
+"q": "Trong ví dụ duyệt vay của slide (8 khách, 4 Yes/4 No), Gain của Income ≈ 0,0613, Credit History ≈ 0,5488, Loan Amount ≈ 0,1887. Nút gốc là gì và nhánh nào dừng ngay?",
+"o": [
+"Credit History; nhánh “Xấu” dừng vì toàn No",
+"Loan Amount; nhánh “Lớn” dừng vì toàn No",
+"Income; nhánh “Cao” dừng vì toàn Yes",
+"Credit History; nhánh “Tốt” dừng vì toàn Yes"
+],
+"w": "Credit History có Gain lớn nhất (0,5488) nên làm nút gốc. Nhánh “Xấu” (KH5, 6, 7) có 0 Yes, 3 No: đã thuần nên dừng. Nhánh “Tốt” có 4 Yes, 1 No nên tiếp tục tách.",
+"x": [
+"Loan Amount có Gain thấp hơn; nhánh “Lớn” có 1 Yes, 3 No chưa thuần.",
+"Income có Gain thấp nhất.",
+"Nhánh “Tốt” có 1 No nên chưa thuần."
+],
+"trap": "Chọn đúng thuộc tính nhưng nhầm nhánh thuần.",
+"mem": "Nút gốc = Gain max; nhánh thuần (entropy 0) thì dừng."
+},
+{
+"lv": "VD",
+"t": "Feature construction",
+"q": "Khách có tổng nợ phải trả hằng tháng 12 triệu, thu nhập hằng tháng 30 triệu, dư nợ thẻ 18 triệu trên hạn mức 60 triệu. DTI và Utilization Rate lần lượt là:",
+"o": [
+"0,40 và 0,30",
+"0,30 và 0,40",
+"2,50 và 3,33",
+"0,40 và 0,60"
+],
+"w": "DTI = tổng nợ phải trả hằng tháng / thu nhập hằng tháng = 12/30 = 0,40. Utilization Rate = dư nợ thẻ / hạn mức = 18/60 = 0,30. Đây là ví dụ feature construction: tỷ số nói được điều mà từng cột riêng không nói được.",
+"x": [
+"Đảo hai đặc trưng.",
+"Đảo tử và mẫu của cả hai tỷ số.",
+"0,6 là 18/30, dùng nhầm thu nhập làm mẫu."
+],
+"trap": "Đảo tử và mẫu.",
+"mem": "DTI = nợ/thu nhập. Utilization = dư nợ/hạn mức."
+},
+{
+"lv": "TH",
+"t": "Embeddings",
+"q": "Embedding trong trích xuất đặc trưng bằng AI là:",
+"o": [
+"Biểu diễn thực thể rời rạc thành vector nhiều chiều, thực thể giống nhau có vector gần nhau",
+"Một cột số từ −1 đến 1 biểu thị sắc thái tích cực hay tiêu cực của văn bản",
+"Một nhãn chủ đề được gán cho mỗi đoạn văn bản bởi mô hình ngôn ngữ",
+"Một tỷ số tạo từ hai cột số như cân nặng chia bình phương chiều cao"
+],
+"w": "Embedding biến mỗi từ, sản phẩm hay khách hàng thành một dãy số (ví dụ 768 số); hai thực thể giống nhau có vector gần nhau, nhờ vậy tính được độ tương đồng.",
+"x": [
+"Đây là đặc trưng sentiment.",
+"Đây là đặc trưng topic.",
+"Đây là feature construction (BMI)."
+],
+"trap": "Lẫn các loại đặc trưng do AI trích xuất.",
+"mem": "Embedding = vector, gần nhau ⇔ giống nhau."
+},
+{
+"lv": "TH",
+"t": "Chiều chất lượng – Timeliness",
+"q": "Bảng giá cổ phiếu trong kho luôn chính xác và đầy đủ, nhưng được cập nhật trễ 1 giờ so với sàn. Đối với bộ phận giao dịch trong phiên, vấn đề thuộc chiều nào?",
+"o": [
+"Timeliness",
+"Accuracy",
+"Completeness",
+"Consistency"
+],
+"w": "Timeliness là độ trễ từ lúc sự kiện xảy ra tới lúc dữ liệu có trong kho. Slide lấy đúng ví dụ giá cổ phiếu trễ 1 giờ thì vô dụng cho giao dịch trong phiên.",
+"x": [
+"Giá trị đúng với thời điểm ghi nhận.",
+"Không thiếu dữ liệu.",
+"Không có xung đột giữa nguồn."
+],
+"trap": "Nghĩ dữ liệu cũ là dữ liệu “sai”.",
+"mem": "Đúng nhưng muộn ⇒ Timeliness."
+},
+{
+"lv": "TH",
+"t": "Vị trí tiền xử lý trong Medallion",
+"q": "Trong kiến trúc Medallion, phần lớn các bước tiền xử lý của Chương 4 (làm sạch, tích hợp, chuẩn hóa) chạy ở tầng nào, còn tổng hợp phục vụ báo cáo chạy ở đâu?",
+"o": [
+"Làm sạch ở Silver; tổng hợp báo cáo ở Gold",
+"Làm sạch ở Bronze; tổng hợp báo cáo ở Silver",
+"Làm sạch ở Gold; tổng hợp báo cáo ở Bronze",
+"Cả hai đều chạy ở Bronze để giữ dữ liệu gốc"
+],
+"w": "Phần lớn các bước tiền xử lý chạy ở tầng Silver; tổng hợp phục vụ báo cáo (aggregation, data cube) chạy ở Gold. Slide trang 16 nêu nguyên lý biến đổi tại tầng Gold để tối ưu cho công cụ ra quyết định.",
+"x": [
+"Bronze giữ nguyên trạng, không làm sạch.",
+"Đảo ngược thứ tự tầng.",
+"Bronze bất biến, không biến đổi."
+],
+"trap": "Làm sạch ngay ở Bronze.",
+"mem": "Silver: làm sạch, tích hợp, chuẩn hóa. Gold: tổng hợp, KPI."
+}
+]
+}

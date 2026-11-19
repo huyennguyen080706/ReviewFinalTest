@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "AI Act – ba trụ cột",
+"q": "Ba trụ cột bắt buộc của quản trị dữ liệu theo AI Act được nêu trong slide là:",
+"o": [
+"Transparency, Human Oversight, Data Quality",
+"Freshness, Volume, Lineage",
+"Discovery, Consistency, Lineage",
+"Monitor, Detect, Report"
+],
+"w": "Transparency (biết và giải thích được AI dùng dữ liệu gì, quyết định thế nào), Human Oversight (con người theo dõi, có quyền can thiệp, đảo ngược quyết định), Data Quality (dữ liệu huấn luyện đại diện, ít lỗi, kiểm soát định kiến).",
+"x": [
+"Đây là các trụ cột observability.",
+"Đây là lợi ích của Feature Store.",
+"Đây là các bước của continuous auditing."
+],
+"trap": "Lẫn các bộ ba thuật ngữ.",
+"mem": "AI Act: Transparency, Human Oversight, Data Quality."
+},
+{
+"lv": "NB",
+"t": "AI Act – mức rủi ro",
+"q": "Theo AI Act, hệ thống <b>chấm điểm tín dụng</b> trong Fintech thuộc mức rủi ro nào?",
+"o": [
+"High",
+"Unacceptable",
+"Transparent / Limited",
+"Minimal"
+],
+"w": "Chấm điểm tín dụng, tuyển dụng, quản trị hạ tầng thiết yếu thuộc nhóm High: kiểm soát nghiêm ngặt.",
+"x": [
+"Unacceptable bị cấm hoàn toàn, ví dụ social scoring.",
+"Limited là chatbot, deepfake: bắt buộc dán nhãn.",
+"Minimal là bộ lọc spam, AI trong game."
+],
+"trap": "Nghĩ tài chính là Unacceptable vì “rủi ro tiền bạc”.",
+"mem": "Credit scoring → High."
+},
+{
+"lv": "VD",
+"t": "AI Act – mức rủi ro",
+"q": "Ngân hàng triển khai một chatbot trả lời câu hỏi về phí dịch vụ. Theo AI Act, nghĩa vụ chính là gì?",
+"o": [
+"Bắt buộc dán nhãn để người dùng biết đang tương tác với AI",
+"Cấm hoàn toàn vì chatbot có thể thao túng hành vi khách",
+"Kiểm soát nghiêm ngặt với đầy đủ hồ sơ kỹ thuật và log",
+"Tự do vận hành, không có nghĩa vụ nào đối với chatbot"
+],
+"w": "Chatbot thuộc mức Transparent / Limited: bắt buộc dán nhãn. Slide liệt kê chatbot và hệ thống tạo ảnh deepfake ở mức này.",
+"x": [
+"Unacceptable là AI thao túng hành vi dưới ngưỡng nhận thức, social scoring.",
+"Kiểm soát nghiêm ngặt là của mức High.",
+"Tự do vận hành là của Minimal (spam filter, game)."
+],
+"trap": "Gán chatbot của ngân hàng vào High vì là ngành tài chính.",
+"mem": "Chatbot, deepfake → Limited (dán nhãn)."
+},
+{
+"lv": "VD",
+"t": "AI Act – mức rủi ro",
+"q": "Hệ thống nào bị <b>cấm hoàn toàn</b> theo AI Act?",
+"o": [
+"Chấm điểm công dân (social scoring) dựa trên hành vi xã hội",
+"Bộ lọc thư rác tự động trong hệ thống email ngân hàng",
+"Mô hình hỗ trợ sàng lọc hồ sơ ứng tuyển của công ty",
+"Chatbot trả lời câu hỏi thường gặp trên website"
+],
+"w": "Mức Unacceptable bị cấm hoàn toàn: chấm điểm công dân (social scoring); AI thao túng hành vi dưới ngưỡng nhận thức.",
+"x": [
+"Spam filter thuộc Minimal.",
+"Tuyển dụng thuộc High, được phép nhưng kiểm soát nghiêm ngặt.",
+"Chatbot thuộc Limited."
+],
+"trap": "Nhầm “rủi ro cao” với “bị cấm”.",
+"mem": "Social scoring, thao túng tiềm thức → Unacceptable (cấm)."
+},
+{
+"lv": "TH",
+"t": "Nghĩa vụ hệ thống rủi ro cao",
+"q": "Nghĩa vụ <b>Traceability</b> đối với hệ thống AI rủi ro cao yêu cầu:",
+"o": [
+"Hệ thống tự ghi nhật ký để theo dõi và kiểm toán suốt vòng đời vận hành",
+"Lưu toàn bộ kiến trúc hệ thống và luồng dữ liệu để thanh tra",
+"Dữ liệu huấn luyện phải đại diện và không chứa sai sót hệ thống",
+"Con người có quyền đảo ngược mọi quyết định của AI"
+],
+"w": "Ba nghĩa vụ ở trang 6: Data Quality (dữ liệu đại diện, kiểm soát bias), Technical Documentation (lưu kiến trúc và luồng dữ liệu), Traceability (tự ghi log để theo dõi và kiểm toán suốt vòng đời).",
+"x": [
+"Đây là Technical Documentation.",
+"Đây là Data Quality.",
+"Đây là trụ cột Human Oversight."
+],
+"trap": "Lẫn ba nghĩa vụ với nhau.",
+"mem": "High risk: Data Quality, Technical Documentation, Traceability (log)."
+},
+{
+"lv": "VDC",
+"t": "AI Act – áp dụng",
+"q": "Ngân hàng dùng mô hình chấm điểm tín dụng tự động từ chối hồ sơ vay. Tổ hợp biện pháp nào đáp ứng đầy đủ nhất yêu cầu của AI Act theo slide?",
+"o": [
+"Lineage và log tự động, hồ sơ kiến trúc, kiểm soát bias dữ liệu, có người duyệt quyết định từ chối",
+"Chỉ cần dán nhãn “quyết định do AI thực hiện” lên thông báo từ chối gửi khách hàng",
+"Ngừng dùng mô hình vì mọi hệ thống chấm điểm đều bị cấm hoàn toàn theo AI Act",
+"Mã hóa toàn bộ dữ liệu huấn luyện và xóa log để tránh lộ thông tin khách hàng"
+],
+"w": "Chấm điểm tín dụng là High risk: cần Data Quality (kiểm soát bias), Technical Documentation, Traceability (log, lineage). Thêm trụ cột Human Oversight: quyết định ảnh hưởng quyền lợi công dân như bác đơn vay bắt buộc có người duyệt (human-in-the-loop).",
+"x": [
+"Dán nhãn là nghĩa vụ của mức Limited, không đủ cho High.",
+"Social scoring mới bị cấm, chấm điểm tín dụng thì được phép nhưng kiểm soát nghiêm.",
+"Xóa log vi phạm Traceability."
+],
+"trap": "Áp nghĩa vụ của mức thấp hơn cho hệ thống High.",
+"mem": "High risk = log/lineage + tài liệu + chất lượng dữ liệu + người duyệt."
+},
+{
+"lv": "NB",
+"t": "Data lineage",
+"q": "Data lineage là:",
+"o": [
+"Đường đi đầy đủ của dữ liệu từ nguồn, qua biến đổi, tới báo cáo hay mô hình",
+"Danh sách định nghĩa khái niệm kinh doanh dùng chung giữa các phòng ban",
+"Bộ lọc động giới hạn các dòng dữ liệu theo danh tính của người truy vấn",
+"Sổ nhật ký bất biến ghi lại ai đã xem hoặc sửa dữ liệu nhạy cảm"
+],
+"w": "Data lineage cho thấy dữ liệu đi từ nguồn, qua từng bước biến đổi (Bronze → Silver → Gold), đến báo cáo hay mô hình AI. Automated lineage tự vẽ đường đi bằng cách đọc code và metadata.",
+"x": [
+"Đây là Business Glossary.",
+"Đây là Row-level Security.",
+"Đây là Data Audit Trail."
+],
+"trap": "Lẫn lineage với audit trail.",
+"mem": "Lineage = đường đi của dữ liệu; audit trail = ai đã làm gì với dữ liệu."
+},
+{
+"lv": "VD",
+"t": "Impact và root-cause analysis",
+"q": "Bảng bronze_crm sắp đổi kiểu dữ liệu một cột. Đội dữ liệu muốn biết trước những mô hình ở tầng Gold nào sẽ bị ảnh hưởng. Đây là việc gì và đi theo chiều nào của lineage?",
+"o": [
+"Impact analysis, đi xuôi từ nguồn tới các bảng và mô hình phía sau",
+"Root-cause analysis, đi ngược từ mô hình về bảng nguồn gây lỗi",
+"Impact analysis, đi ngược từ mô hình Gold về bảng nguồn Bronze",
+"Root-cause analysis, đi xuôi từ bảng nguồn tới các mô hình Gold"
+],
+"w": "Impact analysis đi xuôi: nguồn đổi → cái gì bị ảnh hưởng. Root-cause analysis đi ngược: kết quả sai → lỗi ở đâu.",
+"x": [
+"Root-cause là khi đã có kết quả sai, đi ngược tìm nguyên nhân.",
+"Impact analysis đi xuôi, không ngược.",
+"Root-cause đi ngược, không xuôi."
+],
+"trap": "Đảo hai chiều.",
+"mem": "Impact: xuôi (nguồn → hậu quả). Root-cause: ngược (lỗi → nguyên nhân)."
+},
+{
+"lv": "VD",
+"t": "Root-cause analysis",
+"q": "Mô hình chấm điểm ở tầng Gold đột nhiên cho kết quả sai. Theo slide, lineage giúp sửa lỗi thế nào?",
+"o": [
+"Đi ngược lineage tìm bước biến đổi gây lỗi, giảm phần lớn thời gian rà code thủ công",
+"Đi xuôi lineage để cảnh báo các bảng Bronze cần nạp lại dữ liệu nguồn",
+"Xóa mô hình và huấn luyện lại từ đầu trên toàn bộ dữ liệu Bronze",
+"Tạo bản sao toàn bộ pipeline để chạy thử song song với pipeline cũ"
+],
+"w": "Root-cause analysis: mô hình ra kết quả sai thì đi ngược lineage tìm bước gây lỗi; slide nêu giảm 90% thời gian rà code thủ công.",
+"x": [
+"Đi xuôi là impact analysis.",
+"Huấn luyện lại không tìm ra nguyên nhân; lỗi có thể nằm ở bước biến đổi.",
+"Sao chép pipeline tốn kém và không chỉ ra lỗi."
+],
+"trap": "Sửa triệu chứng thay vì tìm nguyên nhân.",
+"mem": "Kết quả sai ⇒ đi ngược lineage."
+},
+{
+"lv": "TH",
+"t": "Luồng quan sát 360 độ",
+"q": "Trong luồng quan sát lineage 360 độ, bước <b>Transformation</b> thu thập gì?",
+"o": [
+"Code SQL trích từ dbt hoặc Spark để thấy logic làm sạch",
+"Metadata của nguồn như CRM, ERP, web log",
+"Kết quả các bài test định dạng, null, trùng lặp",
+"Liên kết giữa đặc trưng và kết quả dự báo của mô hình"
+],
+"w": "Bốn thành phần: Data Source (metadata nguồn), Transformation (code SQL từ dbt hoặc Spark, ví dụ dbt biết silver_customers tạo từ bronze_crm nhờ ref()), Data Quality Check (kết quả test), AI Consumption (nối đặc trưng với kết quả dự báo).",
+"x": [
+"Đây là Data Source.",
+"Đây là Data Quality Check.",
+"Đây là AI Consumption."
+],
+"trap": "Lẫn bốn thành phần.",
+"mem": "Source → Transformation → Quality Check → AI Consumption."
+},
+{
+"lv": "TH",
+"t": "RLS và masking",
+"q": "Điểm khác giữa Row-level Security (RLS) và Column-level Masking là:",
+"o": [
+"RLS lọc dòng được thấy; masking che giá trị của cột nhạy cảm",
+"RLS che giá trị của cột; masking lọc dòng theo vùng của người dùng",
+"RLS xóa dòng khỏi bảng gốc; masking sửa giá trị trong bảng gốc",
+"RLS áp dụng cho cả bảng; masking áp dụng cho cả cơ sở dữ liệu"
+],
+"w": "RLS là bộ lọc động theo danh tính người truy vấn, giới hạn dòng được thấy. Masking che hoặc mã hóa một phần dữ liệu nhạy cảm trong cột. Cả hai không đổi dữ liệu gốc và không đổi cấu trúc bảng.",
+"x": [
+"Đảo ngược hai khái niệm.",
+"Dữ liệu gốc không đổi; việc lọc và che diễn ra lúc truy vấn.",
+"Cả hai đều chi tiết hơn mức bảng."
+],
+"trap": "Nghĩ RLS/masking sửa dữ liệu gốc.",
+"mem": "RLS = dòng. Masking = cột. Không đổi dữ liệu gốc."
+},
+{
+"lv": "VD",
+"t": "Masking",
+"q": "Policy: <code>CASE WHEN CURRENT_ROLE() = 'COMPLIANCE' THEN val ELSE CONCAT(LEFT(val, 3), 'xxxx', RIGHT(val, 3)) END</code>. Nhân viên vai trò ANALYST truy vấn số điện thoại 0987654321. Kết quả hiển thị là:",
+"o": [
+"098xxxx321",
+"0987654321",
+"0987xxxx21",
+"xxxx654321"
+],
+"w": "ANALYST không phải COMPLIANCE nên vào nhánh ELSE: LEFT(val, 3) = 098, thêm 'xxxx', RIGHT(val, 3) = 321 → 098xxxx321. Dữ liệu gốc trong bảng vẫn là 0987654321.",
+"x": [
+"Chỉ vai trò COMPLIANCE thấy nguyên số.",
+"Lấy 4 ký tự đầu và 2 ký tự cuối là sai tham số.",
+"Không giữ 3 ký tự đầu như policy quy định."
+],
+"trap": "Đếm sai ký tự LEFT/RIGHT.",
+"mem": "Masking theo vai trò, diễn ra lúc truy vấn."
+},
+{
+"lv": "VDC",
+"t": "RLS",
+"q": "Bảng customers có 1.000 khách: 300 vùng Bắc, 450 vùng Nam, 250 vùng Trung. Row access policy: <code>CURRENT_ROLE() = 'MANAGER' OR region = (vùng của CURRENT_USER() trong staff_region)</code>. Nhân viên An (vai trò ANALYST, phụ trách vùng Nam) và chị Bình (vai trò MANAGER, phụ trách vùng Bắc) cùng chạy <code>SELECT COUNT(*) FROM customers</code>. Kết quả lần lượt là:",
+"o": [
+"An: 450; Bình: 1.000",
+"An: 450; Bình: 300",
+"An: 1.000; Bình: 1.000",
+"An: 300; Bình: 450"
+],
+"w": "Policy trả TRUE nếu vai trò là MANAGER (thấy mọi dòng) HOẶC region khớp vùng của người dùng.<br>• An: ANALYST, vùng Nam → thấy 450 dòng.<br>• Bình: MANAGER → điều kiện đầu đúng với mọi dòng → thấy 1.000, dù được gán vùng Bắc.<br>Cùng một câu SELECT, mỗi người nhận kết quả khác nhau.",
+"x": [
+"Bình là MANAGER nên OR với điều kiện vai trò làm mọi dòng đúng.",
+"An không phải MANAGER nên bị lọc theo vùng.",
+"Gán nhầm vùng của hai người."
+],
+"trap": "Bỏ qua toán tử OR với vai trò MANAGER.",
+"mem": "RLS: điều kiện đánh giá trên từng dòng theo danh tính người truy vấn."
+},
+{
+"lv": "TH",
+"t": "Bảo mật và hiệu năng",
+"q": "Theo slide, cách giảm thời gian mã hóa và giải mã tập dữ liệu dạng bảng rất lớn là:",
+"o": [
+"Chia thành N tập tin nhỏ, mã hóa và giải mã song song rồi tổng hợp",
+"Bỏ mã hóa với các bảng có kích thước lớn hơn 1 TB",
+"Chỉ mã hóa các cột số, giữ nguyên các cột văn bản",
+"Mã hóa một lần duy nhất mỗi năm vào kỳ nghỉ lễ"
+],
+"w": "Sơ đồ trang 12: tập dữ liệu lớn được chia thành N tập tin nhỏ, mã hóa song song từng tập, chuyển sang hệ thống phân tích, giải mã song song, rồi tổng hợp và phân tích bằng ML/DL. Bài học: bảo mật không được trả giá bằng hiệu năng thời gian thực.",
+"x": [
+"Bỏ mã hóa vi phạm yêu cầu bảo mật.",
+"Cột văn bản cũng có thể chứa PII.",
+"Mã hóa theo lịch thưa làm dữ liệu không được bảo vệ."
+],
+"trap": "Đánh đổi bảo mật lấy hiệu năng.",
+"mem": "Chia nhỏ + xử lý song song để mã hóa nhanh."
+},
+{
+"lv": "NB",
+"t": "Zero-copy sharing",
+"q": "Trong Zero-copy Data Sharing, đối tác đọc dữ liệu thế nào?",
+"o": [
+"Truy vấn trực tiếp dữ liệu của bên chủ quản, không sao chép",
+"Nhận file CSV qua FTP rồi nạp vào kho riêng của mình",
+"Nhận bản sao toàn bộ database được đồng bộ mỗi đêm",
+"Tải dữ liệu đã mã hóa về máy rồi giải mã tại chỗ"
+],
+"w": "Nhiều tổ chức cùng truy vấn một nguồn dữ liệu duy nhất. Bên chủ quản chỉ cấp quyền trên metadata; đối tác đọc tại chỗ bằng compute của mình, không sao chép.",
+"x": [
+"Đây là ETL/FTP truyền thống.",
+"Bản sao đồng bộ vẫn là sao chép.",
+"Vẫn là tải bản sao về."
+],
+"trap": "Nghĩ chia sẻ phải có bản sao.",
+"mem": "Zero-copy: đọc tại chỗ, không sao chép."
+},
+{
+"lv": "TH",
+"t": "Zero-copy sharing",
+"q": "Nền tảng kỹ thuật cho phép Zero-copy Data Sharing là:",
+"o": [
+"Tách storage và compute: đối tác dùng compute riêng đọc storage gốc",
+"Lưu trữ theo hàng giúp đọc từng bản ghi từ xa nhanh hơn nhiều",
+"Mã hóa đầu cuối giúp gửi dữ liệu an toàn qua mạng Internet",
+"CDC log-based giúp đồng bộ các thay đổi sang kho của đối tác"
+],
+"w": "Cơ chế zero-copy có được nhờ tách storage và compute (Chương 1): đối tác dùng compute của mình để đọc storage của bên chủ quản.",
+"x": [
+"Slide không nêu lưu trữ theo hàng.",
+"Mã hóa không thay đổi việc phải gửi bản sao.",
+"CDC vẫn tạo bản sao ở phía đối tác."
+],
+"trap": "Gán cho kỹ thuật bảo mật thay vì kiến trúc.",
+"mem": "Zero-copy dựa trên decoupling compute/storage."
+},
+{
+"lv": "VDC",
+"t": "Thu hồi quyền chia sẻ",
+"q": "Ngân hàng dừng hợp tác với đối tác sau 2 năm chia sẻ bảng loan_summary. So sánh hai cách: (A) trước đây gửi file CSV hằng tuần qua FTP; (B) dùng Secure Data Sharing. Nhận định đúng là:",
+"o": [
+"B chỉ cần REVOKE là đối tác mất quyền ngay; với A, các file đã gửi vẫn nằm ở đối tác",
+"A và B như nhau vì đối tác đều đã xem dữ liệu trong suốt 2 năm hợp tác",
+"A an toàn hơn vì file CSV đã gửi tự hết hạn sau khi hợp đồng chấm dứt",
+"B phải yêu cầu đối tác tự xóa bản sao trong kho của họ mới chấm dứt được"
+],
+"w": "Zero-copy: thu hồi quyền (REVOKE) là đối tác lập tức không còn thấy dữ liệu nào. Với ETL/FTP, mỗi bản sao là một nguy cơ lộ, và bên gửi không kiểm soát được bản sao sau khi gửi.",
+"x": [
+"Khác biệt nằm ở quyền kiểm soát sau khi dừng hợp tác.",
+"File CSV không tự hết hạn.",
+"Với zero-copy, đối tác không có bản sao để xóa."
+],
+"trap": "Không thấy rủi ro của các bản sao lưu lạc.",
+"mem": "Zero-copy: REVOKE có hiệu lực ngay; FTP: bản sao không thu hồi được."
+},
+{
+"lv": "TH",
+"t": "So sánh ETL và sharing",
+"q": "Theo bảng so sánh trang 15, Secure Data Sharing hơn ETL truyền thống ở những điểm nào?",
+"o": [
+"Dữ liệu live, kiểm soát quyền tập trung bằng IAM, không sinh bản sao lưu trữ",
+"Dữ liệu chạy theo lô, mã hóa từng file, tốn gấp đôi chi phí hạ tầng",
+"Dữ liệu chậm hơn nhưng an toàn hơn vì đối tác không truy cập được",
+"Dữ liệu được làm sạch tự động trước khi đối tác truy vấn"
+],
+"w": "Độ trễ: ETL bị trễ theo lô; Sharing thời gian thực (live). Bảo mật: ETL rủi ro từ file sao lưu lạc; Sharing kiểm soát quyền tập trung bằng IAM. Chi phí: ETL tốn gấp đôi; Sharing dùng chung lưu trữ gốc.",
+"x": [
+"Đây là đặc điểm của ETL truyền thống.",
+"Sharing là live, và đối tác vẫn truy vấn được.",
+"Sharing không làm sạch dữ liệu."
+],
+"trap": "Nghĩ an toàn phải đổi lấy chậm.",
+"mem": "Sharing: live, IAM tập trung, không bản sao."
+},
+{
+"lv": "NB",
+"t": "Differential privacy",
+"q": "Trong differential privacy, ε (epsilon) nhỏ dẫn đến điều gì?",
+"o": [
+"Nhiều nhiễu, bảo mật cao, độ chính xác thấp",
+"Ít nhiễu, bảo mật thấp, độ chính xác cao",
+"Không có nhiễu, kết quả chính xác tuyệt đối",
+"Nhiều nhiễu nhưng độ chính xác vẫn giữ nguyên"
+],
+"w": "ε thấp → nhiều nhiễu → bảo mật cao, độ chính xác thấp. ε cao → ít nhiễu → chính xác, rủi ro lộ danh tính cao.",
+"x": [
+"Đây là ε cao.",
+"Differential privacy luôn thêm nhiễu.",
+"Nhiễu nhiều luôn làm giảm độ chính xác."
+],
+"trap": "Nghĩ ε là “mức bảo mật” (càng lớn càng an toàn).",
+"mem": "ε nhỏ = riêng tư cao = kém chính xác."
+},
+{
+"lv": "VD",
+"t": "Differential privacy",
+"q": "Truy vấn “số khách nợ xấu ở chi nhánh X” có kết quả thật 120. Nhiễu Laplace có độ lớn tỷ lệ với 1/ε. So với ε = 1, khi dùng ε = 0,1 thì:",
+"o": [
+"Nhiễu lớn hơn khoảng 10 lần, kết quả có thể lệch hàng chục đơn vị",
+"Nhiễu nhỏ hơn khoảng 10 lần, kết quả gần như đúng bằng 120",
+"Nhiễu không đổi vì chỉ phụ thuộc vào số khách trong chi nhánh",
+"Kết quả luôn bằng 120 vì ε nhỏ nghĩa là không thêm nhiễu"
+],
+"w": "Độ lớn nhiễu ∝ 1/ε: 1/0,1 = 10 so với 1/1 = 1, tức lớn hơn khoảng 10 lần. Slide: với ε = 1 nhiễu thường vài đơn vị (118–122); với ε = 0,1 nhiễu cỡ 10, có lúc vài chục (có thể 108 hay 135).",
+"x": [
+"Đảo ngược quan hệ.",
+"Nhiễu phụ thuộc ε.",
+"ε nhỏ là thêm nhiều nhiễu nhất."
+],
+"trap": "Đảo quan hệ giữa ε và nhiễu.",
+"mem": "Nhiễu ∝ 1/ε."
+},
+{
+"lv": "VDC",
+"t": "Ngân sách quyền riêng tư",
+"q": "Một tập dữ liệu được cấp tổng ngân sách quyền riêng tư ε = 2,0. Mỗi truy vấn thống kê tiêu tốn ε = 0,25. Sau khi đã trả lời 6 truy vấn, hệ thống còn trả lời được tối đa bao nhiêu truy vấn nữa, và điều gì xảy ra khi hết ngân sách?",
+"o": [
+"2 truy vấn; dùng hết ngân sách thì phải dừng trả lời",
+"8 truy vấn; ngân sách tự làm mới sau mỗi truy vấn",
+"2 truy vấn; sau đó trả kết quả thô không thêm nhiễu",
+"6 truy vấn; ngân sách được tính lại theo từng người dùng"
+],
+"w": "Đã dùng 6 × 0,25 = 1,5. Còn 2,0 − 1,5 = 0,5 → 0,5/0,25 = 2 truy vấn. Slide: mỗi lần truy vấn tiêu tốn một phần ngân sách; dùng hết thì phải dừng trả lời. Privacy Audit Trail theo dõi lượng ε đã tiêu hao.",
+"x": [
+"8 là tổng số truy vấn ban đầu (2,0/0,25), chưa trừ 6 đã dùng.",
+"Trả kết quả thô phá vỡ cam kết quyền riêng tư.",
+"Slide không nói ngân sách tính lại theo người dùng."
+],
+"trap": "Quên trừ phần đã tiêu hao hoặc nghĩ hết ngân sách thì bỏ nhiễu.",
+"mem": "Ngân sách ε cạn ⇒ dừng trả lời."
+},
+{
+"lv": "TH",
+"t": "Differential privacy",
+"q": "Triết lý cốt lõi của differential privacy là:",
+"o": [
+"Kết quả phân tích gần như không đổi dù có hay không có dữ liệu của một người cụ thể",
+"Xóa mọi cột định danh cá nhân như tên, CMND trước khi phân tích dữ liệu",
+"Mỗi người trong bảng không phân biệt được với ít nhất k − 1 người khác",
+"Chỉ những người có quyền COMPLIANCE mới xem được kết quả phân tích"
+],
+"w": "Differential privacy làm kết quả gần như không đổi dù có hay không có một người cụ thể, nên kẻ tấn công không thể dịch ngược báo cáo. Thêm hoặc bớt một khách chỉ đổi kết quả thật 1 đơn vị, chìm trong nhiễu.",
+"x": [
+"Xóa định danh trực tiếp không đủ vì quasi-identifier vẫn cho nhận diện lại.",
+"Đây là k-anonymity.",
+"Đây là kiểm soát truy cập, không phải differential privacy."
+],
+"trap": "Lẫn differential privacy với k-anonymity.",
+"mem": "DP sửa kết quả (thêm nhiễu); k-anonymity sửa dữ liệu."
+},
+{
+"lv": "NB",
+"t": "Quasi-identifier",
+"q": "<b>Quasi-identifier</b> là:",
+"o": [
+"Các cột riêng lẻ không nhạy cảm nhưng ghép lại đủ để nhận diện lại một người",
+"Các cột định danh trực tiếp như số CMND, số tài khoản",
+"Các cột nhạy cảm cần bảo vệ như tình trạng nợ, bệnh án",
+"Các khóa thay thế do kho tự sinh cho mỗi khách hàng"
+],
+"w": "Quasi-identifiers (QI) là các cột như tuổi, giới tính, quận: riêng lẻ không nhạy cảm nhưng ghép lại đủ để re-identification, ví dụ khi đối chiếu với dữ liệu công khai khác.",
+"x": [
+"Đây là định danh trực tiếp.",
+"Đây là thuộc tính nhạy cảm cần bảo vệ.",
+"Surrogate key là khái niệm mô hình hóa ở Chương 2."
+],
+"trap": "Nghĩ chỉ cột định danh trực tiếp mới nguy hiểm.",
+"mem": "QI: tuổi + giới tính + quận ⇒ nhận diện lại."
+},
+{
+"lv": "VD",
+"t": "K-anonymity",
+"q": "Sau generalization, các nhóm theo quasi-identifier (tuổi, giới tính, khu vực) có số dòng lần lượt: 4, 3, 2, 5. Bảng đạt k-anonymity với k lớn nhất bằng bao nhiêu?",
+"o": [
+"2",
+"3",
+"5",
+"14"
+],
+"w": "Bảng đạt k-anonymity nếu mỗi tổ hợp QI xuất hiện ở ít nhất k dòng. k lớn nhất là kích thước nhóm nhỏ nhất = 2.",
+"x": [
+"Nhóm có 2 dòng không thỏa k = 3.",
+"5 là nhóm lớn nhất, không phải nhỏ nhất.",
+"14 là tổng số dòng."
+],
+"trap": "Lấy nhóm lớn nhất hoặc trung bình.",
+"mem": "k = kích thước nhóm QI nhỏ nhất."
+},
+{
+"lv": "VDC",
+"t": "K-anonymity",
+"q": "Bảng sau generalization có các nhóm QI với số dòng: nhóm A 5, nhóm B 3, nhóm C 1, nhóm D 2, nhóm E 4. Muốn đạt k = 3 chỉ bằng suppression (không khái quát thêm), cần xóa ít nhất bao nhiêu dòng?",
+"o": [
+"3",
+"1",
+"2",
+"5"
+],
+"w": "Nhóm có dưới 3 dòng không đạt: C (1 dòng) và D (2 dòng). Suppression xóa các dòng này: 1 + 2 = 3 dòng. Các nhóm A (5), B (3), E (4) đã đạt ≥ 3.",
+"x": [
+"Chỉ xóa nhóm C thì nhóm D (2) vẫn chưa đạt k = 3.",
+"Chỉ xóa nhóm D thì nhóm C (1) vẫn chưa đạt.",
+"5 là kích thước nhóm A, không cần xóa."
+],
+"trap": "Quên kiểm tra mọi nhóm dưới ngưỡng.",
+"mem": "Suppression: xóa dòng của mọi nhóm có < k dòng."
+},
+{
+"lv": "TH",
+"t": "Nhận diện lại qua QI",
+"q": "Bảng đã xóa cột họ tên và số CMND nhưng vẫn giữ tuổi, giới tính, quận. Vì sao vẫn có rủi ro lộ danh tính?",
+"o": [
+"Tổ hợp tuổi, giới tính, quận có thể là duy nhất và đối chiếu được với dữ liệu công khai",
+"Cột tuổi, giới tính và quận được hệ thống tự động mã hóa ngược thành họ tên khách",
+"Bảng vẫn còn surrogate key nên có thể tra lại số CMND trong hệ thống nguồn",
+"Không còn rủi ro nào vì các cột định danh trực tiếp đã bị xóa khỏi bảng"
+],
+"w": "Quasi-identifier riêng lẻ không nhạy cảm nhưng ghép lại đủ để re-identification, ví dụ bằng cách đối chiếu với dữ liệu công khai khác. Biết “nam, 27 tuổi, Q3” là biết ngay người đó. Vì vậy cần k-anonymity.",
+"x": [
+"Không có cơ chế “mã hóa ngược” như vậy.",
+"Đề không nói đến khóa liên kết; rủi ro chính đến từ QI.",
+"Đây là sai lầm phổ biến mà k-anonymity khắc phục."
+],
+"trap": "Nghĩ xóa định danh trực tiếp là đủ.",
+"mem": "Xóa tên, CMND chưa đủ: QI vẫn nhận diện lại được."
+},
+{
+"lv": "VD",
+"t": "Generalization và suppression",
+"q": "Trong bảng gốc có một khách 85 tuổi ở Cần Giờ, không gộp được với ai sau khi khái quát tuổi và khu vực. Theo slide, kỹ thuật áp dụng cho dòng này là:",
+"o": [
+"Suppression: xóa dòng của người quá khác biệt",
+"Generalization: đổi tuổi 85 thành khoảng 20–30",
+"Masking: che số điện thoại của khách hàng",
+"Differential privacy: thêm nhiễu vào cột tuổi"
+],
+"w": "Suppression xóa dòng của người quá khác biệt, không gộp được vào nhóm nào. Slide lấy đúng ví dụ người 85 tuổi ở Cần Giờ bị xóa.",
+"x": [
+"Khái quát sai sự thật (85 thành 20–30) làm hỏng dữ liệu.",
+"Masking che cột, không giải quyết việc dòng có QI độc nhất.",
+"DP sửa kết quả truy vấn, không phải kỹ thuật của k-anonymity."
+],
+"trap": "Khái quát quá mức đến mức sai lệch.",
+"mem": "Khái quát: giá trị → khoảng. Không gộp được: suppression."
+},
+{
+"lv": "VDC",
+"t": "K-anonymity – generalization",
+"q": "Bảng có QI (tuổi, giới tính, khu vực) gồm 8 dòng: (23, Nam, Trung tâm), (27, Nam, Trung tâm), (25, Nam, Trung tâm), (34, Nữ, Nam SG), (38, Nữ, Nam SG), (31, Nam, Nam SG), (36, Nam, Nam SG), (52, Nữ, Trung tâm). Khái quát tuổi thành khoảng 10 năm (20–30, 30–40, 50–60). Bảng đạt k bằng bao nhiêu, và cần suppression tối thiểu mấy dòng để đạt k = 2?",
+"o": [
+"k = 1; xóa 1 dòng",
+"k = 2; không cần xóa dòng nào",
+"k = 3; không cần xóa dòng nào",
+"k = 1; xóa 3 dòng"
+],
+"w": "Sau khái quát, các nhóm QI:<br>• (20–30, Nam, Trung tâm): 3 dòng<br>• (30–40, Nữ, Nam SG): 2 dòng<br>• (30–40, Nam, Nam SG): 2 dòng<br>• (50–60, Nữ, Trung tâm): 1 dòng<br>Nhóm nhỏ nhất có 1 dòng → k = 1. Xóa dòng (52, Nữ, Trung tâm) là các nhóm còn lại đều ≥ 2 → đạt k = 2.",
+"x": [
+"Nhóm (50–60, Nữ, Trung tâm) chỉ có 1 dòng.",
+"3 là nhóm lớn nhất, không phải nhỏ nhất.",
+"Chỉ cần xóa nhóm 1 dòng; hai nhóm 2 dòng đã đạt k = 2."
+],
+"trap": "Lấy nhóm lớn nhất làm k, hoặc xóa thừa.",
+"mem": "k = nhóm QI nhỏ nhất; suppression các nhóm < k."
+},
+{
+"lv": "TH",
+"t": "Privacy và utility",
+"q": "Đồ thị Privacy Loss – Utility trên slide cho thấy điều gì?",
+"o": [
+"Không thể đồng thời riêng tư tối đa và hữu dụng tối đa; phải chọn điểm cân bằng",
+"Tăng mức bảo mật luôn làm tăng tính hữu dụng của dữ liệu cho mô hình AI",
+"Có thể đạt góc “ideal situation” nếu chọn ε đủ nhỏ cho mọi truy vấn",
+"Mức riêng tư và tính hữu dụng của dữ liệu hoàn toàn không liên quan"
+],
+"w": "Góc trên phải (ideal situation) không đạt được. Đường cong là các lựa chọn khả thi: tăng một bên thì bên kia giảm. Siết quá mức (ε → 0) thì dữ liệu gần như vô dụng. Nhà quản trị chọn optimal balance.",
+"x": [
+"Ngược lại: đánh đổi.",
+"ε nhỏ làm tăng riêng tư nhưng giảm hữu dụng.",
+"Hai đại lượng đánh đổi trực tiếp."
+],
+"trap": "Nghĩ có giải pháp “vừa tuyệt đối an toàn vừa tuyệt đối chính xác”.",
+"mem": "Privacy ↔ Utility: đánh đổi, chọn điểm cân bằng."
+},
+{
+"lv": "VDC",
+"t": "Chọn kỹ thuật bảo vệ quyền riêng tư",
+"q": "Ngân hàng cần (1) công bố bộ dữ liệu cấp từng khách cho nhóm nghiên cứu bên ngoài mà không ai nhận diện được khách nào; (2) cung cấp API trả về số liệu thống kê tổng hợp cho đối tác, chống suy ngược từng người qua nhiều truy vấn. Ghép đúng là:",
+"o": [
+"(1) K-anonymity; (2) Differential privacy có ngân sách ε",
+"(1) Differential privacy; (2) K-anonymity với giá trị k lớn",
+"(1) Column masking; (2) Row-level Security theo từng đối tác",
+"(1) Zero-copy sharing; (2) Data catalog có chấm Trust Score"
+],
+"w": "(1) Công bố dữ liệu cấp dòng: sửa dữ liệu để mỗi người lẫn vào đám đông bằng k-anonymity. (2) Trả lời truy vấn thống kê: sửa kết quả bằng cách thêm nhiễu (differential privacy), có ngân sách ε để chặn việc hỏi nhiều lần để suy ngược.",
+"x": [
+"Đảo ngược: DP áp vào kết quả truy vấn, k-anonymity áp vào bảng dữ liệu.",
+"Masking và RLS kiểm soát người nội bộ, không ngăn nhận diện lại qua QI hay suy ngược thống kê.",
+"Zero-copy là cơ chế chia sẻ; Trust Score là độ tin cậy của bảng."
+],
+"trap": "Đảo vai trò hai kỹ thuật.",
+"mem": "Công bố dữ liệu → k-anonymity. Trả lời thống kê → differential privacy."
+},
+{
+"lv": "NB",
+"t": "Data swamp",
+"q": "<b>Data swamp</b> là tình trạng:",
+"o": [
+"Hồ dữ liệu nhiều bảng nhưng không ai biết bảng nào sạch, dùng được",
+"Kho dữ liệu đầy dung lượng và không thể nạp thêm dữ liệu mới nữa",
+"Dữ liệu bị mã hóa nên không thể truy vấn được bằng câu lệnh SQL",
+"Pipeline bị lỗi khiến các bảng ở tầng Gold không được cập nhật"
+],
+"w": "Dữ liệu tăng quá nhanh biến hồ dữ liệu thành data swamp (đầm lầy dữ liệu): rất nhiều bảng, không ai biết bảng nào sạch, bảng nào dùng được. Data catalog là giải pháp.",
+"x": [
+"Dung lượng không phải vấn đề của data swamp.",
+"Mã hóa không liên quan.",
+"Đây là sự cố Freshness."
+],
+"trap": "Hiểu theo nghĩa “quá nhiều dữ liệu”.",
+"mem": "Data swamp = thiếu metadata và catalog."
+},
+{
+"lv": "TH",
+"t": "AI-driven catalog",
+"q": "AI-driven data catalog hỗ trợ bảo mật như thế nào theo slide?",
+"o": [
+"Tự nhận diện cột chứa PII như email, số thẻ để gắn nhãn và áp chính sách như masking",
+"Tự mã hóa toàn bộ dữ liệu trong kho mà không cần cấu hình chính sách",
+"Tự xóa các bảng có Trust Score thấp ra khỏi hồ dữ liệu",
+"Tự cấp quyền truy cập cho mọi người dùng tìm thấy bảng qua Semantic Search"
+],
+"w": "AI-driven catalog tự thu thập và phân loại metadata; tự nhận diện cột chứa email, số thẻ tín dụng (PII) để gắn nhãn và áp chính sách bảo mật, ví dụ masking.",
+"x": [
+"Catalog gắn nhãn và áp chính sách, không tự mã hóa toàn bộ.",
+"Trust Score là thông tin tham khảo, không dùng để tự xóa bảng.",
+"Tìm thấy bảng không có nghĩa là được cấp quyền."
+],
+"trap": "Gán cho catalog chức năng quá rộng.",
+"mem": "AI catalog: tự phát hiện PII → gắn nhãn → áp masking."
+},
+{
+"lv": "VD",
+"t": "Thành phần AI catalog",
+"q": "Nhà phân tích gõ “tìm bảng chứa doanh thu 2 năm trước” và hệ thống trả về đúng bảng, kèm điểm cho biết bảng được dùng nhiều và qua kiểm định chất lượng tốt. Hai thành phần được dùng là:",
+"o": [
+"Semantic Search và Trust Score",
+"Business Glossary và Technical Metadata",
+"Data Lineage Integration và Audit Trail",
+"Row-level Security và Column Masking"
+],
+"w": "Ba thành phần của AI catalog: Semantic Search (tìm bảng bằng ngôn ngữ tự nhiên), Data Lineage Integration (hiển thị lineage trên trang mô tả bảng), Trust Score (điểm tin cậy dựa trên tần suất dùng và lịch sử kiểm định).",
+"x": [
+"Đây là hai loại metadata, không phải thành phần tìm kiếm.",
+"Lineage và audit trail không cho điểm tin cậy hay tìm kiếm ngôn ngữ tự nhiên.",
+"Đây là cơ chế bảo mật."
+],
+"trap": "Lẫn thành phần catalog với loại metadata.",
+"mem": "AI catalog: Semantic Search, Lineage Integration, Trust Score."
+},
+{
+"lv": "VD",
+"t": "Business Glossary và Technical Metadata",
+"q": "Thông tin nào thuộc <b>Business Glossary</b>?",
+"o": [
+"“Churn” là khách không phát sinh giao dịch trên 90 ngày",
+"Cột last_txn_date có kiểu DATE, cập nhật mỗi giờ",
+"Bảng gold_sales có schema gồm 12 cột FLOAT64",
+"Chủ sở hữu kỹ thuật của bảng là nhóm Data Platform"
+],
+"w": "Business Glossary do tầng quản trị quản lý, định nghĩa khái niệm kinh doanh để mọi phòng ban dùng chung một ngôn ngữ, ví dụ định nghĩa “churn”. Kiểu dữ liệu, schema, tần suất cập nhật, chủ sở hữu kỹ thuật thuộc Technical Metadata.",
+"x": [
+"Kiểu dữ liệu và freshness là Technical Metadata.",
+"Schema là Technical Metadata.",
+"Chủ sở hữu kỹ thuật là Technical Metadata."
+],
+"trap": "Nhầm vì cả hai đều nói về cùng một bảng.",
+"mem": "Định nghĩa nghiệp vụ → Glossary. Kiểu, schema, freshness → Technical."
+},
+{
+"lv": "TH",
+"t": "Bản chất bias",
+"q": "Theo slide, nguồn gốc của bias trong mô hình AI là gì?",
+"o": [
+"Dữ liệu lịch sử đã chứa định kiến hoặc thiếu tính đại diện, mô hình học lại và khuếch đại",
+"Bản thân thuật toán học máy luôn tự sinh ra định kiến khi huấn luyện",
+"Phần cứng GPU xử lý các nhóm dữ liệu với độ chính xác khác nhau",
+"Người dùng cuối nhập câu hỏi sai khi tương tác với hệ thống AI"
+],
+"w": "AI không tự sinh ra định kiến; định kiến nằm sẵn trong dữ liệu lịch sử. Ví dụ: AI duyệt vay liên tục từ chối khách một vùng vì dữ liệu quá khứ của vùng đó quá ít (thiếu đại diện).",
+"x": [
+"Slide nhấn mạnh nguồn gốc là dữ liệu, không phải bản thân thuật toán.",
+"Phần cứng không phải nguồn bias.",
+"Không liên quan đến người dùng cuối."
+],
+"trap": "Đổ lỗi cho thuật toán.",
+"mem": "Bias đến từ dữ liệu lịch sử."
+},
+{
+"lv": "VD",
+"t": "Ba thời điểm khử bias",
+"q": "Đội dữ liệu gán trọng số cao hơn cho hồ sơ của vùng ít dữ liệu trong bảng Gold trước khi huấn luyện. Đây là khử bias ở giai đoạn nào?",
+"o": [
+"Pre-processing",
+"In-processing",
+"Post-processing",
+"Continuous auditing"
+],
+"w": "Pre-processing can thiệp vào dữ liệu Gold trước khi học: lấy mẫu lại (resampling) hoặc gán trọng số để cân bằng các nhóm.",
+"x": [
+"In-processing thêm ràng buộc công bằng vào hàm mất mát khi huấn luyện.",
+"Post-processing điều chỉnh ngưỡng phân lớp trên kết quả đầu ra.",
+"Continuous auditing là giám sát tuân thủ, không phải bước khử bias."
+],
+"trap": "Nhầm vì trọng số cũng xuất hiện trong huấn luyện.",
+"mem": "Resampling/reweighting → pre; fairness constraint → in; chỉnh ngưỡng → post."
+},
+{
+"lv": "VD",
+"t": "Ba thời điểm khử bias",
+"q": "Mô hình đã huấn luyện xong; để cân bằng tỷ lệ duyệt, nhóm dùng ngưỡng xác suất vỡ nợ 0,55 cho nhóm bị thiệt thay vì 0,5 như các nhóm khác. Đây là:",
+"o": [
+"Post-processing",
+"Pre-processing",
+"In-processing",
+"Suppression"
+],
+"w": "Post-processing can thiệp vào kết quả đầu ra: điều chỉnh ngưỡng phân lớp riêng cho từng nhóm.",
+"x": [
+"Pre-processing can thiệp vào dữ liệu trước khi học.",
+"In-processing can thiệp vào hàm mất mát khi huấn luyện.",
+"Suppression là kỹ thuật k-anonymity."
+],
+"trap": "Nghĩ đổi ngưỡng là sửa mô hình.",
+"mem": "Chỉnh ngưỡng sau khi có mô hình ⇒ post-processing."
+},
+{
+"lv": "TH",
+"t": "In-processing",
+"q": "Khử bias ở giai đoạn <b>in-processing</b> được thực hiện thế nào?",
+"o": [
+"Thêm ràng buộc công bằng vào hàm mất mát để mô hình bị phạt khi tỷ lệ duyệt giữa nhóm chênh nhau",
+"Lấy mẫu lại dữ liệu Gold để số hồ sơ của các nhóm bằng nhau trước khi huấn luyện",
+"Điều chỉnh ngưỡng phân lớp riêng cho từng nhóm sau khi mô hình đã huấn luyện xong",
+"Xóa cột vùng địa lý khỏi dữ liệu để mô hình không thể phân biệt các nhóm"
+],
+"w": "In-processing can thiệp vào thuật toán huấn luyện: thêm fairness constraint vào hàm mất mát, mô hình bị phạt khi tỷ lệ duyệt giữa các nhóm chênh nhau.",
+"x": [
+"Đây là pre-processing.",
+"Đây là post-processing.",
+"Slide không nêu cách này; xóa cột cũng không loại được bias qua các cột tương quan."
+],
+"trap": "Lẫn ba giai đoạn.",
+"mem": "In-processing = fairness constraint trong loss."
+},
+{
+"lv": "VD",
+"t": "Explainable AI",
+"q": "Thông báo từ chối hồ sơ vay nào đáp ứng yêu cầu Explainable AI theo slide?",
+"o": [
+"“Từ chối vì tỷ lệ nợ/thu nhập 65% vượt ngưỡng 50%”",
+"“Từ chối theo kết quả của mô hình AI”",
+"“Từ chối vì điểm tín dụng của quý khách thấp”",
+"“Từ chối, vui lòng liên hệ chi nhánh để biết thêm”"
+],
+"w": "Explainable AI: mô hình không được là hộp đen; phải giải thích được lý do theo ngữ cảnh. Slide lấy ví dụ “từ chối vì tỷ lệ nợ/thu nhập 65% vượt ngưỡng 50%”.",
+"x": [
+"Không giải thích lý do cụ thể.",
+"Chưa chỉ ra yếu tố và ngưỡng cụ thể.",
+"Không có lý do nào."
+],
+"trap": "Chọn câu có vẻ lịch sự thay vì có giải thích.",
+"mem": "XAI = lý do cụ thể, theo ngữ cảnh."
+},
+{
+"lv": "TH",
+"t": "Human-in-the-loop",
+"q": "Human-in-the-loop theo slide có nghĩa là:",
+"o": [
+"AI chỉ hỗ trợ ra quyết định; quyết định ảnh hưởng quyền lợi công dân bắt buộc có người duyệt",
+"Con người gán nhãn toàn bộ dữ liệu huấn luyện trước khi mô hình học",
+"Con người viết lại mã nguồn mô hình mỗi khi phát hiện bias",
+"AI tự ra quyết định và chỉ báo cho con người khi có sự cố hệ thống"
+],
+"w": "Human-in-the-loop: AI chỉ là hệ hỗ trợ ra quyết định (Decision Support System). Quyết định ảnh hưởng quyền lợi công dân (bác đơn vay, từ chối hồ sơ ứng tuyển) bắt buộc có người duyệt.",
+"x": [
+"Gán nhãn là việc khác, không phải nghĩa trong slide.",
+"Không yêu cầu viết lại mã.",
+"Ngược với tinh thần human oversight."
+],
+"trap": "Hiểu “human” là người gán nhãn.",
+"mem": "Human-in-the-loop: người duyệt quyết định quan trọng."
+},
+{
+"lv": "NB",
+"t": "Continuous auditing",
+"q": "Thứ tự đúng của bốn bước continuous auditing là:",
+"o": [
+"Monitor → Detect → Alert → Report",
+"Detect → Monitor → Report → Alert",
+"Alert → Monitor → Detect → Report",
+"Report → Detect → Alert → Monitor"
+],
+"w": "Monitor (theo dõi truy vấn vào dữ liệu nhạy cảm theo thời gian thực) → Detect (anomaly detection) → Alert (báo động, tự khóa quyền) → Report (tự xuất compliance report).",
+"x": [
+"Phải theo dõi trước mới phát hiện được.",
+"Không thể báo động trước khi theo dõi và phát hiện.",
+"Báo cáo là bước cuối."
+],
+"trap": "Đảo thứ tự.",
+"mem": "Monitor → Detect → Alert → Report."
+},
+{
+"lv": "VD",
+"t": "Continuous auditing",
+"q": "Tài khoản một nhân viên tải hàng loạt dữ liệu khách hàng lúc 2 giờ sáng. Hệ thống continuous auditing xử lý thế nào ở bước Alert?",
+"o": [
+"Báo động và tự khóa quyền của tài khoản nghi vấn",
+"Ghi nhận và đợi kiểm toán viên xem xét vào cuối quý",
+"Xóa ngay dữ liệu đã tải khỏi kho để tránh lộ thông tin",
+"Chuyển dữ liệu sang tầng Bronze để giữ nguyên trạng"
+],
+"w": "Bước Detect phát hiện hành vi bất thường (tải hàng loạt lúc 2 giờ sáng); bước Alert báo động và tự khóa quyền của tài khoản nghi vấn, chặn vi phạm ngay khi vừa xảy ra.",
+"x": [
+"Đợi cuối quý là kiểm toán truyền thống, chậm và dễ sót.",
+"Xóa dữ liệu gốc không ngăn được rò rỉ và làm mất dữ liệu.",
+"Không liên quan đến xử lý vi phạm."
+],
+"trap": "Áp cách kiểm toán truyền thống.",
+"mem": "Continuous auditing: chặn ngay khi phát hiện."
+},
+{
+"lv": "TH",
+"t": "Audit trail",
+"q": "Yêu cầu quan trọng nhất của Data Audit Trail trong báo cáo tuân thủ là:",
+"o": [
+"Bất biến: không ai sửa hay xóa được nhật ký ai đã tạo, sửa, xóa, xem dữ liệu",
+"Được nén tối đa để tiết kiệm dung lượng lưu trữ trong kho",
+"Chỉ ghi các thao tác của quản trị viên, bỏ qua người dùng thường",
+"Tự xóa sau 30 ngày để tuân thủ quyền được lãng quên"
+],
+"w": "Data Audit Trail là sổ nhật ký bất biến (immutable log) ghi ai đã tạo, sửa, xóa hoặc xem dữ liệu, dùng khi điều tra rò rỉ. Chương 9 trình bày cách dùng blockchain để không ai sửa được nhật ký này.",
+"x": [
+"Nén không phải yêu cầu cốt lõi.",
+"Phải ghi mọi người truy cập.",
+"Xóa nhật ký làm mất bằng chứng điều tra."
+],
+"trap": "Bỏ qua tính bất biến.",
+"mem": "Audit trail phải immutable (liên hệ blockchain, Chương 9)."
+},
+{
+"lv": "VD",
+"t": "Thành phần báo cáo tuân thủ",
+"q": "Cơ quan quản lý yêu cầu ngân hàng chứng minh tỷ lệ duyệt vay giữa các vùng không chênh lệch bất thường theo thời gian. Thành phần báo cáo tuân thủ phù hợp là:",
+"o": [
+"Bias Reporting Dashboard",
+"Data Audit Trail",
+"Privacy Audit Trail",
+"Technical Metadata"
+],
+"w": "Bias Reporting Dashboard tự đo định kỳ các chỉ số công bằng (fairness metrics) của mô hình đang chạy, ví dụ tỷ lệ duyệt vay giữa các vùng.",
+"x": [
+"Audit trail ghi ai đã truy cập dữ liệu.",
+"Privacy Audit Trail theo dõi ngân sách ε đã tiêu hao.",
+"Technical metadata mô tả kiểu dữ liệu, schema."
+],
+"trap": "Chọn audit trail vì nghe “kiểm toán”.",
+"mem": "Báo cáo tuân thủ: Data Audit Trail, Bias Dashboard, Privacy Audit Trail."
+},
+{
+"lv": "VDC",
+"t": "Bias do thiếu đại diện",
+"q": "Mô hình duyệt vay từ chối 90% hồ sơ của vùng Tây Nguyên, trong khi tỷ lệ vỡ nợ thực tế ở vùng này không cao hơn các vùng khác. Dữ liệu huấn luyện chỉ có 0,5% hồ sơ từ Tây Nguyên. Chẩn đoán và hướng xử lý phù hợp nhất là:",
+"o": [
+"Bias do thiếu đại diện; cân bằng dữ liệu ở pre-processing, theo dõi fairness, có người duyệt",
+"Concept drift; huấn luyện lại mô hình trên dữ liệu mới nhất của tất cả các vùng miền",
+"Data leakage; xóa đặc trưng vùng địa lý vì đặc trưng này được lấy từ tương lai",
+"Lỗi bảo mật; áp Row-level Security để nhân viên vùng đó không thấy kết quả duyệt"
+],
+"w": "Slide trang 23 mô tả đúng hiện tượng: dữ liệu quá khứ của vùng quá ít (thiếu đại diện), mô hình không học được khách tốt ở vùng đó. Xử lý: pre-processing (resampling hoặc gán trọng số cân bằng nhóm), có thể kết hợp in/post-processing; giám sát bằng Bias Reporting Dashboard; quyết định bác đơn có người duyệt.",
+"x": [
+"Không có dấu hiệu quan hệ đầu vào → nhãn thay đổi theo thời gian; huấn luyện lại trên dữ liệu thiếu đại diện vẫn giữ bias.",
+"Không có thông tin “từ tương lai”.",
+"RLS che kết quả chứ không sửa sự thiên lệch."
+],
+"trap": "Nghĩ chỉ cần huấn luyện lại hoặc giấu kết quả.",
+"mem": "Thiếu đại diện ⇒ bias ⇒ cân bằng dữ liệu + giám sát fairness + human oversight."
+},
+{
+"lv": "VDC",
+"t": "Lineage và AI Act",
+"q": "Thanh tra AI Act hỏi: “Mô hình chấm điểm v5 đã dùng dữ liệu từ những nguồn nào, qua câu SQL nào, và kết quả kiểm định chất lượng ra sao?”. Công cụ nào trả lời trực tiếp và đáp ứng nghĩa vụ nào?",
+"o": [
+"Automated data lineage (source, transformation, quality check, AI consumption); đáp ứng Traceability",
+"Zero-copy data sharing cho phép thanh tra truy vấn bảng Gold; đáp ứng Human Oversight",
+"Differential privacy với ngân sách ε; đáp ứng nghĩa vụ Data Quality",
+"Column-level masking che PII trong báo cáo; đáp ứng Technical Documentation"
+],
+"w": "Automated lineage ghi lại luồng 360 độ: Data Source (nguồn), Transformation (code SQL từ dbt/Spark), Data Quality Check (kết quả test), AI Consumption (đặc trưng → mô hình). Giáo trình nêu lineage là yêu cầu Traceability của AI Act.",
+"x": [
+"Chia sẻ dữ liệu không trả lời câu hỏi nguồn gốc và biến đổi.",
+"DP bảo vệ quyền riêng tư, không truy vết nguồn.",
+"Masking bảo vệ PII, không truy vết."
+],
+"trap": "Chọn công cụ bảo mật cho câu hỏi về truy vết.",
+"mem": "Lineage ⇔ Traceability."
+},
+{
+"lv": "VDC",
+"t": "Bảo mật nhiều lớp",
+"q": "Phòng Marketing được phép phân tích bảng khách hàng nhưng chỉ khách của khu vực mình phụ trách, và không được thấy số CMND đầy đủ. Đồng thời công ty muốn chia sẻ bảng tổng hợp cho đối tác và thu hồi ngay khi dừng hợp tác. Tổ hợp đúng là:",
+"o": [
+"RLS theo khu vực + masking cột CMND + Secure Data Sharing có thể REVOKE",
+"Masking theo khu vực + RLS cột CMND + gửi file CSV qua FTP",
+"K-anonymity toàn bảng + differential privacy cho đối tác qua FTP",
+"Data catalog có Trust Score + audit trail bất biến + full load hằng đêm"
+],
+"w": "Lọc dòng theo khu vực → Row-level Security. Che CMND → Column-level masking. Chia sẻ có thể thu hồi ngay → Secure Data Sharing (zero-copy), dừng hợp tác chỉ cần REVOKE.",
+"x": [
+"Đảo vai trò RLS và masking; FTP không thu hồi được bản sao.",
+"K-anonymity làm mất chi tiết Marketing cần; FTP vẫn tạo bản sao.",
+"Catalog và audit trail không giới hạn dòng hay che cột."
+],
+"trap": "Đảo RLS và masking.",
+"mem": "Dòng → RLS; cột → masking; chia sẻ thu hồi được → zero-copy."
+},
+{
+"lv": "TH",
+"t": "Fine-grained security",
+"q": "Fine-grained security khác phân quyền thông thường ở điểm nào?",
+"o": [
+"Phân quyền tới từng dòng và từng cột, cùng câu SELECT mỗi người nhận kết quả khác nhau",
+"Phân quyền trên cả bảng: người dùng được xem bảng hoặc không",
+"Phân quyền theo thời gian: chỉ được truy vấn trong giờ hành chính",
+"Phân quyền theo thiết bị: chỉ được truy vấn từ máy của công ty"
+],
+"w": "Phân quyền thông thường cấp quyền trên cả bảng. Fine-grained security phân quyền tới từng dòng (RLS) và từng cột (masking): cùng một câu SELECT * FROM customers, mỗi người nhận kết quả khác nhau tùy vai trò.",
+"x": [
+"Đây là phân quyền thông thường.",
+"Slide không mô tả phân quyền theo giờ.",
+"Slide không mô tả phân quyền theo thiết bị."
+],
+"trap": "Nghĩ “chi tiết” là thêm điều kiện ngoài dữ liệu.",
+"mem": "Fine-grained = dòng + cột."
+},
+{
+"lv": "VD",
+"t": "Chọn nghĩa vụ AI Act",
+"q": "Nhóm phát triển lưu đầy đủ sơ đồ kiến trúc hệ thống chấm điểm và luồng dữ liệu để thanh tra có thể kiểm tra bất cứ lúc nào. Đây là nghĩa vụ nào đối với hệ thống rủi ro cao?",
+"o": [
+"Technical Documentation",
+"Traceability",
+"Data Quality",
+"Human Oversight"
+],
+"w": "Technical Documentation: lưu toàn bộ kiến trúc hệ thống và luồng dữ liệu để thanh tra bất cứ lúc nào.",
+"x": [
+"Traceability là tự ghi log suốt vòng đời vận hành.",
+"Data Quality là dữ liệu đại diện, kiểm soát bias.",
+"Human Oversight là trụ cột chung, con người can thiệp quyết định."
+],
+"trap": "Lẫn tài liệu kiến trúc với log vận hành.",
+"mem": "Kiến trúc + luồng dữ liệu → Technical Documentation; log → Traceability."
+},
+{
+"lv": "VD",
+"t": "Privacy Audit Trail",
+"q": "Đội tuân thủ cần theo dõi lượng ngân sách quyền riêng tư đã tiêu hao qua các truy vấn thống kê trong năm. Thành phần nào của báo cáo tuân thủ đáp ứng?",
+"o": [
+"Privacy Audit Trail",
+"Data Audit Trail",
+"Bias Reporting Dashboard",
+"Business Glossary"
+],
+"w": "Privacy Audit Trail theo dõi lượng ngân sách quyền riêng tư ε đã tiêu hao theo thời gian (liên hệ differential privacy, mục 7.5).",
+"x": [
+"Data Audit Trail ghi ai đã tạo, sửa, xóa, xem dữ liệu.",
+"Bias Dashboard đo chỉ số công bằng.",
+"Glossary định nghĩa khái niệm nghiệp vụ."
+],
+"trap": "Lẫn hai loại audit trail.",
+"mem": "Privacy Audit Trail = theo dõi ε."
+}
+]
+}
