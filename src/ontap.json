@@ -1,0 +1,954 @@
+{
+"questions": [
+{
+"lv": "NB",
+"t": "Firebolt (C1)",
+"q": "<b>Firebolt</b> là nền tảng có đặc điểm nổi bật nào?",
+"o": [
+"Tập trung vào tốc độ truy vấn cực nhanh cho phân tích thời gian thực",
+"Tiên phong kiến trúc tách rời compute và storage trên cloud",
+"Serverless hoàn toàn và tích hợp sẵn học máy bằng SQL",
+"Lakehouse “nhẹ” xây dựng trên nền DuckDB"
+],
+"w": "Slide Chương 1 phân biệt các nền tảng: Firebolt nổi bật ở tốc độ truy vấn cực nhanh cho các ứng dụng phân tích thời gian thực.",
+"x": [
+"Đây là Snowflake.",
+"Đây là BigQuery.",
+"Đây là MotherDuck."
+],
+"trap": "Lẫn đặc điểm nhận diện giữa các nền tảng.",
+"mem": "Snowflake: tách compute/storage · BigQuery: serverless + ML · Firebolt: tốc độ · MotherDuck: DuckDB."
+},
+{
+"lv": "TH",
+"t": "Caching (C1)",
+"q": "Trong quản lý chi phí Modern Data Warehouse, cơ chế nào giúp <b>không phải tính toán lại</b> kết quả của một truy vấn đã chạy?",
+"o": [
+"Caching kết quả truy vấn",
+"Auto-suspend kho tính toán",
+"Auto-scaling theo tải",
+"Resource monitor theo hạn mức"
+],
+"w": "Caching giữ lại kết quả truy vấn (khoảng 24 giờ ở BigQuery, Snowflake). Chạy lại đúng câu đó khi dữ liệu gốc chưa đổi thì trả kết quả cũ, không quét bảng, không tốn compute.",
+"x": [
+"Auto-suspend tắt kho khi không có truy vấn, không dùng lại kết quả cũ.",
+"Auto-scaling thêm hoặc bớt tài nguyên theo tải.",
+"Resource monitor cảnh báo hoặc chặn khi vượt hạn mức chi phí."
+],
+"trap": "Lẫn caching với auto-suspend vì cả hai đều tiết kiệm chi phí.",
+"mem": "Truy vấn lặp lại → caching; không có truy vấn → auto-suspend."
+},
+{
+"lv": "TH",
+"t": "Data Fabric (C1)",
+"q": "Mục tiêu quan trọng nhất của <b>Data Fabric</b> là:",
+"o": [
+"Kết nối các nguồn rời rạc thành một thể thống nhất mà không di chuyển dữ liệu, xóa bỏ data silo",
+"Sao chép toàn bộ dữ liệu từ mọi nguồn về một kho trung tâm duy nhất mỗi đêm",
+"Chia dữ liệu cho từng phòng ban tự sở hữu và tự vận hành sản phẩm dữ liệu riêng",
+"Chuyển toàn bộ hệ thống on-premise lên một nhà cung cấp cloud duy nhất"
+],
+"w": "Data Fabric dùng virtualization (truy cập tại nguồn, không sao chép), abstraction layer che độ phức tạp hạ tầng, hỗ trợ hybrid-cloud, một cổng truy cập duy nhất; mục tiêu cuối là xóa bỏ data silo.",
+"x": [
+"Sao chép tập trung là ETL truyền thống, trái với virtualization.",
+"Đây là Data Mesh (sở hữu theo miền).",
+"Data Fabric hỗ trợ hybrid-cloud, không bắt buộc chuyển hết lên cloud."
+],
+"trap": "Lẫn Data Fabric với Data Mesh.",
+"mem": "Fabric: ảo hóa, không di chuyển dữ liệu, xóa silo."
+},
+{
+"lv": "NB",
+"t": "Data Catalog (C1)",
+"q": "<b>Data Catalog</b> là gì?",
+"o": [
+"Thư viện chứa thông tin và vị trí của mọi nguồn dữ liệu",
+"Kho lưu trữ dữ liệu thô dạng file với chi phí rẻ",
+"Công cụ lập lịch và điều phối các pipeline dữ liệu",
+"Bộ nhớ đệm giữ lại kết quả của các truy vấn gần đây"
+],
+"w": "Catalog cho biết có những bảng nào, ở đâu, cột nghĩa là gì, ai sở hữu, ai được dùng. Chương 7: catalog giúp tránh data swamp; AI-driven catalog tự gắn nhãn cột PII.",
+"x": [
+"Đây là data lake / object storage.",
+"Đây là orchestrator như Airflow.",
+"Đây là caching."
+],
+"trap": "Nhầm catalog là nơi chứa dữ liệu.",
+"mem": "Catalog = “danh bạ” của tài sản dữ liệu (metadata), không chứa dữ liệu."
+},
+{
+"lv": "TH",
+"t": "Bucket Policies (C1)",
+"q": "<b>Bucket Policies</b> trong object storage có chức năng gì?",
+"o": [
+"Quy định quyền truy cập cho toàn bộ bucket từ bên ngoài",
+"Giữ nhiều phiên bản của object để khôi phục bản cũ",
+"Khóa object không cho xóa hay sửa trong một thời gian",
+"Gán quyền cho từng người dùng hoặc vai trò trong tổ chức"
+],
+"w": "Bucket policy gắn với tài nguyên (bucket) và quy định ai, từ đâu được truy cập toàn bộ bucket, ví dụ chỉ cho truy cập từ mạng nội bộ.",
+"x": [
+"Đây là Versioning.",
+"Đây là Object Lock.",
+"Đây là IAM policy, gắn với người hoặc vai trò."
+],
+"trap": "Lẫn bucket policy (gắn tài nguyên) với IAM policy (gắn người dùng).",
+"mem": "Bucket policy: tài nguyên · IAM: người · Versioning: bản cũ · Object Lock: chống xóa."
+},
+{
+"lv": "NB",
+"t": "Micro-partition (C2)",
+"q": "Với <b>Micro-partitioning</b>, mỗi phân vùng chứa dữ liệu nén có kích cỡ bao nhiêu?",
+"o": [
+"50 MB – 500 MB",
+"1 MB – 16 MB",
+"1 GB – 5 GB",
+"128 KB – 1 MB"
+],
+"w": "Mỗi micro-partition chứa 50–500 MB dữ liệu (chưa nén), lưu theo cột, nén riêng từng cột. Metadata giữ min/max mỗi cột để pruning.",
+"x": [
+"Quá nhỏ so với slide.",
+"Quá lớn so với slide.",
+"Đây cỡ trang dữ liệu, không phải micro-partition."
+],
+"trap": "Nhớ nhầm đơn vị MB/GB.",
+"mem": "Micro-partition: 50–500 MB, columnar, có min/max để pruning."
+},
+{
+"lv": "TH",
+"t": "Clustering Key (C2)",
+"q": "<b>Clustering Key</b> nên được chọn dựa trên đối tượng nào?",
+"o": [
+"Cột có độ chọn lọc cao, hay xuất hiện trong mệnh đề WHERE",
+"Cột có ít giá trị khác nhau nhất như giới tính, trạng thái",
+"Cột khóa chính duy nhất như mã giao dịch của từng dòng",
+"Cột có kiểu văn bản dài nhất trong bảng để nén tốt hơn"
+],
+"w": "Chọn cột hay dùng để lọc (WHERE), có độ chọn lọc cao vừa phải; cột ngày thường là lựa chọn tốt. Mục tiêu: pruning hiệu quả, tối ưu range query, giảm data skew.",
+"x": [
+"Quá ít giá trị thì pruning được ít.",
+"Giá trị duy nhất tốn công duy trì clustering.",
+"Độ dài văn bản không phải tiêu chí."
+],
+"trap": "Nghĩ khóa chính luôn là clustering key tốt nhất.",
+"mem": "Clustering key: cột lọc thường xuyên, cardinality vừa phải (ngày)."
+},
+{
+"lv": "TH",
+"t": "Accumulating Snapshot (C2)",
+"q": "<b>Accumulating Snapshot Fact Table</b> phù hợp nhất với ngữ cảnh nào?",
+"o": [
+"Theo dõi tiến độ đơn hàng qua các bước đặt, đóng gói, giao",
+"Ghi từng giao dịch quẹt thẻ ngay khi phát sinh",
+"Chụp số dư tài khoản vào cuối mỗi tháng",
+"Lưu danh mục sản phẩm và lịch sử thay đổi giá"
+],
+"w": "Accumulating snapshot: mỗi dòng là một thực thể trong cả vòng đời quy trình nhiều giai đoạn, được cập nhật các mốc thời gian khi qua bước mới; dùng tính lead time.",
+"x": [
+"Đây là transaction fact.",
+"Đây là periodic snapshot fact.",
+"Đây là dimension (có thể kèm SCD)."
+],
+"trap": "Lẫn accumulating với periodic snapshot.",
+"mem": "Transaction: sự kiện · Periodic: theo kỳ · Accumulating: theo vòng đời quy trình, có cập nhật."
+},
+{
+"lv": "NB",
+"t": "Bridge Table (C2)",
+"q": "Chức năng chính của <b>Bridge Table</b> là:",
+"o": [
+"Giải quyết quan hệ nhiều–nhiều giữa fact và dimension",
+"Gộp sẵn fact và dimension để không phải JOIN",
+"Lưu lịch sử thay đổi thuộc tính của dimension",
+"Chia bảng fact lớn thành các phân vùng nhỏ"
+],
+"w": "Bridge table xử lý quan hệ M–M, ví dụ một tài khoản nhiều chủ sở hữu: (account_key, customer_key, weight). JOIN qua bảng cầu dễ đếm trùng nên dùng weight để phân bổ.",
+"x": [
+"Đây là flat table.",
+"Đây là SCD.",
+"Đây là partitioning."
+],
+"trap": "Lẫn bridge với flat table.",
+"mem": "Bridge = M–M; cẩn thận đếm trùng."
+},
+{
+"lv": "NB",
+"t": "Flat table (C2)",
+"q": "<b>Flat table</b> được dùng để giảm thiểu phép tính nào?",
+"o": [
+"JOIN",
+"GROUP BY",
+"ORDER BY",
+"UNION"
+],
+"w": "Flat (wide) table gộp sẵn thông tin fact và các dimension thành một bảng rộng, truy vấn không cần JOIN. Trên cloud ưu tiên tối ưu truy vấn hơn dung lượng.",
+"x": [
+"Vẫn phải GROUP BY khi tổng hợp.",
+"Sắp xếp không liên quan đến flat table.",
+"UNION không phải mục tiêu."
+],
+"trap": "Nghĩ flat table giảm cả phép tổng hợp.",
+"mem": "Flat table = denormalize để bỏ JOIN."
+},
+{
+"lv": "TH",
+"t": "Schema evolution (C3)",
+"q": "Đặc tính của <b>Snowflake Evolution</b> (schema evolution trên Snowflake) là:",
+"o": [
+"Tự điều chỉnh cấu trúc bảng ngay trong lệnh COPY khi file nạp vào có cột mới",
+"Tự xóa cột không còn xuất hiện trong file nguồn để giữ bảng gọn nhẹ",
+"Dừng pipeline và báo lỗi mỗi khi schema của file nguồn thay đổi",
+"Ghi các cột mới vào một bảng riêng để quản trị viên duyệt thủ công"
+],
+"w": "Snowflake tự thêm cột mới vào bảng trong khi chạy COPY. Mục đích chung của các công cụ schema evolution (Iceberg/Delta, Schema Registry, Fivetran Auto-sync, Glue Crawler): pipeline không dừng, không mất dữ liệu âm thầm.",
+"x": [
+"Không tự xóa cột, tránh mất dữ liệu.",
+"Dừng pipeline là điều schema evolution muốn tránh.",
+"Không cần duyệt thủ công."
+],
+"trap": "Nghĩ schema evolution là chặn thay đổi.",
+"mem": "Schema evolution: tự thích nghi, tránh silent loss."
+},
+{
+"lv": "TH",
+"t": "Schema Tests (C3)",
+"q": "Chức năng của <b>Schema Tests</b> trong dbt là:",
+"o": [
+"Tự động kiểm tra điều kiện cơ bản như cột rỗng, trùng lặp",
+"Viết câu SQL riêng để kiểm tra quy tắc nghiệp vụ đặc thù",
+"Sinh tài liệu mô tả bảng và cột cho người dùng kinh doanh",
+"Thêm vòng lặp và điều kiện vào câu lệnh SQL tĩnh"
+],
+"w": "Schema (generic) tests khai báo trong YAML, dbt tự sinh SQL kiểm tra. Bốn test có sẵn: not_null, unique, accepted_values, relationships.",
+"x": [
+"Đây là singular test.",
+"Đây là dbt docs.",
+"Đây là Jinja."
+],
+"trap": "Lẫn schema test với singular test.",
+"mem": "Schema test: not_null, unique, accepted_values, relationships."
+},
+{
+"lv": "TH",
+"t": "Jinja (C3)",
+"q": "<b>Jinja</b> trong dbt là gì?",
+"o": [
+"Templating engine thêm if, for, biến vào SQL để tạo dynamic SQL",
+"Ngôn ngữ truy vấn đồ thị dùng để duyệt quan hệ nhiều tầng",
+"Công cụ điều phối pipeline viết DAG bằng ngôn ngữ Python",
+"Định dạng file cấu hình khai báo các test cho mô hình"
+],
+"w": "Jinja bổ sung cấu trúc điều khiển vào SQL tĩnh: đóng gói SQL lặp lại thành macro, tự đổi tên bảng/schema theo môi trường Dev/Test/Prod.",
+"x": [
+"Đây là Cypher.",
+"Đây là Airflow.",
+"Đây là YAML."
+],
+"trap": "Lẫn Jinja với YAML vì cùng nằm trong project dbt.",
+"mem": "Jinja = template + macro cho SQL."
+},
+{
+"lv": "TH",
+"t": "Apache Airflow (C3)",
+"q": "Đặc tính nào đúng với <b>Apache Airflow</b>?",
+"o": [
+"Tư duy task-centric, pipeline viết thành DAG bằng Python",
+"Tư duy asset-centric, quản lý pipeline theo tài sản dữ liệu",
+"Chỉ chạy được pipeline streaming theo thời gian thực",
+"Không hỗ trợ retry hay lập lịch cho các tác vụ"
+],
+"w": "Airflow là tiêu chuẩn công nghiệp cho orchestration, hàng nghìn thư viện kết nối, task-centric (tác vụ nào chạy, thành công hay thất bại), pipeline là DAG viết bằng Python; có lập lịch, retry, cảnh báo.",
+"x": [
+"Asset-centric là Dagster.",
+"Airflow chủ yếu điều phối batch.",
+"Airflow có retry và lập lịch."
+],
+"trap": "Lẫn Airflow với Dagster.",
+"mem": "Airflow: task-centric · Dagster: asset-centric."
+},
+{
+"lv": "TH",
+"t": "Storage Mirroring (C3)",
+"q": "<b>Storage Mirroring</b> trong Zero-ETL có chức năng gì?",
+"o": [
+"Nhân bản dữ liệu tự động, liên tục ở tầng lưu trữ vật lý",
+"Viết lại câu SQL biến đổi dữ liệu thành mô hình dbt",
+"Chụp toàn bộ cơ sở dữ liệu nguồn mỗi đêm theo lịch",
+"Nén dữ liệu cũ sang tầng lưu trữ lạnh để giảm chi phí"
+],
+"w": "Storage mirroring nhân bản dữ liệu tự động và liên tục ở tầng hệ thống vật lý; là công nghệ cốt lõi của Zero-ETL (cùng proprietary connectors, metadata sharing, serverless scaling, unified control plane). Ví dụ Microsoft Fabric Mirroring.",
+"x": [
+"Không liên quan đến dbt.",
+"Chụp theo lịch là batch, không liên tục.",
+"Đây là tiering lưu trữ."
+],
+"trap": "Nghĩ mirroring là backup theo lịch.",
+"mem": "Mirroring: liên tục, tầng storage, nền của Zero-ETL."
+},
+{
+"lv": "VD",
+"t": "Entropy (C4)",
+"q": "Dataset D có 2 lớp với <b>6 Good</b> và <b>4 Bad</b>. Entropy Info(D) bằng:",
+"o": [
+"≈ 0,971",
+"≈ 0,500",
+"≈ 1,000",
+"≈ 0,673"
+],
+"w": "p = 0,6 và 0,4. Info(D) = −0,6·log<sub>2</sub>0,6 − 0,4·log<sub>2</sub>0,4 = 0,442 + 0,529 ≈ 0,971.",
+"x": [
+"0,5 không theo công thức entropy.",
+"Chỉ bằng 1 khi chia 50/50.",
+"0,673 là khi dùng ln thay cho log<sub>2</sub>."
+],
+"trap": "Dùng logarit tự nhiên thay log cơ số 2.",
+"mem": "2 lớp: entropy ∈ [0, 1]; 60/40 ≈ 0,971."
+},
+{
+"lv": "TH",
+"t": "Ý nghĩa Entropy (C4)",
+"q": "Công thức Info(D) = −Σ p<sub>i</sub>·log<sub>2</sub>(p<sub>i</sub>) đo điều gì?",
+"o": [
+"Mức hỗn loạn về nhãn lớp, số bit trung bình để xác định lớp của một bản ghi",
+"Lượng thông tin còn lại sau khi tách D theo một thuộc tính A",
+"Mức giảm entropy khi tách D theo thuộc tính A tốt nhất",
+"Tỉ lệ bản ghi bị phân lớp sai của một cây quyết định"
+],
+"w": "Entropy đo độ không chắc chắn về nhãn lớp. Dấu trừ để kết quả không âm (log<sub>2</sub>p ≤ 0). Bằng 0 khi mọi bản ghi cùng lớp.",
+"x": [
+"Đây là Info<sub>A</sub>(D).",
+"Đây là Gain(A).",
+"Đây là error rate."
+],
+"trap": "Lẫn Info(D), Info_A(D) và Gain.",
+"mem": "Info(D): trước khi tách · Info_A(D): sau khi tách · Gain = hiệu."
+},
+{
+"lv": "TH",
+"t": "Info_A(D) (C4)",
+"q": "Trong Info<sub>A</sub>(D) = Σ |D<sub>j</sub>|/|D| × Info(D<sub>j</sub>), thành phần |D<sub>j</sub>|/|D| là:",
+"o": [
+"Trọng số: tỉ lệ bản ghi rơi vào nhánh j khi tách theo A",
+"Xác suất một bản ghi trong D thuộc lớp thứ j",
+"Entropy của tập con D<sub>j</sub> sau khi tách",
+"Số giá trị khác nhau của thuộc tính A"
+],
+"w": "Info<sub>A</sub>(D) là trung bình có trọng số entropy của các tập con. |D<sub>j</sub>|/|D| là trọng số của nhánh j; Info(D<sub>j</sub>) là entropy nhánh; v là số giá trị của A.",
+"x": [
+"p<sub>i</sub> là xác suất lớp, nằm trong công thức Info(D).",
+"Đây là Info(D<sub>j</sub>).",
+"Đây là v."
+],
+"trap": "Lẫn tỉ lệ nhánh với tỉ lệ lớp.",
+"mem": "|D_j|/|D| = trọng số nhánh."
+},
+{
+"lv": "VDC",
+"t": "Gain (C4)",
+"q": "D có 10 mẫu (6 Good, 4 Bad), Info(D) ≈ 0,971. Tách theo A được D<sub>1</sub>: 4 mẫu đều Good; D<sub>2</sub>: 6 mẫu gồm 2 Good, 4 Bad (Info(D<sub>2</sub>) ≈ 0,918). Gain(A) bằng:",
+"o": [
+"≈ 0,420",
+"≈ 0,551",
+"≈ 0,053",
+"≈ 0,971"
+],
+"w": "Info(D<sub>1</sub>) = 0 (thuần). Info<sub>A</sub>(D) = 0,4 × 0 + 0,6 × 0,918 ≈ 0,551. Gain(A) = 0,971 − 0,551 ≈ 0,420.",
+"x": [
+"0,551 là Info<sub>A</sub>(D), chưa lấy hiệu.",
+"0,053 là 0,971 − 0,918, quên trọng số và nhánh D<sub>1</sub>.",
+"0,971 là Info(D), coi như A không đổi gì."
+],
+"trap": "Dừng ở Info_A(D) hoặc bỏ trọng số nhánh.",
+"mem": "Gain = Info(D) − Σ (|D_j|/|D|)·Info(D_j)."
+},
+{
+"lv": "VDC",
+"t": "ID3 chọn thuộc tính (C4)",
+"q": "Info(D) = 0,971. Ba thuộc tính cho Info<sub>A</sub>(D) = 0,651; Info<sub>B</sub>(D) = 0,875; Info<sub>C</sub>(D) = 0,720. ID3 chọn thuộc tính nào và Gain bao nhiêu?",
+"o": [
+"A, Gain = 0,320",
+"B, Gain = 0,096",
+"C, Gain = 0,251",
+"B, Gain = 0,875"
+],
+"w": "Gain(A) = 0,320; Gain(B) = 0,096; Gain(C) = 0,251. ID3 chọn Gain lớn nhất, tương đương Info<sub>A</sub>(D) nhỏ nhất → A.",
+"x": [
+"B có Gain nhỏ nhất.",
+"C có Gain nhỏ hơn A.",
+"Chọn Info lớn nhất là ngược; 0,875 không phải Gain."
+],
+"trap": "Chọn Info_A(D) lớn nhất.",
+"mem": "ID3: Gain lớn nhất = Info_A(D) nhỏ nhất."
+},
+{
+"lv": "VD",
+"t": "Min-Max (C4)",
+"q": "Thu nhập thấp nhất <b>5 triệu</b>, cao nhất <b>10 triệu</b>. Thu nhập <b>8 triệu</b> sau Min-Max về [0, 1] là:",
+"o": [
+"0,6",
+"0,8",
+"0,3",
+"0,5"
+],
+"w": "v′ = (8 − 5)/(10 − 5) = 3/5 = 0,6.",
+"x": [
+"0,8 = 8/10, quên trừ min.",
+"0,3 = 3/10, chia cho max thay vì (max − min).",
+"0,5 là điểm giữa 7,5 triệu."
+],
+"trap": "Chia cho max thay vì khoảng (max − min).",
+"mem": "Min-Max: (v − min)/(max − min)."
+},
+{
+"lv": "VD",
+"t": "Equal-width (C4)",
+"q": "Ngân hàng chia khách thành <b>3 nhóm</b> theo Equal-width Binning, hạn mức thấp nhất 100 triệu, cao nhất 700 triệu. Nhóm thấp nhất có khoảng:",
+"o": [
+"100 – 300 triệu",
+"100 – 233 triệu",
+"0 – 233 triệu",
+"100 – 400 triệu"
+],
+"w": "Width = (700 − 100)/3 = 200 → 100–300, 300–500, 500–700.",
+"x": [
+"233 = 700/3, quên trừ min.",
+"Bắt đầu từ 0 là sai, phải từ min.",
+"400 là khi chia 2 nhóm."
+],
+"trap": "Chia max cho N thay vì (max − min).",
+"mem": "Equal-width: width = (max − min)/N."
+},
+{
+"lv": "TH",
+"t": "Z-score (C4)",
+"q": "Nhận định nào đúng về <b>Z-Score Normalization</b>?",
+"o": [
+"Sau chuẩn hóa dữ liệu có trung bình 0, độ lệch chuẩn 1; ít bị outlier chi phối hơn Min-Max",
+"Luôn đưa dữ liệu về đúng đoạn [0, 1] giống Min-Max Normalization",
+"Chia giá trị cho 10<sup>j</sup> với j nhỏ nhất để mọi giá trị nhỏ hơn 1",
+"Chỉ dùng được khi biết trước giá trị nhỏ nhất và lớn nhất của dữ liệu"
+],
+"w": "v′ = (v − μ)/σ; kết quả có μ = 0, σ = 1, cho biết cách trung bình bao nhiêu độ lệch chuẩn. Hợp khi không biết min/max hoặc có outlier; phát hiện outlier với |Z| > 3.",
+"x": [
+"Z-score không giới hạn trong [0, 1].",
+"Đây là decimal scaling.",
+"Ngược lại: Z-score không cần min/max."
+],
+"trap": "Nghĩ mọi chuẩn hóa đều về [0, 1].",
+"mem": "Z-score: μ = 0, σ = 1; |Z| > 3 là outlier."
+},
+{
+"lv": "VD",
+"t": "Decimal scaling (C4)",
+"q": "Một cột có giá trị từ −480 đến 9.200. Theo Decimal Scaling, j bằng bao nhiêu và 9.200 thành bao nhiêu?",
+"o": [
+"j = 4; 0,92",
+"j = 3; 9,2",
+"j = 5; 0,092",
+"j = 4; 0,048"
+],
+"w": "max|v| = 9.200; j nhỏ nhất để 10<sup>j</sup> > 9.200 là j = 4. 9.200/10<sup>4</sup> = 0,92; −480 → −0,048.",
+"x": [
+"9,2 vẫn ≥ 1 nên j = 3 chưa đủ.",
+"j = 5 đúng điều kiện nhưng không phải nhỏ nhất.",
+"0,048 là giá trị của −480 (bỏ dấu), không phải 9.200."
+],
+"trap": "Chọn j không nhỏ nhất.",
+"mem": "Decimal scaling: j nhỏ nhất để mọi |v/10^j| < 1."
+},
+{
+"lv": "VD",
+"t": "Equal-frequency (C4)",
+"q": "9 hạn mức (triệu): 10, 12, 15, 18, 20, 22, 25, 40, 70. Chia 3 bin theo Equal-frequency, bin thứ hai là:",
+"o": [
+"{18, 20, 22}",
+"{10, 12, 15}",
+"{30–50}",
+"{25, 40, 70}"
+],
+"w": "9 bản ghi, 3 bin → mỗi bin 3 bản ghi theo thứ tự tăng dần: {10,12,15}, {18,20,22}, {25,40,70}.",
+"x": [
+"Đây là bin thứ nhất.",
+"Chia theo khoảng là equal-width.",
+"Đây là bin thứ ba."
+],
+"trap": "Chia theo khoảng giá trị.",
+"mem": "Equal-frequency: sắp xếp rồi chia đều số lượng."
+},
+{
+"lv": "VD",
+"t": "Discretization (C4)",
+"q": "Biến cột thu nhập liên tục thành ba nhãn Thấp / Trung bình / Cao để chạy Apriori là kỹ thuật gì?",
+"o": [
+"Discretization (rời rạc hóa)",
+"Normalization (chuẩn hóa)",
+"PCA (giảm chiều)",
+"Smoothing bằng SMA"
+],
+"w": "Discretization biến thuộc tính liên tục thành khoảng hoặc nhãn rời rạc, giảm số giá trị khác nhau, phục vụ thuật toán cần dữ liệu rời rạc (ID3, Apriori). Kỹ thuật: equal-width, equal-frequency; đi kèm concept hierarchy.",
+"x": [
+"Chuẩn hóa vẫn giữ giá trị liên tục.",
+"PCA tạo cột mới liên tục, giảm số chiều.",
+"SMA làm mượt chuỗi thời gian."
+],
+"trap": "Lẫn rời rạc hóa với chuẩn hóa.",
+"mem": "Liên tục → nhãn/khoảng = discretization."
+},
+{
+"lv": "TH",
+"t": "PCA (C4)",
+"q": "Nhận định đúng về phép biến đổi <b>PCA</b>:",
+"o": [
+"Tạo cột mới là tổ hợp tuyến tính của cột cũ, giữ tối đa phương sai",
+"Giữ nguyên một số cột gốc quan trọng nhất và bỏ các cột còn lại",
+"Đưa mọi cột về cùng thang đo [0, 1] trước khi huấn luyện",
+"Gom các bản ghi gần nhau thành cụm theo khoảng cách"
+],
+"w": "PCA là phép biến đổi tuyến tính giữ tối đa phương sai để giảm số chiều; thành phần chính là vector riêng ứng với trị riêng lớn nhất của ma trận hiệp phương sai.",
+"x": [
+"Đây là feature selection.",
+"Đây là Min-Max.",
+"Đây là clustering."
+],
+"trap": "Lẫn PCA với feature selection.",
+"mem": "PCA tạo cột mới; feature selection giữ cột cũ."
+},
+{
+"lv": "VD",
+"t": "SMA (C4)",
+"q": "Giá dầu 6 ngày: 75, 78, 76, 80, 82, 81 (USD), cửa sổ k = 3. Theo định nghĩa của môn (trung bình k giá trị gần nhất tính đến ngày n), <b>SMA ngày 4</b> là:",
+"o": [
+"78",
+"76,33",
+"79,33",
+"81"
+],
+"w": "Cửa sổ ngày 2, 3, 4: (78 + 76 + 80)/3 = 234/3 = 78.",
+"x": [
+"76,33 là trung bình ngày 1–3, cách hiểu “dự báo ngày 4”.",
+"79,33 là SMA ngày 5 (76, 80, 82).",
+"81 là SMA ngày 6."
+],
+"trap": "Lấy nhầm cửa sổ ngày 1–3.",
+"mem": "SMA_n gồm cả ngày n: (x_{n−2} + x_{n−1} + x_n)/3."
+},
+{
+"lv": "VD",
+"t": "Multi-level mining (C4)",
+"q": "Ở mức chi nhánh không luật kết hợp nào đủ phổ biến; khi gộp lên mức vùng thì xuất hiện luật mạnh. Khả năng truy vấn nhiều cấp này gắn với dạng khai phá nào?",
+"o": [
+"Multi-level mining dựa trên concept hierarchy",
+"Sequential pattern mining theo thứ tự thời gian",
+"Outlier detection bằng Z-score",
+"Clustering theo khoảng cách"
+],
+"w": "Multi-level mining khai phá luật ở nhiều mức trừu tượng dựa trên phân cấp khái niệm; dùng roll-up/drill-down tìm nguyên nhân gốc (vùng → tỉnh → chi nhánh).",
+"x": [
+"Sequential mining xét thứ tự, không xét cấp trừu tượng.",
+"Outlier detection tìm điểm bất thường.",
+"Clustering không dựa trên phân cấp khái niệm."
+],
+"trap": "Chọn sequential vì có chữ “nhiều bước”.",
+"mem": "Nhiều cấp trừu tượng = multi-level mining + concept hierarchy."
+},
+{
+"lv": "VD",
+"t": "Apriori ứng viên (C5)",
+"q": "Có <b>6 item</b> đơn lẻ phổ biến. Số itemset 2 phần tử được sinh ra để kiểm tra là:",
+"o": [
+"15",
+"30",
+"36",
+"12"
+],
+"w": "C(6, 2) = 6 × 5 / 2 = 15. Số ứng viên tăng nhanh là điểm yếu của Apriori mà FP-Growth khắc phục.",
+"x": [
+"30 = 6 × 5, tính cả thứ tự.",
+"36 = 6², tính cả cặp trùng.",
+"12 = 6 × 2."
+],
+"trap": "Quên chia 2 (cặp không có thứ tự).",
+"mem": "Ứng viên 2-itemset = n(n − 1)/2."
+},
+{
+"lv": "NB",
+"t": "Ngưỡng minsup (C5)",
+"q": "Thông thường, ngưỡng <b>minsup</b> được chọn là bao nhiêu?",
+"o": [
+"0,01 (1%)",
+"0,8 (80%)",
+"0,5 (50%)",
+"0,85 (85%)"
+],
+"w": "minsup thường 0,01; minconf thường 0,8. Luật được giữ khi vượt cả hai ngưỡng.",
+"x": [
+"0,8 là minconf.",
+"0,5 quá cao cho dữ liệu giỏ hàng.",
+"0,85 là damping factor của PageRank."
+],
+"trap": "Lẫn minsup với minconf.",
+"mem": "minsup 1% · minconf 0,8 · damping 0,85."
+},
+{
+"lv": "VD",
+"t": "Support (C5)",
+"q": "CSDL 8 giao dịch: T1{a,b,c}, T2{a,b,c,d,e}, T3{b}, T4{c,d,e}, T5{c}, T6{b,c,d}, T7{c,d,e}, T8{c,e}. Với luật L: {c} → {d,e}, <b>Sup(L)</b> bằng:",
+"o": [
+"0,375",
+"0,4286",
+"0,875",
+"0,25"
+],
+"w": "Sup(L) = Sup({c,d,e}); {c,d,e} có ở T2, T4, T7 → 3/8 = 0,375.",
+"x": [
+"0,4286 = 3/7 là Confidence.",
+"0,875 = 7/8 là Sup({c}).",
+"0,25 là Sup({b,c,d})."
+],
+"trap": "Lẫn support với confidence.",
+"mem": "Sup(X→Y) = Sup(X ∪ Y)."
+},
+{
+"lv": "VD",
+"t": "Confidence (C5)",
+"q": "Tính <b>Conf({c} → {d,e})</b> trên CSDL 8 giao dịch (T1{a,b,c}, T2{a,b,c,d,e}, T3{b}, T4{c,d,e}, T5{c}, T6{b,c,d}, T7{c,d,e}, T8{c,e}). Kết quả là:",
+"o": [
+"3/7 ≈ 0,4286",
+"3/8 = 0,375",
+"7/8 = 0,875",
+"3/3 = 1"
+],
+"w": "Conf = Sup({c,d,e})/Sup({c}) = 3/7 ≈ 0,4286 ({c} có ở 7 giao dịch).",
+"x": [
+"3/8 là Support của luật.",
+"7/8 là Sup({c}).",
+"Chia cho Sup({d,e}) = 3 là chiều ngược {d,e} → {c}."
+],
+"trap": "Chia cho support vế phải.",
+"mem": "Conf = Sup(X∪Y)/Sup(X), X là vế trái."
+},
+{
+"lv": "VDC",
+"t": "Lift (C5)",
+"q": "Tính <b>Lift({c} → {d,e})</b> trên CSDL 8 giao dịch (T1{a,b,c}, T2{a,b,c,d,e}, T3{b}, T4{c,d,e}, T5{c}, T6{b,c,d}, T7{c,d,e}, T8{c,e}). Giá trị và ý nghĩa là:",
+"o": [
+"8/7 ≈ 1,143; tương quan dương yếu",
+"3/7 ≈ 0,429; tương quan âm",
+"7/8 = 0,875; tương quan âm",
+"1; c và {d,e} độc lập"
+],
+"w": "Lift = Conf/Sup({d,e}) = (3/7)/(3/8) = 8/7 ≈ 1,143 > 1: xuất hiện cùng nhau nhiều hơn mức kỳ vọng nếu độc lập, nhưng chỉ nhẹ.",
+"x": [
+"0,429 là Confidence, chưa chia Sup({d,e}).",
+"0,875 là Sup({c}), chia nhầm vế.",
+"Lift khác 1."
+],
+"trap": "Chia cho Sup vế trái thay vì vế phải.",
+"mem": "Lift = Conf/Sup(Y); > 1 dương, < 1 âm, = 1 độc lập."
+},
+{
+"lv": "VDC",
+"t": "Leverage (C5)",
+"q": "Với CSDL 8 giao dịch (T1{a,b,c}, T2{a,b,c,d,e}, T3{b}, T4{c,d,e}, T5{c}, T6{b,c,d}, T7{c,d,e}, T8{c,e}) và công thức Leverage(X → Y) = Sup(X ∪ Y) − Sup(X) × Sup(Y). <b>Leverage({c} → {d,e})</b> bằng:",
+"o": [
+"3/64 ≈ 0,0469",
+"21/64 ≈ 0,328",
+"3/8 = 0,375",
+"8/7 ≈ 1,143"
+],
+"w": "Sup({c,d,e}) = 3/8; Sup({c}) = 7/8; Sup({d,e}) = 3/8. Leverage = 3/8 − 7/8 × 3/8 = 24/64 − 21/64 = 3/64 ≈ 0,0469 > 0.",
+"x": [
+"21/64 là tích Sup(X)·Sup(Y), chưa lấy hiệu.",
+"3/8 là Sup(X ∪ Y).",
+"8/7 là Lift."
+],
+"trap": "Dừng ở bước nhân.",
+"mem": "Leverage = thực tế − kỳ vọng nếu độc lập."
+},
+{
+"lv": "VD",
+"t": "Support 3-itemset (C5)",
+"q": "Đếm độ hỗ trợ của <b>{c, d, b}</b> trong CSDL (T1{a,b,c}, T2{a,b,c,d,e}, T3{b}, T4{c,d,e}, T5{c}, T6{b,c,d}, T7{c,d,e}, T8{c,e}). Kết quả là:",
+"o": [
+"2/8 = 0,25",
+"4/8 = 0,5",
+"1/8 = 0,125",
+"3/8 = 0,375"
+],
+"w": "{b, c, d} cùng có mặt ở T2 và T6 → 2/8 = 0,25.",
+"x": [
+"0,5 là Sup({b}) hoặc Sup({d}).",
+"Bỏ sót T6.",
+"0,375 là Sup({c,d,e})."
+],
+"trap": "Đếm giao dịch chứa ít nhất một item thay vì đủ cả ba.",
+"mem": "Support itemset: giao dịch chứa đủ mọi item."
+},
+{
+"lv": "VDC",
+"t": "FP-Growth sắp xếp (C5)",
+"q": "FP-Growth trên CSDL 8 giao dịch (T1{a,b,c}, T2{a,b,c,d,e}, T3{b}, T4{c,d,e}, T5{c}, T6{b,c,d}, T7{c,d,e}, T8{c,e}), <b>minsup = 4</b> (số đếm). Chuỗi sắp xếp cố định chuẩn bị cho FP-Growth có thể là:",
+"o": [
+"c, b, d, e",
+"c, b, d, e, a",
+"a, b, c, d, e",
+"b, d, e, c"
+],
+"w": "Đếm: c = 7, b = 4, d = 4, e = 4, a = 2. Loại a (2 < 4); giữ b, d, e vì bằng ngưỡng. Sắp giảm dần theo số đếm: c đứng đầu; b, d, e bằng nhau xếp theo chữ cái.",
+"x": [
+"a không đạt minsup nên phải loại.",
+"Phải sắp theo số đếm giảm dần, không theo chữ cái, và loại a.",
+"c có số đếm lớn nhất phải đứng đầu."
+],
+"trap": "Loại nhầm item bằng ngưỡng hoặc quên sắp giảm dần.",
+"mem": "FP-Growth: lọc < minsup, sắp giảm dần theo số đếm."
+},
+{
+"lv": "VDC",
+"t": "Conditional Pattern Base (C5)",
+"q": "Conditional Pattern Base: X {Y:4}; Y {X:4, T:3}; Z {X:3, Y:4, T:3}; T {Y:4, Z:3}. FP-Growth, <b>minsup = 4</b>. Các tập phổ biến 2 item <b>không chứa X</b> là:",
+"o": [
+"{Y, Z} và {Y, T}",
+"{X, Y} và {Y, Z}",
+"{Y, Z}, {Y, T} và {Z, T}",
+"Chỉ {Y, T}"
+],
+"w": "Mỗi dòng giữ phần tử có số đếm ≥ 4: X→Y:4 ({X,Y}); Y→X:4 ({X,Y}); Z→Y:4 ({Y,Z}); T→Y:4 ({Y,T}). Bỏ {X,Y} vì chứa X.",
+"x": [
+"{X, Y} chứa X.",
+"Z:3 trong dòng T dưới ngưỡng nên {Z, T} không phổ biến.",
+"Bỏ sót {Y, Z} từ dòng Z."
+],
+"trap": "Giữ phần tử có số đếm 3.",
+"mem": "Mỗi dòng: giữ phần tử ≥ minsup rồi ghép với item của dòng."
+},
+{
+"lv": "NB",
+"t": "Damping factor (C6)",
+"q": "Chỉ số <b>damping factor</b> trong PageRank thường được dùng với giá trị:",
+"o": [
+"0,85",
+"0,15",
+"0,5",
+"1,0"
+],
+"w": "d = 0,85: 85% khả năng tiếp tục bấm link, 15% nhảy ngẫu nhiên; vì vậy hạng tử (1 − d) = 0,15.",
+"x": [
+"0,15 là (1 − d).",
+"Không phải giá trị thường dùng.",
+"d = 1 bỏ hẳn bước nhảy ngẫu nhiên."
+],
+"trap": "Lẫn d với (1 − d).",
+"mem": "d = 0,85; 1 − d = 0,15."
+},
+{
+"lv": "VDC",
+"t": "PageRank Page 2 (C6)",
+"q": "Đồ thị: 1→2; 2→5; 3→1, 2, 4, 5; 4→3, 5; 5→4. Khởi tạo PR = 1, d = 0,85, PR(A) = (1 − d) + d·Σ PR(T)/C(T). PageRank của <b>Page 2</b> ở vòng 1 là:",
+"o": [
+"1,2125",
+"1,25",
+"0,3625",
+"1,0625"
+],
+"w": "Page 2 được trỏ từ Page 1 (C = 1) và Page 3 (C = 4). PR(2) = 0,15 + 0,85 × (1/1 + 1/4) = 0,15 + 0,85 × 1,25 = 1,2125.",
+"x": [
+"1,25 là tổng đóng góp, quên áp d và (1 − d).",
+"0,3625 là PR của Page 1.",
+"1,0625 = 0,85 × 1,25, quên cộng 0,15."
+],
+"trap": "Quên chia cho số link ra C(T) hoặc quên hạng tử 0,15.",
+"mem": "PR = 0,15 + 0,85 × Σ PR(T)/C(T)."
+},
+{
+"lv": "VDC",
+"t": "PageRank Page 1 (C6)",
+"q": "Cùng đồ thị (1→2; 2→5; 3→1, 2, 4, 5; 4→3, 5; 5→4), PR khởi tạo 1, d = 0,85. PageRank của <b>Page 1</b> ở vòng 1 là:",
+"o": [
+"0,3625",
+"0,4",
+"1,0",
+"0,2125"
+],
+"w": "Page 1 chỉ được trỏ từ Page 3, mà Page 3 có 4 link ra. PR(1) = 0,15 + 0,85 × 1/4 = 0,15 + 0,2125 = 0,3625.",
+"x": [
+"0,4 = 0,15 + 0,25, quên nhân d.",
+"1,0 là giá trị khởi tạo.",
+"0,2125 quên cộng 0,15."
+],
+"trap": "Đọc sai chiều mũi tên (1 trỏ tới 2, không phải ngược lại).",
+"mem": "Lập bảng “được trỏ từ” trước khi tính."
+},
+{
+"lv": "VDC",
+"t": "CPT dự đoán (C6)",
+"q": "CPT có 4 chuỗi: s1 = ⟨A,B,C,D,F⟩, s2 = ⟨D,C,B,E⟩, s3 = ⟨E,A,D,C,B⟩, s4 = ⟨E,G,A,D,B,C⟩. Phần tử có điểm dự đoán cao nhất cho chuỗi <b>⟨D, C⟩</b> là:",
+"o": [
+"B (điểm 2/4)",
+"E (điểm 2/4)",
+"F (điểm 1/4)",
+"C (điểm 1/4)"
+],
+"w": "Cả 4 chuỗi chứa D và C. Phần sau khi đã gặp đủ D và C: s1 → ⟨F⟩; s2 → ⟨B, E⟩; s3 → ⟨B⟩; s4 → rỗng. Count: B = 2/4, E = 1/4, F = 1/4 → B.",
+"x": [
+"E chỉ xuất hiện ở s2 → 1/4.",
+"F chỉ 1/4, thấp hơn B.",
+"C nằm trong chuỗi dự đoán, không tính là hậu tố."
+],
+"trap": "Lấy phần sau chữ C ở s1 dù D chưa xuất hiện.",
+"mem": "CPT: tìm chuỗi tương tự (AND inverted index) → đếm phần sau hậu tố."
+},
+{
+"lv": "VD",
+"t": "Cấu trúc CPT (C6)",
+"q": "Trong cấu trúc CPT, <b>Lookup Table</b> dùng để làm gì?",
+"o": [
+"Trỏ mỗi chuỗi tới nút cuối trên cây để khôi phục lại toàn bộ chuỗi",
+"Đánh dấu chuỗi nào chứa item nào để AND tìm chuỗi tương tự",
+"Lưu các chuỗi dưới dạng cây tiền tố dùng chung nhánh đầu",
+"Đếm điểm của từng item ứng viên khi dự đoán phần tử kế tiếp"
+],
+"w": "Prediction Tree: cây tiền tố. Inverted Index: bảng item × chuỗi để tìm chuỗi tương tự. Lookup Table: mỗi chuỗi trỏ tới nút cuối; đi ngược lên gốc khôi phục cả chuỗi.",
+"x": [
+"Đây là Inverted Index.",
+"Đây là Prediction Tree.",
+"Đây là Count Table khi dự đoán."
+],
+"trap": "Lẫn Lookup Table với Inverted Index.",
+"mem": "Tree: lưu · Inverted Index: tìm · Lookup: khôi phục."
+},
+{
+"lv": "VDC",
+"t": "CPT+ nén cây (C6)",
+"q": "Cây CPT+ có nút nén x = AB. Inverted Index: s3 có A = 1, B = 1, C = 1, D = 1, E = 0; nhánh từ gốc là x → D → C. Chuỗi s3 là:",
+"o": [
+"⟨A, B, D, C⟩",
+"⟨A, B, C⟩",
+"⟨B, C⟩",
+"⟨E, A, B, A⟩"
+],
+"w": "x = AB, sau đó D rồi C → s3 = ABDC, khớp Inverted Index (có A, B, C, D, không có E). s1 = ABC, s4 = BC, s5 = EABA.",
+"x": [
+"Đây là s1, thiếu D.",
+"Đây là s4.",
+"Đây là s5."
+],
+"trap": "Quên bung nút nén x thành AB.",
+"mem": "CPT+: chuỗi con hay gặp thay bằng một nút mới (x = AB)."
+},
+{
+"lv": "VD",
+"t": "CLM (C7)",
+"q": "Áp <b>Column-level Masking</b> cho số điện thoại 0935123777 theo quy tắc giữ 3 số đầu và 3 số cuối. Nhân viên không thuộc vai trò COMPLIANCE thấy:",
+"o": [
+"093xxxx777",
+"0935123777",
+"xxxxxxx777",
+"0935xxx777"
+],
+"w": "CLM che một phần dữ liệu nhạy cảm theo vai trò, không đổi dữ liệu gốc và cấu trúc bảng: 093 + xxxx + 777. Chỉ COMPLIANCE thấy đủ số.",
+"x": [
+"Số đầy đủ chỉ dành cho COMPLIANCE.",
+"Không giữ 3 số đầu như quy tắc.",
+"Giữ 4 số đầu là sai quy tắc."
+],
+"trap": "Nghĩ masking sửa dữ liệu trong bảng.",
+"mem": "CLM che cột; RLS lọc dòng; cả hai không đổi dữ liệu gốc."
+},
+{
+"lv": "VD",
+"t": "AI Act (C7)",
+"q": "Theo <b>AI Act</b>, hệ thống chấm điểm tín dụng tự động của ngân hàng thuộc mức rủi ro nào?",
+"o": [
+"High: kiểm soát nghiêm ngặt",
+"Unacceptable: cấm hoàn toàn",
+"Limited: chỉ cần dán nhãn",
+"Minimal: tự do vận hành"
+],
+"w": "AI Act (EU) phân loại theo mức rủi ro. Chấm điểm tín dụng, tuyển dụng, hạ tầng thiết yếu là High. Ba trụ cột: Transparency, Human Oversight, Data Quality.",
+"x": [
+"Unacceptable là social scoring, AI thao túng hành vi.",
+"Limited là chatbot, deepfake.",
+"Minimal là spam filter, game."
+],
+"trap": "Nhầm High với Unacceptable.",
+"mem": "Social scoring → cấm · Tín dụng → High · Chatbot → dán nhãn."
+},
+{
+"lv": "VD",
+"t": "BFS (C9)",
+"q": "Đồ thị vô hướng: A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C. Duyệt <b>BFS</b> từ A, đỉnh kề xét theo bảng chữ cái. Thứ tự duyệt là:",
+"o": [
+"A, B, D, G, E, F, C",
+"A, B, E, G, F, C, D",
+"A, B, D, G, F, E, C",
+"A, D, B, G, E, F, C"
+],
+"w": "BFS dùng hàng đợi (FIFO): A → B, D, G; B → E, F; D → (F đã có); G → (E đã có); E; F → C; C. Thứ tự: A, B, D, G, E, F, C.",
+"x": [
+"Đây là thứ tự DFS.",
+"E vào hàng đợi trước F nên ra trước.",
+"Sai quy ước chữ cái: B trước D."
+],
+"trap": "Nhầm thứ tự E, F trong hàng đợi.",
+"mem": "BFS ↔ queue ↔ theo từng cấp ↔ đường đi ngắn nhất."
+},
+{
+"lv": "VD",
+"t": "DFS (C9)",
+"q": "Cùng đồ thị A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C. Duyệt <b>DFS</b> từ A, chọn đỉnh kề chưa thăm nhỏ nhất theo chữ cái. Thứ tự thăm là:",
+"o": [
+"A, B, E, G, F, C, D",
+"A, B, D, G, E, F, C",
+"A, B, F, C, D, E, G",
+"A, B, E, F, G, C, D"
+],
+"w": "DFS dùng ngăn xếp/đệ quy: A → B → E → G (cụt, quay lui về B) → F → C (cụt, về F) → D. Thứ tự: A, B, E, G, F, C, D.",
+"x": [
+"Đây là thứ tự BFS.",
+"Từ B phải chọn E trước F.",
+"Từ E phải đi sâu sang G trước khi quay lui."
+],
+"trap": "Quay lui quá sớm.",
+"mem": "DFS ↔ stack/đệ quy ↔ đi sâu rồi quay lui."
+},
+{
+"lv": "NB",
+"t": "Blockchain (C9)",
+"q": "Dữ liệu thô trên <b>Blockchain</b> tồn tại ở dạng nào?",
+"o": [
+"Byte/hex, khó đọc và phân tán",
+"Bảng quan hệ có schema cố định",
+"File JSON có cấu trúc lồng nhau",
+"Văn bản thuần mã hóa UTF-8"
+],
+"w": "Dữ liệu on-chain minh bạch và ghi vĩnh viễn nhưng ở dạng byte/hex. Blockchain ETL: Node Ingestion (RPC) → Event Decoding (ABI dịch hex thành hàm, tham số) → Data Normalization (Wei → Ether, UTC).",
+"x": [
+"Phải qua ETL mới thành bảng quan hệ.",
+"Không phải JSON.",
+"Không phải văn bản thuần."
+],
+"trap": "Nghĩ blockchain lưu sẵn dạng bảng.",
+"mem": "On-chain = hex; ABI để giải mã."
+},
+{
+"lv": "TH",
+"t": "IVFFLAT (C8–9)",
+"q": "Nhận định đúng về <b>IVFFLAT</b>:",
+"o": [
+"Vector index chia không gian bằng K-Means thành vùng, vector trong vùng lưu nguyên không nén",
+"Vector index dựng đồ thị nhiều tầng, tầng trên thưa nhảy xa, tầng dưới dày đi chi tiết",
+"Kỹ thuật nén mỗi đoạn vector thành mã 1 byte để cả chỉ mục vừa trong RAM",
+"Thuật toán tìm chính xác bằng cách tính khoảng cách tới mọi vector trong kho"
+],
+"w": "IVF (Inverted File Index) phân cụm K-Means thành vùng Voronoi, khi tìm chỉ so với vài vùng gần nhất; FLAT là vector lưu nguyên, không nén (khác IVF-PQ). Thuộc nhóm ANN.",
+"x": [
+"Đây là HNSW.",
+"Đây là Product Quantization.",
+"Đây là vét cạn, IVFFLAT là gần đúng (ANN)."
+],
+"trap": "Lẫn IVF với HNSW.",
+"mem": "IVF = vùng Voronoi; FLAT = không nén; thuộc ANN."
+}
+]
+}

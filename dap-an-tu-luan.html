@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ôn tập trọng tâm DW</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one reading column; sticky chapter bar; formula sheet first, then 40 questions grouped by chapter, answers folded for self-testing */
+:root{
+  --bg:#f5f6f9; --paper:#ffffff; --ink:#1c2430; --muted:#5f6b7a; --line:#dfe3ea;
+  --brand:#1f4fbf; --brand-soft:#e6ecfa; --ok:#1d7a46; --ok-soft:#e3f4ea;
+  --warn:#8a5a00; --warn-soft:#fff4d6; --formula:#f3f5fb; --chip:#eef1f6;
+  --serif:"Times New Roman",Times,"Liberation Serif",serif;
+  --sans:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;
+  --mono:Consolas,"Cascadia Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10141b; --paper:#171c25; --ink:#e3e7ee; --muted:#9aa5b4; --line:#283041;
+  --brand:#7ea2ff; --brand-soft:#1c2948; --ok:#5fcf8f; --ok-soft:#15301f;
+  --warn:#f0c05a; --warn-soft:#33290f; --formula:#1b2230; --chip:#202837; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10141b; --paper:#171c25; --ink:#e3e7ee; --muted:#9aa5b4; --line:#283041;
+  --brand:#7ea2ff; --brand-soft:#1c2948; --ok:#5fcf8f; --ok-soft:#15301f;
+  --warn:#f0c05a; --warn-soft:#33290f; --formula:#1b2230; --chip:#202837; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:13pt;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:860px;margin:0 auto;padding-block:20px 60px}
+a{color:var(--brand)}
+header.top h1{font-size:21pt;line-height:1.25;margin:0 0 4px;text-wrap:balance}
+header.top p{margin:0;color:var(--muted);font-family:var(--sans);font-size:10.5pt}
+.back{font-family:var(--sans);font-size:10.5pt;text-decoration:none;display:inline-block;margin-bottom:10px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:10px;margin-top:14px;border-bottom:1px solid var(--line)}
+.bar .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.chipnav a{font-family:var(--sans);font-size:10pt;text-decoration:none;color:var(--ink);background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:3px 10px;white-space:nowrap}
+.chipnav a:hover,.chipnav a:focus-visible{border-color:var(--brand);outline:none}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center;font-family:var(--sans);font-size:10pt}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:6px;padding:4px 10px}
+button:hover{border-color:var(--brand)}
+button:focus-visible,summary:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.prog{margin-left:auto;color:var(--muted)}
+.prog b{color:var(--ok);font-variant-numeric:tabular-nums}
+
+h2{font-size:15.5pt;margin:34px 0 6px;text-wrap:balance}
+h2 .tag{font-family:var(--sans);font-size:9.5pt;font-weight:600;color:var(--brand);background:var(--brand-soft);border-radius:4px;padding:2px 7px;vertical-align:middle;margin-left:6px}
+.lead{color:var(--muted);margin:0 0 12px;font-size:12pt}
+
+/* weight map */
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:10px}
+.map a{display:block;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:9px 11px;min-width:0}
+.map a:hover{border-color:var(--brand)}
+.map .t{font-weight:700}
+.map .s{font-family:var(--sans);font-size:9.5pt;color:var(--muted)}
+.meter{height:6px;background:var(--chip);border-radius:3px;margin-top:6px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--brand)}
+
+/* formula sheet */
+.sheet{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.f{background:var(--formula);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+.f .n{font-family:var(--sans);font-size:9.5pt;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.04em}
+.f .e{font-size:13.5pt;margin:4px 0 2px;overflow-x:auto}
+.f .c{font-size:11.5pt;color:var(--muted)}
+
+/* questions */
+details.q{background:var(--paper);border:1px solid var(--line);border-radius:8px;margin:8px 0}
+details.q[data-done="1"]{border-color:var(--ok)}
+details.q summary{list-style:none;cursor:pointer;display:flex;gap:10px;align-items:flex-start;padding:10px 12px}
+details.q summary::-webkit-details-marker{display:none}
+.no{flex:none;min-width:34px;height:26px;padding:0 6px;border-radius:13px;background:var(--brand-soft);color:var(--brand);font-family:var(--sans);font-size:10pt;font-weight:700;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+details.q[data-done="1"] .no{background:var(--ok-soft);color:var(--ok)}
+.qt{flex:1;min-width:0}
+.hint{flex:none;font-family:var(--sans);font-size:9pt;color:var(--muted);padding-top:3px}
+details.q[open] .hint{display:none}
+.ans{padding:0 14px 12px 56px;border-top:1px solid var(--line)}
+.ans p{margin:8px 0}
+.key{margin-top:10px!important;font-weight:700}
+.key span{color:var(--ok)}
+.trap{background:var(--warn-soft);color:var(--ink);border-left:3px solid var(--warn);padding:6px 10px;border-radius:4px;font-size:12pt}
+.calc{background:var(--formula);border:1px dashed var(--line);padding:7px 10px;border-radius:6px;overflow-x:auto}
+.src{font-family:var(--sans);font-size:9.5pt;color:var(--muted)}
+.mark{margin-top:8px;font-family:var(--sans);font-size:10pt}
+details.q[data-done="1"] .mark button{border-color:var(--ok);color:var(--ok)}
+.tw{overflow-x:auto;margin:8px 0}
+table{border-collapse:collapse;font-size:12pt;min-width:100%}
+th,td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
+th{background:var(--chip);font-family:var(--sans);font-size:10pt}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+ul{margin:6px 0;padding-left:20px}
+code{font-family:var(--mono);font-size:11pt;background:var(--chip);padding:0 4px;border-radius:3px}
+sub,sup{font-size:70%}
+footer{margin-top:40px;font-family:var(--sans);font-size:10pt;color:var(--muted)}
+@media (max-width:520px){.ans{padding-left:14px}.hint{display:none}}
+@media (prefers-reduced-motion:no-preference){details.q[open] .ans{animation:fd .18s ease-out}@keyframes fd{from{opacity:.4}to{opacity:1}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <a class="back" href="index.html">← Danh sách chương trắc nghiệm</a> · <a class="back" href="on-tap.html">Làm trắc nghiệm ôn tập trọng tâm →</a>
+  <h1>Ôn tập trọng tâm: Nhà kho dữ liệu và tích hợp</h1>
+  <p>Theo 40 câu trong “Một số câu hỏi ôn tập” · Bấm vào câu để xem đáp án · Đánh dấu câu đã thuộc (lưu trên trình duyệt)</p>
+</header>
+
+<div class="bar">
+  <nav class="row chipnav" aria-label="Chương">
+    <a href="#cong-thuc">Công thức</a><a href="#c1">C1</a><a href="#c2">C2</a><a href="#c3">C3</a><a href="#c4">C4</a><a href="#c5">C5</a><a href="#c6">C6</a><a href="#c7">C7</a><a href="#c89">C8–9</a>
+  </nav>
+  <div class="tools">
+    <button type="button" id="openAll">Mở tất cả đáp án</button>
+    <button type="button" id="closeAll">Đóng tất cả</button>
+    <button type="button" id="todo">Chỉ hiện câu chưa thuộc</button>
+    <button type="button" id="reset">Xóa đánh dấu</button>
+    <span class="prog">Đã thuộc: <b id="pdone">0</b> / <span id="ptotal">0</span></span>
+  </div>
+</div>
+
+<h2>Câu hỏi nằm ở chương nào</h2>
+<p class="lead">Số câu trong đề ôn tập thuộc từng chương. Chương 4 và 5 (tiền xử lý, khai phá) có nhiều câu tính toán nhất.</p>
+<div class="map" id="map"></div>
+
+<h2 id="cong-thuc">Công thức phải thuộc</h2>
+<p class="lead">Gần một nửa đề là câu tính tay. Thuộc bảng này là làm được câu 16–32.</p>
+<div class="sheet">
+  <div class="f"><div class="n">Entropy</div><div class="e">Info(D) = −Σ p<sub>i</sub> log<sub>2</sub> p<sub>i</sub></div><div class="c">2 lớp: 0 khi thuần, 1 khi 50/50</div></div>
+  <div class="f"><div class="n">Entropy sau khi tách theo A</div><div class="e">Info<sub>A</sub>(D) = Σ |D<sub>j</sub>|/|D| · Info(D<sub>j</sub>)</div><div class="c">Gain(A) = Info(D) − Info<sub>A</sub>(D); ID3 chọn Gain lớn nhất</div></div>
+  <div class="f"><div class="n">Min-Max</div><div class="e">v′ = (v − min) / (max − min)</div><div class="c">Đưa về [0, 1]; nhạy với outlier</div></div>
+  <div class="f"><div class="n">Z-score</div><div class="e">v′ = (v − μ) / σ</div><div class="c">Sau chuẩn hóa μ = 0, σ = 1; outlier khi |Z| &gt; 3</div></div>
+  <div class="f"><div class="n">Decimal scaling</div><div class="e">v′ = v / 10<sup>j</sup></div><div class="c">j nhỏ nhất để mọi |v′| &lt; 1</div></div>
+  <div class="f"><div class="n">Equal-width binning</div><div class="e">width = (max − min) / N</div><div class="c">Equal-frequency: mỗi bin cùng số bản ghi</div></div>
+  <div class="f"><div class="n">SMA cửa sổ k</div><div class="e">SMA<sub>n</sub> = (x<sub>n−k+1</sub> + … + x<sub>n</sub>) / k</div><div class="c">Theo môn: tính cả ngày n</div></div>
+  <div class="f"><div class="n">Ứng viên 2-itemset</div><div class="e">C(n, 2) = n(n − 1) / 2</div><div class="c">6 item phổ biến → 15 ứng viên</div></div>
+  <div class="f"><div class="n">Support, Confidence</div><div class="e">Sup(X→Y) = Sup(X∪Y); Conf = Sup(X∪Y)/Sup(X)</div><div class="c">Ngưỡng thường dùng: minsup 1%, minconf 0,8</div></div>
+  <div class="f"><div class="n">Lift, Leverage</div><div class="e">Lift = Conf / Sup(Y); Lev = Sup(X∪Y) − Sup(X)·Sup(Y)</div><div class="c">Lift &gt; 1, Lev &gt; 0: tương quan dương</div></div>
+  <div class="f"><div class="n">PageRank (dạng của môn)</div><div class="e">PR(A) = (1 − d) + d · Σ PR(T)/C(T)</div><div class="c">d = 0,85; C(T) = số link ra của T; dùng PR vòng trước</div></div>
+  <div class="f"><div class="n">Điểm dự đoán CPT</div><div class="e">score(x) = số chuỗi tương tự có x / số chuỗi tương tự</div><div class="c">Chỉ đếm phần sau khi đã gặp đủ hậu tố</div></div>
+</div>
+
+<div id="qs"></div>
+
+<footer>Đáp án theo slide và tài liệu giảng giải Chương 1–9. Câu 26 (SMA) có hai cách hiểu; trang ghi rõ cách theo định nghĩa của môn. Làm thêm trắc nghiệm theo chương ở <a href="index.html">trang danh sách</a>.</footer>
+</div>
+
+<script>
+const CH = {
+  c1:{t:"Chương 1 · Kiến trúc Modern Data Warehouse", s:"Firebolt, caching, Data Fabric, catalog, bucket policy"},
+  c2:{t:"Chương 2 · Mô hình hóa và tối ưu lưu trữ", s:"Micro-partition, clustering, loại fact, bridge, flat table"},
+  c3:{t:"Chương 3 · Pipeline, ELT và dbt", s:"Schema evolution, tests, Jinja, Airflow, Zero-ETL"},
+  c4:{t:"Chương 4 · Tiền xử lý dữ liệu", s:"Entropy, chuẩn hóa, binning, PCA, SMA, multi-level"},
+  c5:{t:"Chương 5 · Khai phá luật kết hợp", s:"Apriori, Sup/Conf/Lift/Leverage, FP-Growth"},
+  c6:{t:"Chương 6 · In-Database ML", s:"PageRank, damping factor, CPT"},
+  c7:{t:"Chương 7 · Quản trị và bảo mật", s:"Column masking, RLS, AI Act"},
+  c89:{t:"Chương 8–9 · Đa mô hình", s:"BFS, DFS, blockchain hex, IVFFLAT"}
+};
+const Q = [
+/* ---------- C1 ---------- */
+{c:"c1",n:"1",q:"<b>Firebolt</b> là một nền tảng có đặc điểm gì?",
+a:`<p class="key">Đáp án: <span>tập trung vào tốc độ truy vấn cực nhanh cho phân tích thời gian thực.</span></p>
+<div class="tw"><table><tr><th>Nền tảng</th><th>Điểm nhận diện trên slide</th></tr>
+<tr><td>Snowflake</td><td>Tiên phong tách compute và storage</td></tr>
+<tr><td>BigQuery</td><td>Serverless, tích hợp ML</td></tr>
+<tr><td>Firebolt</td><td>Truy vấn cực nhanh, phân tích thời gian thực</td></tr>
+<tr><td>MotherDuck</td><td>Lakehouse “nhẹ” dựa trên DuckDB</td></tr></table></div>`,src:"Chương 1"},
+{c:"c1",n:"2",q:"Trong quản lý chi phí của Modern Data Warehouse, cơ chế nào giúp <b>tránh tính toán lại</b> kết quả cũ?",
+a:`<p class="key">Đáp án: <span>Caching</span> (bộ nhớ đệm kết quả truy vấn).</p>
+<p>Chạy lại đúng câu truy vấn khi dữ liệu gốc chưa đổi thì hệ thống trả kết quả cũ, không quét bảng, không tốn compute. BigQuery và Snowflake giữ cache khoảng 24 giờ. Cache mất tác dụng khi bảng đổi, câu truy vấn khác đi, hoặc có hàm như <code>CURRENT_TIMESTAMP()</code>.</p>
+<p class="trap">Dễ nhầm: auto-suspend tiết kiệm khi <i>không có</i> truy vấn; caching tiết kiệm khi truy vấn <i>lặp lại</i>.</p>`,src:"Chương 1"},
+{c:"c1",n:"3",q:"<b>Data Fabric</b> có những mục tiêu quan trọng nào?",
+a:`<p class="key">Đáp án: <span>kết nối mọi nguồn rời rạc thành một thể thống nhất mà không di chuyển dữ liệu, xóa bỏ data silo.</span></p>
+<ul><li>Virtualization: truy cập dữ liệu tại nguồn, không sao chép.</li><li>Abstraction layer: che độ phức tạp của hạ tầng.</li><li>Hỗ trợ hybrid-cloud: nối on-premise với cloud.</li><li>Tự động hóa việc tìm và truy cập dữ liệu an toàn.</li><li>Một cổng truy cập duy nhất cho mọi nhu cầu dữ liệu.</li></ul>`,src:"Chương 1, slide 13"},
+{c:"c1",n:"4",q:"<b>Data Catalog</b> là gì?",
+a:`<p class="key">Đáp án: <span>thư viện chứa thông tin và vị trí của mọi nguồn dữ liệu.</span></p>
+<p>Cho biết có bảng nào, nằm ở đâu, cột nghĩa là gì, ai sở hữu, ai được dùng (Collibra, Alation, Unity Catalog). Chương 7: catalog giúp tránh <i>data swamp</i>; AI-driven catalog tự gắn nhãn cột PII.</p>`,src:"Chương 1, slide 16 · Chương 7"},
+{c:"c1",n:"5",q:"<b>Bucket Policies</b> có chức năng gì?",
+a:`<p class="key">Đáp án: <span>quy định quyền truy cập cho toàn bộ bucket (data container) từ bên ngoài.</span></p>
+<p>Bucket policy gắn với tài nguyên; IAM policy gắn với người hoặc vai trò. Cùng nhóm bảo mật object storage: Versioning (khôi phục bản cũ), Object Lock (chống xóa/sửa trong một thời gian).</p>`,src:"Chương 1"},
+/* ---------- C2 ---------- */
+{c:"c2",n:"6",q:"Với <b>Micro-partitioning</b>, mỗi phân vùng chứa dữ liệu nén có kích cỡ bao nhiêu?",
+a:`<p class="key">Đáp án: <span>50 MB đến 500 MB.</span></p>
+<p>Dữ liệu trong phân vùng lưu theo cột, nén riêng từng cột. Metadata giữ min/max mỗi cột để <i>pruning</i> bỏ qua phân vùng không liên quan.</p>`,src:"Chương 2, slide 9"},
+{c:"c2",n:"7",q:"<b>Clustering Key</b> được chọn dựa trên đối tượng nào?",
+a:`<p class="key">Đáp án: <span>cột có độ chọn lọc cao, thường xuất hiện trong mệnh đề WHERE.</span></p>
+<p>Cột quá ít giá trị (giới tính) pruning kém; cột duy nhất (mã giao dịch) tốn công duy trì; cột ngày thường là lựa chọn tốt. Quan trọng với bảng cực lớn, tối ưu range query, giảm data skew.</p>`,src:"Chương 2, slide 10"},
+{c:"c2",n:"8",q:"<b>Accumulating Snapshot Fact Table</b> phù hợp cho ngữ cảnh nào?",
+a:`<p class="key">Đáp án: <span>theo dõi tiến độ một quy trình nhiều giai đoạn</span>, ví dụ đơn hàng từ đặt → đóng gói → giao.</p>
+<div class="tw"><table><tr><th>Loại fact</th><th>Một dòng là</th><th>Dòng có bị sửa</th></tr>
+<tr><td>Transaction</td><td>Một sự kiện</td><td>Không</td></tr>
+<tr><td>Periodic snapshot</td><td>Một đối tượng tại một kỳ</td><td>Không</td></tr>
+<tr><td>Accumulating snapshot</td><td>Một đối tượng trong cả vòng đời quy trình</td><td>Có, cập nhật từng mốc</td></tr></table></div>
+<p>Dùng để tính lead time giữa các bước.</p>`,src:"Chương 2, slide 16"},
+{c:"c2",n:"9",q:"Chức năng của <b>Bridge Table</b>?",
+a:`<p class="key">Đáp án: <span>giải quyết quan hệ nhiều–nhiều giữa fact và dimension.</span></p>
+<p>Ví dụ một tài khoản nhiều chủ, một khách nhiều tài khoản: bảng cầu (account_key, customer_key, weight).</p>
+<p class="trap">JOIN qua bảng cầu dễ đếm trùng (bùng nổ dữ liệu); dùng cột weight để phân bổ.</p>`,src:"Chương 2, slide 17"},
+{c:"c2",n:"10",q:"<b>Flat tables</b> được dùng để giảm thiểu phép tính nào?",
+a:`<p class="key">Đáp án: <span>phép JOIN.</span></p>
+<p>Gộp sẵn fact và các dimension thành một bảng rộng. Trên cloud, ưu tiên tối ưu truy vấn hơn dung lượng nên chấp nhận denormalization.</p>`,src:"Chương 2"},
+/* ---------- C3 ---------- */
+{c:"c3",n:"11",q:"Những đặc tính của <b>Snowflake Evolution</b> (schema evolution)?",
+a:`<p class="key">Đáp án: <span>kho tự điều chỉnh cấu trúc bảng ngay trong lệnh COPY khi file nạp vào có cột mới.</span></p>
+<p>Cùng nhóm công cụ schema evolution: Iceberg/Delta Lake, Schema Registry (Kafka), Fivetran Auto-sync, AWS Glue Crawler. Mục đích: pipeline không dừng, không mất dữ liệu âm thầm (silent loss) khi nguồn đổi schema.</p>`,src:"Chương 3, slide 33"},
+{c:"c3",n:"12",q:"Những chức năng của <b>Schema Tests</b>?",
+a:`<p class="key">Đáp án: <span>tự động xác thực điều kiện cơ bản như cột rỗng hay trùng lặp.</span></p>
+<p>Khai báo trong YAML, dbt tự sinh SQL kiểm tra. Bốn test có sẵn: <code>not_null</code>, <code>unique</code>, <code>accepted_values</code>, <code>relationships</code>.</p>
+<p class="trap">Singular test là câu SQL tự viết cho quy tắc nghiệp vụ riêng, không phải schema test.</p>`,src:"Chương 3, slide 29"},
+{c:"c3",n:"13",q:"<b>Jinja</b> là gì?",
+a:`<p class="key">Đáp án: <span>templating engine thêm cấu trúc điều khiển (if, for, biến) vào SQL tĩnh, tạo dynamic SQL trong dbt.</span></p>
+<p>Đóng gói SQL lặp lại thành macro; tự đổi tên bảng/schema theo môi trường Dev/Test/Prod; trừu tượng hóa logic phức tạp.</p>`,src:"Chương 3, slide 28"},
+{c:"c3",n:"14",q:"<b>Apache Airflow</b> có những đặc tính nào?",
+a:`<p class="key">Đáp án: <span>tiêu chuẩn công nghiệp cho orchestration, hàng nghìn thư viện kết nối, tư duy task-centric, pipeline viết thành DAG bằng Python.</span></p>
+<p class="trap">Task-centric (Airflow) khác asset-centric (Dagster).</p>`,src:"Chương 3, slide 19–20"},
+{c:"c3",n:"15",q:"<b>Storage Mirroring</b> có những chức năng nào?",
+a:`<p class="key">Đáp án: <span>nhân bản dữ liệu tự động và liên tục ở tầng lưu trữ vật lý.</span></p>
+<p>Là công nghệ cốt lõi của Zero-ETL, cùng proprietary connectors, metadata sharing, serverless scaling, unified control plane. Ví dụ: Microsoft Fabric Mirroring nhân bản CSDL vào OneLake.</p>`,src:"Chương 3, slide 12–13"},
+/* ---------- C4 ---------- */
+{c:"c4",n:"16",q:"Dataset D có 2 lớp: <b>6 Good</b> và <b>4 Bad</b>. Entropy của D bằng bao nhiêu?",
+a:`<p class="key">Đáp án: <span>Info(D) ≈ 0,971</span></p>
+<p class="calc">p(Good) = 0,6; p(Bad) = 0,4<br>Info(D) = −0,6·log<sub>2</sub>0,6 − 0,4·log<sub>2</sub>0,4 = 0,442 + 0,529 ≈ 0,971</p>
+<p>Kiểm tra nhanh: 50/50 cho 1, một lớp cho 0; 60/40 gần cân bằng nên gần 1.</p>`,src:"Chương 4"},
+{c:"c4",n:"17",q:"Thu nhập thấp nhất <b>5 triệu</b>, cao nhất <b>10 triệu</b>. Thu nhập <b>8 triệu</b> sau Min-Max về [0, 1] là?",
+a:`<p class="key">Đáp án: <span>0,6</span></p><p class="calc">(8 − 5) / (10 − 5) = 3/5 = 0,6</p>`,src:"Chương 4"},
+{c:"c4",n:"18",q:"Equal-width Binning 3 nhóm, hạn mức từ <b>100</b> đến <b>700 triệu</b>. Nhóm thấp nhất có khoảng nào?",
+a:`<p class="key">Đáp án: <span>100 – 300 triệu.</span></p><p class="calc">width = (700 − 100) / 3 = 200 → 100–300, 300–500, 500–700</p>`,src:"Chương 4"},
+{c:"c4",n:"19",q:"Ý nghĩa công thức Info<sub>A</sub>(D) = Σ<sub>j=1..v</sub> |D<sub>j</sub>|/|D| × Info(D<sub>j</sub>)?",
+a:`<p class="key">Đáp án: <span>entropy còn lại sau khi tách D theo thuộc tính A</span>: trung bình có trọng số entropy của các tập con.</p>
+<ul><li>v: số giá trị khác nhau của A; D<sub>j</sub>: tập bản ghi có giá trị thứ j.</li><li>|D<sub>j</sub>|/|D|: trọng số, tỉ lệ bản ghi rơi vào nhánh j.</li><li>Gain(A) = Info(D) − Info<sub>A</sub>(D); ID3 chọn A có Gain lớn nhất (Info<sub>A</sub> nhỏ nhất).</li></ul>`,src:"Chương 4, slide 32–33"},
+{c:"c4",n:"20",q:"Ý nghĩa công thức Info(D) = −Σ<sub>i=1..m</sub> p<sub>i</sub> log<sub>2</sub>(p<sub>i</sub>)?",
+a:`<p class="key">Đáp án: <span>Entropy của D</span>: mức hỗn loạn về nhãn lớp, số bit trung bình cần để xác định lớp của một bản ghi.</p>
+<ul><li>m: số lớp; p<sub>i</sub>: tỉ lệ bản ghi lớp i.</li><li>Dấu trừ để kết quả không âm (log<sub>2</sub>p<sub>i</sub> ≤ 0).</li><li>2 lớp: trong [0, 1].</li></ul>`,src:"Chương 4"},
+{c:"c4",n:"21",q:"Hiểu về <b>Z-Score Normalization</b>.",
+a:`<p class="key">Đáp án: <span>v′ = (v − μ) / σ</span>, chuẩn hóa theo trung bình và độ lệch chuẩn.</p>
+<p>Sau chuẩn hóa μ = 0, σ = 1; v′ là số độ lệch chuẩn cách trung bình (âm là dưới trung bình). Hợp khi không biết min/max hoặc có outlier. Phát hiện outlier với |Z| &gt; 3.</p>`,src:"Chương 4"},
+{c:"c4",n:"22",q:"Hiểu về <b>Decimal Scaling</b>.",
+a:`<p class="key">Đáp án: <span>v′ = v / 10<sup>j</sup></span>, dời dấu thập phân sang trái j chữ số.</p>
+<p class="calc">j nhỏ nhất để mọi |v′| &lt; 1. Ví dụ slide: số dư −750.000 … 3.500.000 → j = 7 → 3.500.000 → 0,35; −750.000 → −0,075</p>`,src:"Chương 4"},
+{c:"c4",n:"23",q:"Phương pháp <b>Equal-frequency Binning</b>.",
+a:`<p class="key">Đáp án: <span>mỗi bin chứa số bản ghi bằng nhau</span> (không phải độ rộng bằng nhau); hợp với dữ liệu lệch.</p>
+<p class="calc">10, 12, 15, 18, 20, 22, 25, 40, 70 → {10, 12, 15} · {18, 20, 22} · {25, 40, 70}</p>
+<p class="trap">Equal-width trên cùng dữ liệu: nhóm 1 có 7 khách, hai nhóm còn lại mỗi nhóm 1.</p>`,src:"Chương 4"},
+{c:"c4",n:"24",q:"Phương pháp <b>Discretization</b>.",
+a:`<p class="key">Đáp án: <span>biến thuộc tính liên tục thành khoảng hoặc nhãn rời rạc</span> (thu nhập → Thấp/Trung bình/Cao).</p>
+<p>Giảm số giá trị khác nhau, phục vụ thuật toán cần giá trị rời rạc (ID3, Apriori). Kỹ thuật: equal-width, equal-frequency. Đi kèm concept hierarchy (ngày &lt; tháng &lt; quý &lt; năm).</p>`,src:"Chương 4"},
+{c:"c4",n:"25",q:"Phép biến đổi <b>PCA</b>.",
+a:`<p class="key">Đáp án: <span>biến đổi tuyến tính giữ tối đa phương sai để giảm số chiều.</span></p>
+<p>Mỗi cột mới là tổ hợp tuyến tính các cột cũ (PC1 = 0,6x<sub>1</sub> + 0,5x<sub>2</sub> + …); thành phần chính là vector riêng ứng với trị riêng lớn nhất của ma trận hiệp phương sai.</p>
+<p class="trap">Feature selection giữ nguyên cột gốc; PCA tạo cột mới.</p>`,src:"Chương 4"},
+{c:"c4",n:"26",q:"Giá dầu 6 ngày: 75, 78, 76, 80, 82, 81 (USD), k = 3. <b>SMA ngày 4</b> là bao nhiêu?",
+a:`<p class="key">Đáp án: <span>78 USD</span></p><p class="calc">Cửa sổ gồm ngày 2, 3, 4: (78 + 76 + 80) / 3 = 234 / 3 = 78</p>
+<p class="trap">Nếu đề hiểu là dự báo ngày 4 từ ba ngày trước thì (75 + 78 + 76)/3 ≈ 76,33. Theo định nghĩa của môn chọn 78.</p>`,src:"Chương 4"},
+{c:"c4",n:"39",q:"Khả năng truy vấn nhiều cấp liên quan đến khai phá dữ liệu dạng nào?",
+a:`<p class="key">Đáp án: <span>Multi-level Mining</span>: khai phá luật ở nhiều mức trừu tượng dựa trên concept hierarchy.</p>
+<p>Ở mức chi nhánh có thể không luật nào đủ phổ biến; gộp lên mức vùng thì luật xuất hiện. Dùng roll-up/drill-down tìm nguyên nhân gốc: doanh số vùng giảm → tỉnh → chi nhánh.</p>`,src:"Chương 4, slide 23"},
+/* ---------- C5 ---------- */
+{c:"c5",n:"27",q:"Có <b>6 item</b> đơn lẻ phổ biến. Số itemset 2 phần tử sinh ra để kiểm tra là bao nhiêu?",
+a:`<p class="key">Đáp án: <span>15</span></p><p class="calc">C(6, 2) = 6 × 5 / 2 = 15</p><p>Số ứng viên tăng nhanh là điểm yếu của Apriori mà FP-Growth khắc phục.</p>`,src:"Chương 5"},
+{c:"c5",n:"28",q:"CSDL 8 giao dịch: 1{a,b,c}, 2{a,b,c,d,e}, 3{b}, 4{c,d,e}, 5{c}, 6{b,c,d}, 7{c,d,e}, 8{c,e}. Bảng đếm cần dùng.",
+a:`<div class="tw"><table><tr><th>Itemset</th><th>Giao dịch chứa</th><th class="num">Đếm</th><th class="num">Support</th></tr>
+<tr><td>{a}</td><td>1, 2</td><td class="num">2</td><td class="num">0,25</td></tr>
+<tr><td>{b}</td><td>1, 2, 3, 6</td><td class="num">4</td><td class="num">0,5</td></tr>
+<tr><td>{c}</td><td>1, 2, 4, 5, 6, 7, 8</td><td class="num">7</td><td class="num">0,875</td></tr>
+<tr><td>{d}</td><td>2, 4, 6, 7</td><td class="num">4</td><td class="num">0,5</td></tr>
+<tr><td>{e}</td><td>2, 4, 7, 8</td><td class="num">4</td><td class="num">0,5</td></tr>
+<tr><td>{d, e}</td><td>2, 4, 7</td><td class="num">3</td><td class="num">0,375</td></tr>
+<tr><td>{c, d, e}</td><td>2, 4, 7</td><td class="num">3</td><td class="num">0,375</td></tr>
+<tr><td>{b, c, d}</td><td>2, 6</td><td class="num">2</td><td class="num">0,25</td></tr></table></div>
+<p>Đếm kỹ bảng này trước, các câu 28a–28f chỉ là thay số.</p>`,src:"Chương 5"},
+{c:"c5",n:"28a",q:"L: {c} → {d, e}. <b>Leverage(L)</b>?",
+a:`<p class="key">Đáp án: <span>3/64 ≈ 0,0469</span></p><p class="calc">3/8 − 7/8 × 3/8 = 0,375 − 0,328 = 0,0469</p><p>Dương nhưng nhỏ: tương quan dương yếu.</p>`,src:"Chương 5"},
+{c:"c5",n:"28b",q:"L: {c} → {d, e}. <b>Sup(L)</b>?",
+a:`<p class="key">Đáp án: <span>3/8 = 0,375</span></p><p>Sup của luật là Sup({c, d, e}): giao dịch 2, 4, 7.</p>`,src:"Chương 5"},
+{c:"c5",n:"28c",q:"L: {c} → {d, e}. <b>Conf(L)</b>?",
+a:`<p class="key">Đáp án: <span>3/7 ≈ 0,4286</span></p><p class="calc">Sup({c,d,e}) / Sup({c}) = 3 / 7</p>`,src:"Chương 5"},
+{c:"c5",n:"28d",q:"L: {c} → {d, e}. <b>Lift(L)</b>?",
+a:`<p class="key">Đáp án: <span>8/7 ≈ 1,143</span></p><p class="calc">Conf / Sup({d,e}) = (3/7) / (3/8) = 8/7</p><p class="trap">Chia cho Sup của vế phải {d, e}, không phải Sup({c}).</p>`,src:"Chương 5"},
+{c:"c5",n:"28e",q:"Chuỗi sắp xếp cố định để chuẩn bị FP-Growth, <b>minsup = 4</b>?",
+a:`<p class="key">Đáp án: <span>c, b, d, e</span></p>
+<p class="calc">Đếm: c = 7, b = 4, d = 4, e = 4, a = 2 → loại a (2 &lt; 4); giữ phần tử bằng ngưỡng; sắp giảm dần, b/d/e cùng 4 xếp theo chữ cái.</p>
+<p class="trap">Mẹo trắc nghiệm: chọn phương án bắt đầu bằng c, có đủ b, d, e và không có a.</p>`,src:"Chương 5"},
+{c:"c5",n:"28f",q:"<b>Độ hỗ trợ</b> của itemset {c, d, b}?",
+a:`<p class="key">Đáp án: <span>2/8 = 0,25</span> (giao dịch 2 và 6).</p>`,src:"Chương 5"},
+{c:"c5",n:"29",q:"Conditional Pattern Base: X {Y:4}; Y {X:4, T:3}; Z {X:3, Y:4, T:3}; T {Y:4, Z:3}. FP-Growth, <b>minsup = 4</b>: tập phổ biến 2 item <b>không chứa X</b>?",
+a:`<p class="key">Đáp án: <span>{Y, Z} và {Y, T}</span></p>
+<div class="tw"><table><tr><th>Dòng</th><th>Giữ phần tử ≥ 4</th><th>Tập 2 item</th></tr>
+<tr><td>X</td><td>Y:4</td><td>{X, Y}</td></tr><tr><td>Y</td><td>X:4</td><td>{X, Y} (trùng)</td></tr>
+<tr><td>Z</td><td>Y:4</td><td>{Y, Z}</td></tr><tr><td>T</td><td>Y:4</td><td>{Y, T}</td></tr></table></div>
+<p>Bỏ {X, Y} vì chứa X.</p>`,src:"Chương 5"},
+{c:"c5",n:"30",q:"Người ta thường chọn ngưỡng <b>minsup</b> là bao nhiêu?",
+a:`<p class="key">Đáp án: <span>0,01 (1%)</span>; minconf thường 0,8.</p>`,src:"Chương 5, slide 9–10"},
+/* ---------- C6 ---------- */
+{c:"c6",n:"31",q:"Đồ thị liên kết: 1→2; 2→5; 3→1, 2, 4, 5; 4→3, 5; 5→4. Khởi tạo PR = 1, d = 0,85. Bảng liên kết.",
+a:`<div class="tw"><table><tr><th>Trang</th><th>Trỏ tới</th><th class="num">C (link ra)</th><th>Được trỏ từ</th></tr>
+<tr><td>1</td><td>2</td><td class="num">1</td><td>3</td></tr><tr><td>2</td><td>5</td><td class="num">1</td><td>1, 3</td></tr>
+<tr><td>3</td><td>1, 2, 4, 5</td><td class="num">4</td><td>4</td></tr><tr><td>4</td><td>3, 5</td><td class="num">2</td><td>3, 5</td></tr>
+<tr><td>5</td><td>4</td><td class="num">1</td><td>2, 3, 4</td></tr></table></div>
+<p class="trap">Đọc kỹ chiều mũi tên trên hình; lập bảng “được trỏ từ” trước khi tính.</p>`,src:"Chương 6"},
+{c:"c6",n:"31a",q:"PageRank của <b>Page 2</b> ở vòng lặp đầu tiên?",
+a:`<p class="key">Đáp án: <span>1,2125</span></p><p class="calc">0,15 + 0,85 × (PR(1)/1 + PR(3)/4) = 0,15 + 0,85 × 1,25 = 1,2125</p>`,src:"Chương 6"},
+{c:"c6",n:"31b",q:"PageRank của <b>Page 1</b> ở vòng lặp đầu tiên?",
+a:`<p class="key">Đáp án: <span>0,3625</span></p><p class="calc">0,15 + 0,85 × PR(3)/4 = 0,15 + 0,2125 = 0,3625</p><p>Page 1 chỉ nhận link từ Page 3, mà Page 3 chia điểm cho 4 trang.</p>`,src:"Chương 6"},
+{c:"c6",n:"40",q:"Chỉ số <b>damping factor</b> thường dùng giá trị bao nhiêu?",
+a:`<p class="key">Đáp án: <span>d = 0,85</span></p><p>85% khả năng người dùng tiếp tục bấm link, 15% nhảy ngẫu nhiên sang trang khác; vì vậy hạng tử (1 − d) = 0,15.</p>`,src:"Chương 6, slide 17"},
+{c:"c6",n:"32",q:"Cây CPT có 4 chuỗi: s1 = ⟨A,B,C,D,F⟩, s2 = ⟨D,C,B,E⟩, s3 = ⟨E,A,D,C,B⟩, s4 = ⟨E,G,A,D,B,C⟩. Phần tử có điểm dự đoán cao nhất cho chuỗi <b>⟨D, C⟩</b>?",
+a:`<p class="key">Đáp án: <span>B</span> (điểm 2/4 = 0,5)</p>
+<ol style="margin:6px 0;padding-left:20px"><li>Inverted Index: dòng D AND dòng C → cả 4 chuỗi đều chứa D và C.</li>
+<li>Lấy phần sau vị trí đã gặp đủ D và C: s1 → ⟨F⟩; s2 → ⟨B, E⟩; s3 → ⟨B⟩; s4 → rỗng (C ở cuối).</li>
+<li>Count table: B = 2/4; E = 1/4; F = 1/4 → chọn B.</li></ol>
+<p class="trap">Ở s1, C đứng trước D; phải chờ gặp đủ cả hai rồi mới lấy phần sau.</p>`,src:"Chương 6"},
+{c:"c6",n:"33",q:"Hiểu cấu trúc cây <b>CPT</b>: Prediction Tree, Inverted Index, Lookup Table.",
+a:`<ul><li><b>Prediction Tree</b>: cây tiền tố; chuỗi cùng phần đầu dùng chung nhánh, giữ thứ tự.</li>
+<li><b>Inverted Index</b>: bảng item × chuỗi, ô = 1 nếu chuỗi có item; AND các dòng để tìm chuỗi tương tự.</li>
+<li><b>Lookup Table</b>: mỗi chuỗi trỏ tới nút cuối của nó; đi ngược lên gốc khôi phục cả chuỗi.</li></ul>
+<p>Hình trong đề là CPT+ có nén: chuỗi con AB thay bằng nút x = AB. Đọc được s1 = ABC, s2 = AB (trỏ vào nút x), s3 = ABDC, s4 = BC, s5 = EABA.</p>`,src:"Chương 6"},
+/* ---------- C7 ---------- */
+{c:"c7",n:"37",q:"Hiểu về <b>CLM</b>.",
+a:`<p class="key">Đáp án: <span>Column-level Masking</span>: che hoặc mã hóa một phần dữ liệu nhạy cảm trong cột, không đổi cấu trúc bảng.</p>
+<p>Ví dụ: 0912345888 hiển thị 091xxxx888; chỉ vai trò COMPLIANCE thấy đủ. Đi cặp với RLS: RLS lọc <i>dòng</i> theo danh tính, CLM che <i>cột</i>.</p>`,src:"Chương 7, slide 9–10"},
+{c:"c7",n:"38",q:"Đạo luật <b>AI Act</b>?",
+a:`<p class="key">Đáp án: <span>luật AI của EU, phân loại hệ thống AI theo mức rủi ro</span>; theo slide áp dụng toàn diện từ 2026.</p>
+<p>Ba trụ cột: Transparency, Human Oversight, Data Quality.</p>
+<div class="tw"><table><tr><th>Mức</th><th>Xử lý</th><th>Ví dụ</th></tr>
+<tr><td>Unacceptable</td><td>Cấm</td><td>Social scoring, thao túng hành vi</td></tr>
+<tr><td>High</td><td>Kiểm soát nghiêm</td><td>Chấm điểm tín dụng, tuyển dụng, hạ tầng thiết yếu</td></tr>
+<tr><td>Limited</td><td>Dán nhãn</td><td>Chatbot, deepfake</td></tr>
+<tr><td>Minimal</td><td>Tự do</td><td>Lọc spam, game</td></tr></table></div>
+<p>Data lineage đáp ứng yêu cầu Traceability.</p>`,src:"Chương 7, slide 4–6"},
+/* ---------- C8-9 ---------- */
+{c:"c89",n:"33b",q:"Hiểu về <b>BFS</b> (Breadth-First Search).",
+a:`<p class="key">Đáp án: <span>duyệt theo chiều rộng, dùng hàng đợi (FIFO)</span>; đánh dấu đã thăm khi đưa vào hàng đợi.</p>
+<p class="calc">Đồ thị slide A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C, từ A, kề theo chữ cái → A, B, D, G, E, F, C</p>
+<p>Ứng dụng: thực thể gần nhất, gợi ý sản phẩm, gợi ý kết bạn, đường đi ít cạnh nhất.</p>`,src:"Chương 9, slide 10–12"},
+{c:"c89",n:"34",q:"Hiểu về <b>DFS</b> (Depth-First Search).",
+a:`<p class="key">Đáp án: <span>đi sâu theo một nhánh tới khi cụt rồi quay lui; dùng ngăn xếp (LIFO) hoặc đệ quy.</span></p>
+<p class="calc">Cùng đồ thị → A, B, E, G, F, C, D</p>
+<p>Ứng dụng: quan hệ sâu nhiều tầng, duyệt ontology, xây taxonomy, chuỗi liên kết dài.</p>`,src:"Chương 9, slide 10–12"},
+{c:"c89",n:"35",q:"Dữ liệu thô trên <b>Blockchain</b> tồn tại ở dạng nào?",
+a:`<p class="key">Đáp án: <span>dạng byte/hex</span>, khó đọc và phân tán.</p>
+<p>Blockchain ETL: Node Ingestion (RPC) → Event Decoding (ABI dịch hex thành hàm, tham số) → Data Normalization (Wei → Ether, 1 Ether = 10<sup>18</sup> Wei; timestamp về UTC).</p>`,src:"Chương 9, slide 19–20"},
+{c:"c89",n:"36",q:"Khái niệm <b>IVFFLAT</b>.",
+a:`<p class="key">Đáp án: <span>một loại vector index</span> giúp tìm vector tương đồng trong hàng triệu bản ghi chỉ vài mili giây.</p>
+<ul><li>IVF: K-Means chia không gian thành vùng Voronoi; chỉ so với vector trong vài vùng gần nhất.</li><li>FLAT: vector trong vùng lưu nguyên, không nén (khác IVF-PQ).</li><li>Thuộc ANN: chấp nhận gần đúng để nhanh hơn hàng trăm lần. 1.000 vùng, xét 10 vùng → giảm khoảng 100 lần phép tính.</li></ul>`,src:"Chương 8 slide 10 · Chương 9 slide 16"}
+];
+
+const KEY="ontap-dw-done";
+let done={}; try{done=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){done={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}}
+
+const box=document.getElementById("qs");
+Object.keys(CH).forEach(k=>{
+  const items=Q.filter(x=>x.c===k);
+  const h=document.createElement("h2"); h.id=k;
+  h.innerHTML=CH[k].t+'<span class="tag">'+items.length+' mục</span>';
+  box.appendChild(h);
+  items.forEach(x=>{
+    const d=document.createElement("details"); d.className="q"; d.dataset.id=x.n;
+    d.innerHTML='<summary><span class="no">'+x.n+'</span><span class="qt">'+x.q+'</span><span class="hint">Xem đáp án</span></summary>'+
+      '<div class="ans">'+x.a+'<p class="src">Nguồn: '+x.src+'</p><div class="mark"><button type="button" id="m-'+x.n+'"></button></div></div>';
+    box.appendChild(d);
+    const b=d.querySelector("button");
+    const paint=()=>{d.dataset.done=done[x.n]?"1":"0"; b.textContent=done[x.n]?"✓ Đã thuộc (bấm để bỏ)":"Đánh dấu đã thuộc"};
+    b.addEventListener("click",()=>{done[x.n]=!done[x.n]; if(!done[x.n]) delete done[x.n]; save(); paint(); prog()});
+    paint();
+  });
+});
+
+const map=document.getElementById("map");
+const counts={c1:5,c2:5,c3:5,c4:12,c5:4,c6:4,c7:2,c89:4}; // câu gốc trong đề (28, 31 tính 1 câu)
+const mx=Math.max(...Object.values(counts));
+Object.keys(CH).forEach(k=>{
+  const a=document.createElement("a"); a.href="#"+k;
+  const [ch,name]=CH[k].t.split(" · ");
+  a.innerHTML='<div class="t">'+ch+': '+counts[k]+' câu</div><div class="s">'+name+'</div><div class="meter"><i style="width:'+Math.round(counts[k]/mx*100)+'%"></i></div>';
+  map.appendChild(a);
+});
+
+function prog(){
+  document.getElementById("pdone").textContent=Object.keys(done).filter(k=>Q.some(x=>x.n===k)).length;
+  document.getElementById("ptotal").textContent=Q.length;
+}
+prog();
+const all=()=>document.querySelectorAll("details.q");
+document.getElementById("openAll").onclick=()=>all().forEach(d=>d.open=true);
+document.getElementById("closeAll").onclick=()=>all().forEach(d=>d.open=false);
+let only=false;
+document.getElementById("todo").onclick=e=>{
+  only=!only; e.target.textContent=only?"Hiện tất cả câu":"Chỉ hiện câu chưa thuộc";
+  all().forEach(d=>d.hidden=only&&d.dataset.done==="1");
+};
+let armed=false;
+document.getElementById("reset").onclick=e=>{
+  if(!armed){armed=true;e.target.textContent="Bấm lần nữa để xóa";setTimeout(()=>{armed=false;e.target.textContent="Xóa đánh dấu"},3000);return}
+  done={};save();armed=false;e.target.textContent="Xóa đánh dấu";
+  all().forEach(d=>{d.dataset.done="0";d.hidden=false;d.querySelector(".mark button").textContent="Đánh dấu đã thuộc"});prog();
+};
+</script>
+</body>
+</html>

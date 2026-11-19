@@ -86,8 +86,16 @@ def shuffle(n, qs):
     return out
 
 
+SPECIAL = {"ontap": (99, "Ôn tập trọng tâm: 40 chủ đề trong đề ôn tập", "on-tap.html")}
+
+
 def build(n):
-    data = json.loads((SRC / f"ch{n}.json").read_text(encoding="utf-8"))
+    if n in SPECIAL:
+        seed, title, outname = SPECIAL[n]
+        data = json.loads((SRC / f"{n}.json").read_text(encoding="utf-8"))
+    else:
+        seed, title, outname = n, f"Chương {n}: {CHAPTERS[n]}", f"chuong-{n}.html"
+        data = json.loads((SRC / f"ch{n}.json").read_text(encoding="utf-8"))
     qs = data["questions"]
     errs, warns = validate(n, qs)
     for w in warns:
@@ -95,14 +103,13 @@ def build(n):
     if errs:
         print(f"Ch{n} LỖI:\n  " + "\n  ".join(errs))
         return False
-    out = shuffle(n, qs)
+    out = shuffle(seed, qs)
     dist = [sum(1 for q in out if q["a"] == k) for k in range(4)]
-    title = f"Chương {n}: {CHAPTERS[n]}"
     payload = base64.b64encode(json.dumps(out, ensure_ascii=False).encode("utf-8")).decode("ascii")
     page = (TEMPLATE.replace("__TITLE__", html.escape(title))
-            .replace("__KEY__", f"dwquiz-ch{n}-v1")
+            .replace("__KEY__", f"dwquiz-{n if n in SPECIAL else 'ch' + str(n)}-v1")
             .replace("__DATA__", payload))
-    (ROOT / f"chuong-{n}.html").write_text(page, encoding="utf-8")
+    (ROOT / outname).write_text(page, encoding="utf-8")
     print(f"Ch{n} OK · 50 câu · đáp án A/B/C/D = {dist}")
     return True
 
@@ -132,7 +139,7 @@ a.ch:hover{{border-color:var(--brand);transform:translateY(-2px)}}
 </style></head><body><div class="wrap">
 <h1>Ôn tập Nhà kho dữ liệu và tích hợp</h1>
 <p class="sub">Trắc nghiệm 50 câu mỗi chương · Nhận biết 8 · Thông hiểu 15 · Vận dụng 17 · Vận dụng cao 10</p>
-<a class="ch" href="on-tap.html" style="margin-bottom:14px"><span class="n">★</span><span><b>Ôn tập trọng tâm</b><br>40 câu hỏi ôn tập: công thức, đáp án, ví dụ tính tay</span></a>
+<a class="ch" href="on-tap.html" style="margin-bottom:14px"><span class="n">★</span><span><b>Trắc nghiệm ôn tập trọng tâm</b><br>50 câu xoay quanh 40 chủ đề trong đề ôn tập · <span style="white-space:nowrap">kèm <u>bảng đáp án tự luận</u></span></span></a>
 <div class="grid">
 {items}
 </div>
@@ -143,7 +150,7 @@ Sau khi xong có thể chọn “Làm lại câu sai” hoặc “Làm lại to�
 
 
 if __name__ == "__main__":
-    nums = [int(a) for a in sys.argv[1:]] or [n for n in CHAPTERS if (SRC / f"ch{n}.json").exists()]
+    nums = [a if a in SPECIAL else int(a) for a in sys.argv[1:]] or ([n for n in CHAPTERS if (SRC / f"ch{n}.json").exists()] + list(SPECIAL))
     ok = all([build(n) for n in nums])
     index()
     sys.exit(0 if ok else 1)
