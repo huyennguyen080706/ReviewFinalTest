@@ -763,7 +763,7 @@
 {
 "lv": "VDC",
 "t": "PageRank Page 1 (C6)",
-"q": "Cùng đồ thị (1→2; 2→5; 3→1, 2, 4, 5; 4→3, 5; 5→4), PR khởi tạo 1, d = 0,85. PageRank của <b>Page 1</b> ở vòng 1 là:",
+"q":"Đồ thị (1→2; 2→5; 3→1, 2, 4, 5; 4→3, 5; 5→4), PR khởi tạo 1, d = 0,85. PageRank của <b>Page 1</b> ở vòng 1 là:",
 "o": [
 "0,3625",
 "0,4",
@@ -896,7 +896,7 @@
 {
 "lv": "VD",
 "t": "DFS (C9)",
-"q": "Cùng đồ thị A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C. Duyệt <b>DFS</b> từ A, chọn đỉnh kề chưa thăm nhỏ nhất theo chữ cái. Thứ tự thăm là:",
+"q":"Đồ thị vô hướng A–B, A–D, A–G, B–E, B–F, D–F, E–G, F–C. Duyệt <b>DFS</b> từ A, chọn đỉnh kề chưa thăm nhỏ nhất theo chữ cái. Thứ tự thăm là:",
 "o": [
 "A, B, E, G, F, C, D",
 "A, B, D, G, E, F, C",
