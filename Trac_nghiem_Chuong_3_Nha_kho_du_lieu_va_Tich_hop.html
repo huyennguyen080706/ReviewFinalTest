@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="30 câu trắc nghiệm Chương 3 Nhà kho dữ liệu và tích hợp; có đáp án, giải thích, thống kê và làm lại câu sai." />
+  <title>Trắc nghiệm Chương 3 | Nhà kho dữ liệu và tích hợp</title>
+  <style>
+    :root { --navy:#122a47; --blue:#1e5c9b; --sky:#edf5ff; --line:#d5e2f1; --bg:#f5f7fb; --ink:#233448; --muted:#63748b; --good:#16633c; --goodbg:#ebf8f0; --bad:#a32e31; --badbg:#fff1f1; --white:#fff; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:13pt/1.52 "Times New Roman",Times,serif}
+    button{font:inherit;cursor:pointer}
+    button:focus-visible,a:focus-visible{outline:3px solid #e3a63e;outline-offset:3px}
+    .wrap{max-width:1080px;margin:auto;padding:24px 22px 72px}
+    .hero{background:linear-gradient(135deg,#122a47,#24598d);color:white;border-radius:18px;padding:30px 32px;box-shadow:0 9px 22px rgba(16,39,70,.12)}
+    .eyebrow{color:#d1e4ff;font-size:11pt;font-weight:bold;letter-spacing:1px;text-transform:uppercase}
+    h1{font-size:27pt;line-height:1.16;margin:10px 0 8px}
+    .subtitle{font-size:14pt;color:#edf4ff;margin:0 0 20px}
+    .chips{display:flex;flex-wrap:wrap;gap:8px}.chip{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.10);padding:4px 12px;border-radius:99px;font-size:11pt}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:22px 0 18px}
+    .btn{border-radius:10px;padding:10px 17px;border:1px solid var(--line);background:white;color:var(--navy);font-weight:bold}
+    .btn:hover:enabled{background:#eaf3fd}
+    .btn.primary{background:var(--blue);border-color:var(--blue);color:white}.btn.primary:hover:enabled{background:#164878}
+    .btn:disabled{opacity:.45;cursor:not-allowed}
+    .info{color:var(--muted);font-size:11.5pt;margin-left:auto}
+    .panel{background:white;border:1px solid var(--line);border-radius:14px;padding:19px 22px;margin:14px 0;box-shadow:0 2px 6px rgba(22,45,71,.035)}
+    .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    .stat{text-align:center;padding:13px 8px;background:#f3f7fb;border-radius:10px}.stat .num{font-size:21pt;font-weight:bold;line-height:1.1}.stat small{font-size:11pt;color:var(--muted)}
+    .stat.good .num{color:var(--good)}.stat.bad .num{color:var(--bad)}
+    .bar{height:11px;background:#e6edf5;border-radius:50px;overflow:hidden;margin-top:15px}.fill{height:100%;background:#3985cc;width:0%;transition:width .3s}
+    .panel h2{font-size:16pt;margin:0 0 12px;color:var(--navy)}
+    .review-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .review-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:12px}
+    .review-box{border:1px solid var(--line);border-radius:10px;padding:12px;background:#fbfdff}
+    .review-box h3{font-size:13pt;margin:0 0 9px}.review-list{display:flex;flex-wrap:wrap;gap:7px;min-height:36px}
+    .jump{min-width:38px;background:#f2f6ff;border:1px solid #bacfe6;border-radius:7px;padding:4px 7px}
+    .jump.good{background:var(--goodbg);border-color:#badfcd;color:var(--good)}.jump.bad{background:var(--badbg);border-color:#f0c2c2;color:var(--bad)}
+    .empty{color:var(--muted);font-size:11pt;font-style:italic}
+    .notice{background:#eef5ff;border:1px solid #cfdeee;border-radius:10px;padding:12px 16px;margin:12px 0;font-size:12pt}
+    .group{margin-top:31px}.group h2{font-size:17pt;color:var(--navy);border-bottom:2px solid #d5e3f3;padding-bottom:8px;margin:0 0 15px}
+    .q-card{background:white;border:1px solid var(--line);border-radius:15px;padding:21px 23px;margin:16px 0;scroll-margin-top:15px;box-shadow:0 2px 7px rgba(22,45,71,.035)}
+    .q-card.answered.correct{border-left:5px solid #26814e}.q-card.answered.incorrect{border-left:5px solid #c13b3f}
+    .q-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px;font-size:11pt;color:var(--muted)}
+    .q-no{color:#1b5995;font-weight:bold}.tag{background:#f0f5fa;padding:2px 9px;border-radius:50px}
+    .prompt{font-size:15.2pt;font-weight:bold;line-height:1.38;margin:4px 0 15px;color:#1a2e44}
+    .options{display:grid;gap:9px}
+    .option{display:flex;text-align:left;gap:12px;align-items:flex-start;width:100%;padding:11px 12px;border:1px solid #cbd9e8;border-radius:9px;background:white;line-height:1.34;color:var(--ink)}
+    .option:hover:not(:disabled){background:#edf5ff;border-color:#6399d0}
+    .option:disabled{cursor:default;opacity:1}
+    .letter{flex:0 0 26px;min-width:26px;height:26px;display:grid;place-items:center;border-radius:6px;background:#edf3fa;color:#295582;font-size:11.5pt;font-weight:bold}
+    .option.is-right{background:var(--goodbg);border:2px solid #2b8557;padding:10px 11px}.option.is-right .letter{background:#2b8557;color:white}
+    .option.is-wrong{background:var(--badbg);border:2px solid #c54d50;padding:10px 11px}.option.is-wrong .letter{background:#be4144;color:white}
+    .option.is-muted{background:#f8fafc;color:#718093}
+    .feedback{border-radius:10px;padding:13px 15px;margin-top:13px;border:1px solid #cbdccc;background:#f5faf7}
+    .feedback.bad{background:#fff8f7;border-color:#edcdca}
+    .feedback strong{display:block;margin-bottom:4px;color:var(--good)}.feedback.bad strong{color:var(--bad)}
+    .source{display:block;margin-top:8px;font-size:10.5pt;color:var(--muted)}
+    footer{margin-top:35px;color:var(--muted);font-size:11pt;text-align:center}
+    .complete{border:1px solid #b9d9c8;background:#f0fbf5;border-radius:12px;padding:14px 17px;margin:10px 0;font-size:13pt}
+    dialog{border:1px solid var(--line);border-radius:16px;padding:19px;max-width:min(820px,95vw);max-height:88vh;overflow:auto;box-shadow:0 18px 60px rgba(0,0,0,.22)}
+    dialog::backdrop{background:rgba(9,27,50,.62)}
+    .dialog-head{display:flex;align-items:center;justify-content:space-between;gap:15px}.dialog-head h2{margin:0;font-size:17pt;color:var(--navy)}
+    dialog .q-card{margin:10px 0 0;box-shadow:none}
+    @media(max-width:660px){body{font-size:12pt}.wrap{padding:12px 10px 45px}.hero{padding:23px 18px}h1{font-size:23pt}.subtitle{font-size:12pt}.q-card{padding:16px 13px}.prompt{font-size:14pt}.stat-row{grid-template-columns:repeat(2,1fr)}.review-grid{grid-template-columns:1fr}.info{margin-left:0;width:100%}}
+    @media print{body{background:white}.wrap{max-width:none;padding:0}.hero{color:black;background:white;box-shadow:none;border:1px solid gray}.toolbar,.review-panel{display:none}.q-card,.panel{break-inside:avoid;box-shadow:none}.option{padding:8px 10px}.feedback{display:none}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Nhà kho dữ liệu và tích hợp • BIM5021</div>
+    <h1>Trắc nghiệm ôn tập Chương 3</h1>
+    <p class="subtitle">Tích hợp dữ liệu và Pipeline tự động</p>
+    <div class="chips"><span class="chip">30 câu • 4 lựa chọn</span><span class="chip">8 chủ đề</span><span class="chip">Chọn xong khóa đáp án</span><span class="chip">Giải thích + nguồn slide</span></div>
+  </header>
+  <div class="toolbar">
+    <button class="btn primary" type="button" id="retry-wrong">↻ Làm lại câu sai</button>
+    <button class="btn" type="button" id="retry-all">Làm lại toàn bộ</button>
+    <button class="btn" type="button" id="toggle-review" aria-expanded="true">Ẩn danh sách đúng/sai</button>
+    <span class="info" id="mode-label" aria-live="polite"></span>
+  </div>
+  <section class="panel" aria-label="Tiến độ làm bài">
+    <div class="stat-row">
+      <div class="stat"><div class="num" id="attempted">0/30</div><small>Đã trả lời trong lượt</small></div>
+      <div class="stat good"><div class="num" id="correct">0</div><small>Đúng trong lượt</small></div>
+      <div class="stat bad"><div class="num" id="incorrect">0</div><small>Sai trong lượt</small></div>
+      <div class="stat"><div class="num" id="overall">0/30</div><small>Đã làm đúng tổng thể</small></div>
+    </div>
+    <div class="bar" role="progressbar" aria-label="Tiến độ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><div class="fill" id="progress-fill"></div></div>
+    <div id="completion" aria-live="polite"></div>
+  </section>
+  <section class="panel review-panel" id="review-panel" aria-label="Danh sách câu đúng sai">
+    <div class="review-head"><h2>Danh sách câu làm đúng / làm sai</h2><span class="empty">Bấm vào số câu để xem lại</span></div>
+    <div class="review-grid">
+      <div class="review-box"><h3 style="color:var(--good)">✓ Các câu đã làm đúng</h3><div class="review-list" id="correct-list"></div></div>
+      <div class="review-box"><h3 style="color:var(--bad)">✕ Các câu đã làm sai</h3><div class="review-list" id="incorrect-list"></div></div>
+    </div>
+  </section>
+  <div class="notice" id="help-note">Chọn <b>một</b> đáp án A–D cho mỗi câu. Đáp án sẽ <b>khóa ngay</b>, đồng thời hiện đúng/sai và phần giải thích. Khi làm xong, dùng <b>“Làm lại câu sai”</b> để ôn đúng phần chưa vững.</div>
+  <main id="quiz"></main>
+  <dialog id="review-dialog" aria-label="Xem lại câu đã trả lời"><div class="dialog-head"><h2>Chi tiết đáp án đã chọn</h2><button class="btn" id="close-dialog" type="button">Đóng</button></div><div id="review-content"></div></dialog>
+  <footer>Nguồn biên soạn: <b>NhaKhoDuLieuVaTichHop_Slide3.pdf</b> – TS. Nguyễn Thôn Dã. Số trang tham chiếu là số slide in ở chân trang tài liệu (khác số trang PDF).</footer>
+</div>
+<script>
+'use strict';
+const QUESTIONS = [{"id": 1, "topic": "ETL / Cloud-Native ELT", "level": "Cơ bản", "q": "Điểm khác biệt cốt lõi giữa ETL truyền thống và Cloud-Native ELT là gì?", "opts": ["ETL nạp dữ liệu trước khi biến đổi, còn ELT biến đổi trước khi nạp", "ETL biến đổi dữ liệu trước khi nạp, còn ELT nạp dữ liệu rồi mới biến đổi", "Cả hai luôn xử lý dữ liệu bên ngoài kho", "ELT không cần bước trích xuất dữ liệu"], "a": 1, "why": "ETL thực hiện Extract → Transform → Load. Trong Cloud-Native ELT, dữ liệu thô được nạp vào Lake/Warehouse trước rồi dùng năng lực Compute trên Cloud để biến đổi tại chỗ.", "slide": 3}, {"id": 2, "topic": "ETL / Cloud-Native ELT", "level": "Cơ bản", "q": "Hạn chế nào dưới đây được nêu đối với quy trình ETL truyền thống?", "opts": ["Phụ thuộc máy chủ trung gian, dễ tạo nút thắt cổ chai và khó mở rộng", "Tách biệt hoàn toàn Storage và Compute", "Hỗ trợ Schema-on-read linh hoạt", "Tự động co giãn tài nguyên theo tải"], "a": 0, "why": "ETL truyền thống thường phụ thuộc hạ tầng biến đổi trung gian; với dữ liệu lớn, khâu này tạo độ trễ, chi phí bảo trì và khó scale linh hoạt.", "slide": 3}, {"id": 3, "topic": "ETL / Cloud-Native ELT", "level": "Cơ bản", "q": "Theo slide, Schema-on-read trong Cloud-Native ELT có ý nghĩa gì?", "opts": ["Bắt buộc cố định lược đồ trước khi thu thập dữ liệu", "Không được lưu bất kỳ dữ liệu nào chưa cấu trúc", "Chỉ được phép truy vấn dữ liệu đã tổng hợp ở tầng Gold", "Định nghĩa/diễn giải cấu trúc dữ liệu tại thời điểm truy vấn"], "a": 3, "why": "Cloud-Native ELT hỗ trợ Schema-on-read: có thể lưu dữ liệu thô trước và xác định cách diễn giải lược đồ khi đọc hoặc truy vấn dữ liệu.", "slide": 4}, {"id": 4, "topic": "ETL / Cloud-Native ELT", "level": "Vận dụng", "q": "Trong Medallion Architecture, dữ liệu đã được chuẩn hóa và loại bỏ bản ghi rác nhưng chưa tổng hợp báo cáo nằm ở tầng nào?", "opts": ["Bronze", "Gold", "Silver", "Tất cả các tầng đồng thời"], "a": 2, "why": "Bronze giữ dữ liệu thô; Silver làm sạch, chuẩn hóa và lọc bản ghi rác; Gold tổng hợp dữ liệu sẵn sàng cho BI và phân tích.", "slide": 6}, {"id": 5, "topic": "Change Data Capture (CDC)", "level": "Cơ bản", "q": "CDC chủ yếu dùng để nắm bắt nhóm thao tác nào trong cơ sở dữ liệu nguồn?", "opts": ["CREATE DATABASE, DROP DATABASE, GRANT", "INSERT, UPDATE, DELETE", "SELECT, JOIN, GROUP BY", "BACKUP, RESTORE, ANALYZE"], "a": 1, "why": "Theo phần CDC, hệ thống theo dõi sự thay đổi phát sinh từ INSERT, UPDATE và DELETE để đồng bộ sang hệ đích.", "slide": 7}, {"id": 6, "topic": "Change Data Capture (CDC)", "level": "Cơ bản", "q": "Cơ chế Log-based CDC trong bài giảng hoạt động theo nguyên lý nào?", "opts": ["Đọc trực tiếp Redo logs/thay đổi nhật ký của CSDL nguồn", "Quét toàn bộ bảng nguồn theo chu kỳ bằng SQL", "Xuất CSV định kỳ rồi nạp thủ công", "Chỉ đọc dữ liệu tại thời điểm khởi tạo hệ thống"], "a": 0, "why": "Log-based CDC đọc thông tin thay đổi từ Redo logs, nhờ đó giảm tải truy vấn lên CSDL nguồn và hỗ trợ đồng bộ gần thời gian thực.", "slide": 7}, {"id": 7, "topic": "Change Data Capture (CDC)", "level": "Vận dụng", "q": "Một bảng nguồn bị xóa cứng (hard delete) một bản ghi. Theo bảng so sánh của slide, phương án nào phát hiện sự kiện xóa chính xác hơn?", "opts": ["Query-based CDC, vì luôn truy vấn được bản ghi đã biến mất", "Cả hai chắc chắn như nhau trong mọi trường hợp", "Batch export cuối tuần", "Log-based CDC, vì ghi nhận sự kiện xóa trong nhật ký thay đổi"], "a": 3, "why": "Bảng so sánh nêu Log-based CDC ghi nhận việc xóa ngay; Query-based CDC khó phát hiện hard delete nếu chỉ quét trạng thái hiện tại.", "slide": 8}, {"id": 8, "topic": "Change Data Capture (CDC)", "level": "Cơ bản", "q": "Debezium là nền tảng CDC mã nguồn mở được mô tả là hoạt động dựa trên hệ sinh thái nào?", "opts": ["Apache Airflow", "dbt Core", "Apache Kafka Connect", "Power BI"], "a": 2, "why": "Slide về các nền tảng CDC giới thiệu Debezium là nền tảng mã nguồn mở dựa trên Apache Kafka Connect.", "slide": 10}, {"id": 9, "topic": "Zero-ETL Integration", "level": "Cơ bản", "q": "Định nghĩa nào phù hợp nhất với Zero-ETL Integration?", "opts": ["Phải viết thêm nhiều bước ETL trung gian", "Chỉ cho phép nhập file Excel bằng tay", "Không cần lưu dữ liệu vào hệ thống phân tích", "Tích hợp trực tiếp nguồn–đích, không cần tự xây code pipeline trung gian"], "a": 3, "why": "Zero-ETL hướng tới việc nhà cung cấp tự xử lý mapping và đồng bộ trực tiếp, giảm nhu cầu xây dựng/bảo trì pipeline trung gian.", "slide": 11}, {"id": 10, "topic": "Zero-ETL Integration", "level": "Cơ bản", "q": "Trong Zero-ETL, Metadata Sharing được mô tả là gì?", "opts": ["Chia sẻ trực tiếp siêu dữ liệu cấu trúc ở cấp độ lưu trữ", "Chia sẻ mật khẩu cho mọi người dùng", "Luôn chuyển toàn bộ dữ liệu thành hình ảnh", "Thay thế dữ liệu bằng tệp nhật ký văn bản"], "a": 0, "why": "Metadata Sharing là một công nghệ hỗ trợ Zero-ETL: chia sẻ thông tin cấu trúc trực tiếp ở tầng lưu trữ để đơn giản hóa tích hợp.", "slide": 12}, {"id": 11, "topic": "Zero-ETL Integration", "level": "Vận dụng", "q": "Nguồn dữ liệu chứa nhiều bản ghi sai và cần biến đổi nghiệp vụ phức tạp. Theo slide, đánh giá nào phù hợp nhất về Zero-ETL?", "opts": ["Đây là trường hợp phù hợp nhất với Zero-ETL", "Không phù hợp nếu chỉ trông chờ Zero-ETL, vì cần làm sạch và biến đổi phức tạp", "Zero-ETL tự động xử lý hoàn hảo mọi quy tắc nghiệp vụ", "Zero-ETL luôn thay thế được dbt ở mọi hệ thống"], "a": 1, "why": "Phần hạn chế nhấn mạnh Zero-ETL không phù hợp với nguồn dữ liệu bẩn cần làm sạch và chuyển đổi phức tạp. Cần một lớp xử lý phù hợp.", "slide": 14}, {"id": 12, "topic": "Zero-ETL Integration", "level": "Cơ bản", "q": "Rủi ro “Vendor Lock-in” của Zero-ETL là gì?", "opts": ["Không thể thực hiện truy vấn SQL", "Dữ liệu tự động biến thành bản ghi trùng lặp", "Bị phụ thuộc vào hệ sinh thái của một nhà cung cấp Cloud", "Bắt buộc mọi tác vụ chạy trên máy tính cá nhân"], "a": 2, "why": "Khi luồng tích hợp dựa mạnh vào connector và dịch vụ riêng của một Cloud Platform, việc đổi nhà cung cấp có thể khó khăn hoặc tốn kém.", "slide": 14}, {"id": 13, "topic": "Orchestration & Scheduling", "level": "Cơ bản", "q": "Vai trò chính của Orchestration trong một Data Pipeline là gì?", "opts": ["Thay thế hoàn toàn Data Warehouse", "Chỉ tạo biểu đồ báo cáo", "Điều phối thứ tự, phụ thuộc tác vụ; retry và cảnh báo khi xảy ra lỗi", "Chỉ lưu dữ liệu thô ở tầng Bronze"], "a": 2, "why": "Orchestration đóng vai trò nhạc trưởng: kiểm soát thứ tự, điều kiện chạy, tự động retry, thông báo lỗi và ghi lịch sử thực thi.", "slide": 15}, {"id": 14, "topic": "Orchestration & Scheduling", "level": "Vận dụng", "q": "Trong DAG của pipeline Bronze → Silver → Gold, khi nào tác vụ tạo bảng Gold nên được chạy?", "opts": ["Sau khi bước Silver phụ thuộc hoàn tất thành công", "Ngay lập tức, kể cả khi Silver chưa chạy", "Trước Bronze để tiết kiệm thời gian", "Không cần quan tâm quan hệ phụ thuộc"], "a": 0, "why": "DAG quản lý phụ thuộc rõ ràng: các tác vụ downstream như Gold chỉ được chạy sau khi upstream như Silver hoàn tất điều kiện cần.", "slide": 16}, {"id": 15, "topic": "Orchestration & Scheduling", "level": "Cơ bản", "q": "Cặp công cụ – tư duy nào khớp với nội dung Task-centric và Asset-centric trong slide?", "opts": ["Apache Airflow – Asset-centric; Dagster – Task-centric", "Apache Airflow – Task-centric; Dagster – Asset-centric", "dbt – Streaming; Snowpipe – Task-centric", "Kafka – Asset-centric; BigQuery – Task-centric"], "a": 1, "why": "Slide dùng Airflow làm ví dụ cho cách nhìn Task-centric (quản lý tác vụ) và Dagster cho Asset-centric (quản lý tài sản dữ liệu sinh ra).", "slide": 18}, {"id": 16, "topic": "Orchestration & Scheduling", "level": "Cơ bản", "q": "Đâu là cặp dịch vụ Orchestration Cloud-Native/Serverless được nhắc đến?", "opts": ["Photoshop và Illustrator", "MongoDB và Redis", "PowerPoint và Excel", "AWS Step Functions và Google Workflows"], "a": 3, "why": "Slide liệt kê AWS Step Functions và Google Workflows là lựa chọn điều phối Cloud-Native cho hệ thống Serverless.", "slide": 19}, {"id": 17, "topic": "Batch Ingestion & Streaming", "level": "Vận dụng", "q": "Doanh nghiệp chỉ cần tổng hợp bảng lương vào mỗi cuối tháng và chấp nhận dữ liệu trễ. Cách xử lý nào phù hợp nhất theo slide?", "opts": ["Continuous Streaming 24/7", "Batch Processing theo lịch", "Chỉ dùng Vector Search", "Chỉ dùng CDC Log-based"], "a": 1, "why": "Batch xử lý theo lô/chu kỳ, đơn giản và tiết kiệm khi bài toán chấp nhận độ trễ như tính lương hoặc báo cáo cuối kỳ.", "slide": 20}, {"id": 18, "topic": "Batch Ingestion & Streaming", "level": "Cơ bản", "q": "Theo nội dung về Snowpipe, điều gì có thể kích hoạt việc nạp dữ liệu tự động?", "opts": ["Tệp mới xuất hiện trên Cloud Storage", "Người dùng phải khởi động lại máy chủ vật lý", "Bảng Gold được xóa khỏi Warehouse", "Một báo cáo Power BI được in ra"], "a": 0, "why": "Snowpipe có thể được kích hoạt khi tệp dữ liệu xuất hiện trên Cloud Storage; hệ thống tự cấp tài nguyên cho nạp dữ liệu kiểu micro-batch.", "slide": 21}, {"id": 19, "topic": "Batch Ingestion & Streaming", "level": "Cơ bản", "q": "Trong Spark Structured Streaming, Watermarks chủ yếu giúp giải quyết vấn đề gì?", "opts": ["Tăng tốc độ vẽ dashboard tĩnh", "Mã hóa toàn bộ dữ liệu trước khi nạp", "Xử lý các bản ghi đến trễ trong luồng dữ liệu", "Cấu hình mạng nội bộ của máy chủ"], "a": 2, "why": "Slide phân biệt Windowing (khung thời gian), Watermarks (xử lý bản ghi đến trễ) và Checkpointing (phục hồi sau sự cố).", "slide": 23}, {"id": 20, "topic": "Batch Ingestion & Streaming", "level": "Cơ bản", "q": "Điểm khác nhau cơ bản giữa kiến trúc Lambda và Kappa là gì?", "opts": ["Lambda chỉ dùng một streaming codebase; Kappa dùng hai codebase", "Lambda và Kappa đều bắt buộc xử lý chỉ bằng batch", "Kappa không thể xử lý dữ liệu lịch sử", "Lambda có hai luồng Batch và Speed; Kappa hướng tới một luồng Streaming duy nhất"], "a": 3, "why": "Slide so sánh Lambda dùng đồng thời luồng Batch và Speed/Streaming, còn Kappa đơn giản hóa về một pipeline streaming để xử lý dữ liệu thực và lịch sử.", "slide": 24}, {"id": 21, "topic": "dbt, SQL & Jinja", "level": "Cơ bản", "q": "Triết lý SQL-first của dbt nhấn mạnh điều gì?", "opts": ["Toàn bộ logic chỉ được viết bằng Java", "Dùng SQL làm nền tảng chính để biểu diễn logic biến đổi dữ liệu", "Chỉ được phép dùng câu lệnh INSERT", "dbt thay thế vai trò của mọi công cụ điều phối"], "a": 1, "why": "dbt hướng tới biến đổi dữ liệu theo cách SQL-first, chia logic thành các model có thể quản lý bằng Git và tái sử dụng.", "slide": 26}, {"id": 22, "topic": "dbt, SQL & Jinja", "level": "Cơ bản", "q": "Trong dbt, Jinja Macros được dùng để làm gì?", "opts": ["Thay thế toàn bộ dữ liệu trong kho bằng tệp CSV", "Tạo bản sao vật lý máy chủ Cloud", "Đo độ trễ mạng WAN", "Đóng gói đoạn SQL lặp lại thành hàm/tái sử dụng"], "a": 3, "why": "Jinja bổ sung templating cho SQL; Macros giúp đóng gói các đoạn SQL thường dùng, hạn chế lặp code và hỗ trợ linh hoạt theo môi trường.", "slide": 27}, {"id": 23, "topic": "dbt, SQL & Jinja", "level": "Cơ bản", "q": "Trong dbt, Schema Tests thông thường kiểm tra điều gì?", "opts": ["Điều kiện cơ bản như cột rỗng (null) hoặc giá trị trùng lặp", "Tốc độ quạt tản nhiệt máy chủ", "Dự báo chính xác giá cổ phiếu ngày mai", "Độ phân giải của hình ảnh dashboard"], "a": 0, "why": "Schema Tests trong dbt tự động kiểm tra các điều kiện dữ liệu cơ bản. Singular Tests là SQL riêng để kiểm thử quy tắc nghiệp vụ đặc thù.", "slide": 28}, {"id": 24, "topic": "dbt, SQL & Jinja", "level": "Vận dụng", "q": "Một báo cáo Gold bị sai và nhóm cần truy ngược bảng nguồn, các bước biến đổi. Tính năng dbt nào giúp nhìn rõ mối quan hệ đầu vào–đầu ra?", "opts": ["Watermarks", "Micro-batch", "Visual Data Lineage", "Vendor Lock-in"], "a": 2, "why": "Visual Lineage của dbt vẽ quan hệ phụ thuộc các bảng/model, hỗ trợ truy vết và đánh giá tác động khi một bảng nguồn thay đổi.", "slide": 29}, {"id": 25, "topic": "Schema Evolution", "level": "Cơ bản", "q": "Trong bài giảng, Schema Drift nghĩa là gì?", "opts": ["Khả năng dữ liệu được cập nhật đúng hạn", "Sự thay đổi bất ngờ ở cấu trúc nguồn như thêm/xóa cột, đổi kiểu dữ liệu", "Một kỹ thuật phân nhóm dữ liệu theo thời gian", "Việc tự động mã hóa dữ liệu nhạy cảm"], "a": 1, "why": "Schema Drift là thay đổi cấu trúc dữ liệu nguồn, có thể làm hỏng downstream pipeline hoặc gây mất dữ liệu ngầm (silent loss).", "slide": 30}, {"id": 26, "topic": "Schema Evolution", "level": "Vận dụng", "q": "Nguồn xuất hiện thuộc tính mới “loyalty_tier”. Cơ chế Schema Evolution nào giúp bổ sung trường tương ứng vào bảng đích?", "opts": ["Auto-column addition", "Hard delete", "Windowing", "Checkpointing"], "a": 0, "why": "Auto-column addition nhận diện thuộc tính/cột mới và tự bổ sung cột vào đích; slide cũng đề cập kiểu linh hoạt JSON/VARIANT và Type Coercion.", "slide": 31}, {"id": 27, "topic": "Schema Evolution", "level": "Cơ bản", "q": "Theo slide, Full Compatibility của lược đồ là gì?", "opts": ["Chỉ bảo đảm mã xử lý mới đọc được lược đồ cũ", "Không cần lưu trữ phiên bản schema", "Kết hợp cả Backward và Forward Compatibility", "Bắt buộc cấm mọi thay đổi kiểu dữ liệu"], "a": 2, "why": "Full Compatibility kết hợp tương thích ngược (code cũ đọc cấu trúc mới) và tương thích xuôi (cấu trúc cũ làm việc với code mới).", "slide": 32}, {"id": 28, "topic": "Data Observability", "level": "Cơ bản", "q": "Khác biệt quan trọng giữa Monitoring và Data Observability trong slide là gì?", "opts": ["Monitoring giải thích nguyên nhân sâu xa, Observability chỉ báo có lỗi", "Hai khái niệm giống nhau hoàn toàn", "Observability chỉ dùng để tính chi phí hạ tầng", "Monitoring báo có lỗi; Observability giúp hiểu lỗi vì sao và nằm ở đâu"], "a": 3, "why": "Data Observability đi xa hơn cảnh báo trạng thái: hỗ trợ nhận diện nguồn gốc, nguyên nhân và mức ảnh hưởng, từ đó giảm Data Downtime.", "slide": 34}, {"id": 29, "topic": "Data Observability", "level": "Vận dụng", "q": "Một bảng giao dịch đáng lẽ được cập nhật mỗi giờ nhưng đã 8 giờ chưa có dữ liệu mới. Trụ cột Observability nào phát hiện trực tiếp vấn đề này?", "opts": ["Volume", "Distribution", "Freshness", "Lineage"], "a": 2, "why": "Freshness theo dõi việc dữ liệu đến có đúng hạn/SLA hay không; Volume kiểm tra số lượng bản ghi, Distribution kiểm tra phân bố thống kê.", "slide": 35}, {"id": 30, "topic": "Data Observability", "level": "Vận dụng", "q": "Pipeline thường nạp 100.000 dòng/ngày nhưng hôm nay chỉ còn 500 dòng. Trong 5 trụ cột Data Observability, chỉ số nào cần kiểm tra trước?", "opts": ["Volume", "Schema", "Lineage", "Freshness"], "a": 0, "why": "Volume theo dõi biến động bất thường về số bản ghi so với lịch sử. Sụt giảm mạnh số lượng bản ghi là dấu hiệu trực tiếp của sự cố volume.", "slide": 35}];
+const LETTERS = ['A','B','C','D'];
+const KEY = 'nkdltichhop_chuong3_quiz_v1';
+let state = { activeIds:QUESTIONS.map(q=>q.id), answers:{}, mode:'all' };
+try {
+  const cached=JSON.parse(localStorage.getItem(KEY));
+  if (cached && Array.isArray(cached.activeIds) && cached.activeIds.length && cached.activeIds.every(n=>Number.isInteger(n)&&n>=1&&n<=30)) {
+    state.activeIds=[...new Set(cached.activeIds)];
+    state.mode=cached.mode==='wrong'?'wrong':'all';
+    if (cached.answers && typeof cached.answers==='object') for(const q of QUESTIONS){
+      if(Number.isInteger(cached.answers[q.id]) && cached.answers[q.id]>=0 && cached.answers[q.id]<=3) state.answers[q.id]=cached.answers[q.id];
+    }
+  }
+} catch(err) { /* No local storage available; quiz still works. */ }
+const byId=id=>QUESTIONS[id-1];
+const answered=id=>Object.prototype.hasOwnProperty.call(state.answers,id);
+const isCorrect=id=>answered(id) && state.answers[id]===byId(id).a;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};
+const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const questionHTML=q=>{
+  const done=answered(q.id), good=isCorrect(q.id), picked=state.answers[q.id];
+  const opts=q.opts.map((o,i)=>{
+    const klass=done?(i===q.a?'is-right':(i===picked?'is-wrong':'is-muted')):'';
+    const right=done&&i===q.a?' ✓':done&&i===picked?' ✕':'';
+    return `<button type="button" class="option ${klass}" data-id="${q.id}" data-index="${i}" ${done?'disabled':''} aria-label="Câu ${q.id}, đáp án ${LETTERS[i]}: ${escapeHTML(o)}"><span class="letter">${LETTERS[i]}</span><span>${escapeHTML(o)}${right}</span></button>`;
+  }).join('');
+  return `<article class="q-card ${done?'answered '+(good?'correct':'incorrect'):''}" id="q-${q.id}">
+    <div class="q-meta"><span class="q-no">Câu ${q.id} / 30</span><span class="tag">${escapeHTML(q.level)}</span><span class="tag">${done?(good?'✓ Đúng':'✕ Sai'):'Chưa trả lời'}</span></div>
+    <p class="prompt">${escapeHTML(q.q)}</p><div class="options">${opts}</div>
+    ${done?`<div class="feedback ${good?'':'bad'}" role="status"><strong>${good?'✓ Chính xác!':'✕ Chưa đúng.'} Đáp án: ${LETTERS[q.a]}.</strong>${escapeHTML(q.why)}<span class="source">Tham chiếu: Slide Chương 3, trang ${q.slide} (số in trên slide).</span></div>`:''}
+    </article>`;
+};
+function render(){
+  const ids=state.activeIds, active=ids.map(byId), tried=ids.filter(answered), rights=tried.filter(isCorrect), wrongs=tried.filter(id=>!isCorrect(id));
+  const totalGood=QUESTIONS.filter(q=>isCorrect(q.id)).length;
+  const completed=tried.length===ids.length;
+  document.getElementById('attempted').textContent=`${tried.length}/${ids.length}`;
+  document.getElementById('correct').textContent=rights.length;
+  document.getElementById('incorrect').textContent=wrongs.length;
+  document.getElementById('overall').textContent=`${totalGood}/30`;
+  document.getElementById('mode-label').textContent=state.mode==='wrong'?`Lượt làm lại: ${ids.length} câu sai`:'Lượt ôn tập: toàn bộ 30 câu';
+  const ratio=Math.round(100*tried.length/ids.length);
+  document.getElementById('progress-fill').style.width=ratio+'%';
+  document.getElementById('progress').setAttribute('aria-valuenow',ratio);
+  document.getElementById('retry-wrong').disabled=!completed || !wrongs.length;
+  document.getElementById('retry-wrong').textContent=`↻ Làm lại câu sai${wrongs.length?' ('+wrongs.length+')':''}`;
+  document.getElementById('completion').innerHTML=completed?`<div class="complete"><b>Hoàn thành lượt ôn tập!</b> Bạn đúng <b>${rights.length}/${ids.length}</b> câu (${Math.round(100*rights.length/ids.length)}%). ${wrongs.length?'Có '+wrongs.length+' câu cần ôn lại.':'Bạn đã trả lời đúng tất cả câu trong lượt này.'}</div>`:'';
+  for(const [listId,nums,klass] of [['correct-list',QUESTIONS.filter(q=>isCorrect(q.id)).map(q=>q.id),'good'],['incorrect-list',QUESTIONS.filter(q=>answered(q.id)&&!isCorrect(q.id)).map(q=>q.id),'bad']]){
+    document.getElementById(listId).innerHTML=nums.length?nums.map(id=>`<button type="button" class="jump ${klass}" data-jump="${id}" title="Đến câu ${id}">${id}</button>`).join(''):'<span class="empty">Chưa có câu nào</span>';
+  }
+  let group='',blocks=[];
+  for(const q of active){
+    if(q.topic!==group){group=q.topic;blocks.push(`<section class="group"><h2>${escapeHTML(group)}</h2>`)}
+    blocks.push(questionHTML(q));
+    if(q.id===active[active.length-1].id || active[active.indexOf(q)+1].topic!==group) blocks.push('</section>');
+  }
+  document.getElementById('quiz').innerHTML=blocks.join('');
+}
+document.getElementById('quiz').addEventListener('click',ev=>{
+  const b=ev.target.closest('button[data-id]'); if(!b)return;
+  const id=Number(b.dataset.id),idx=Number(b.dataset.index);
+  if(!state.activeIds.includes(id)||answered(id))return;
+  state.answers[id]=idx;save();render();
+});
+document.getElementById('retry-wrong').addEventListener('click',()=>{
+  const ids=state.activeIds.filter(id=>answered(id)&&!isCorrect(id));
+  if(!ids.length)return;
+  ids.forEach(id=>delete state.answers[id]);
+  state.activeIds=ids;state.mode='wrong';save();render();
+  document.getElementById('help-note').scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('retry-all').addEventListener('click',()=>{
+  state={activeIds:QUESTIONS.map(q=>q.id),answers:{},mode:'all'};save();render();
+  document.querySelector('.hero').scrollIntoView({behavior:'smooth',block:'start'});
+});
+document.getElementById('toggle-review').addEventListener('click',()=>{
+  const panel=document.getElementById('review-panel'),btn=document.getElementById('toggle-review');
+  const hidden=panel.hidden=!panel.hidden;
+  btn.textContent=hidden?'Xem danh sách đúng/sai':'Ẩn danh sách đúng/sai';
+  btn.setAttribute('aria-expanded',String(!hidden));
+});
+document.getElementById('review-panel').addEventListener('click',ev=>{
+  const b=ev.target.closest('[data-jump]');if(!b)return;
+  const id=Number(b.dataset.jump);
+  const target=document.getElementById('q-'+id);
+  if(target){target.scrollIntoView({behavior:'smooth',block:'start'})}
+  else{document.getElementById('review-content').innerHTML=questionHTML(byId(id));document.getElementById('review-dialog').showModal();}
+});
+document.getElementById('close-dialog').addEventListener('click',()=>document.getElementById('review-dialog').close());
+render();
+</script>
+</body>
+</html>
