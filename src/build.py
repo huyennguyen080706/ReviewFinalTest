@@ -26,8 +26,10 @@ CHAPTERS = {
 
 def validate(n, qs):
     errs, warns = [], []
-    if len(qs) != 50:
-        errs.append(f"có {len(qs)} câu, cần 50")
+    exam = str(n).startswith("de")  # đề thi thử: 47 câu, không chia cố định theo mức
+    want = 47 if exam else 50
+    if len(qs) != want:
+        errs.append(f"có {len(qs)} câu, cần {want}")
     cnt = {k: 0 for k in NEED}
     seen = set()
     for i, q in enumerate(qs, 1):
@@ -57,7 +59,7 @@ def validate(n, qs):
             if "tất cả" in low and "đều" in low or low.startswith("cả a") or "cả a và b" in low:
                 errs.append(f"câu {i}: phương án cấm '{o_[:40]}'")
     for k, v in NEED.items():
-        if cnt[k] != v:
+        if not exam and cnt[k] != v:
             errs.append(f"mức {k}: {cnt[k]} câu, cần {v}")
     return errs, warns
 
@@ -87,6 +89,9 @@ def shuffle(n, qs):
 
 
 SPECIAL = {"ontap": (99, "Ôn tập trọng tâm: 40 chủ đề trong đề ôn tập", "on-tap.html")}
+# Đề thi thử: src/deN.json sinh bởi src/de_gen.py
+for _v in (1, 2, 3, 4):
+    SPECIAL[f"de{_v}"] = (200 + _v, f"Đề thi thử số {_v}", f"de-thi-thu-{_v}.html")
 
 
 def build(n):
@@ -110,7 +115,7 @@ def build(n):
             .replace("__KEY__", f"dwquiz-{n if n in SPECIAL else 'ch' + str(n)}-v1")
             .replace("__DATA__", payload))
     (ROOT / outname).write_text(page, encoding="utf-8")
-    print(f"Ch{n} OK · 50 câu · đáp án A/B/C/D = {dist}")
+    print(f"Ch{n} OK · {len(out)} câu · đáp án A/B/C/D = {dist}")
     return True
 
 
@@ -121,12 +126,14 @@ def index():
         if n in built else
         f'<div class="ch off"><span class="n">{n}</span><span><b>Chương {n}</b><br>{html.escape(t)}<br><i>Đang soạn</i></span></div>'
         for n, t in CHAPTERS.items())
+    exams = "\n".join(
+        f'<a class="ch" href="de-thi-thu-{v}.html"><span class="n">Đ{v}</span><span><b>Đề thi thử số {v}</b><br>47 câu · 40 chủ đề trọng tâm</span></a>'
+        for v in (1, 2, 3, 4) if (ROOT / f"de-thi-thu-{v}.html").exists())
     page = f"""<!doctype html>
 <html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ôn tập Nhà kho dữ liệu</title>
 <style>
 :root{{--bg:#f4f6fb;--card:#fff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--brand:#1d4ed8;--soft:#e0e7ff}}
-@media (prefers-color-scheme: dark){{:root{{--bg:#0f172a;--card:#111827;--ink:#e5e7eb;--muted:#9ca3af;--line:#1f2937;--brand:#60a5fa;--soft:#1e3a8a}}}}
 *{{box-sizing:border-box}} body{{margin:0;background:var(--bg);color:var(--ink);font-family:"Times New Roman",Times,serif;font-size:13pt}}
 .wrap{{max-width:860px;margin:0 auto;padding:24px 16px 50px}}
 h1{{font-size:20pt;margin:0 0 4px}} p.sub{{color:var(--muted);margin:0 0 18px;font-family:"Segoe UI",Arial,sans-serif;font-size:11pt}}
@@ -135,11 +142,18 @@ h1{{font-size:20pt;margin:0 0 4px}} p.sub{{color:var(--muted);margin:0 0 18px;fo
 a.ch:hover{{border-color:var(--brand);transform:translateY(-2px)}}
 .ch .n{{flex:none;width:36px;height:36px;border-radius:50%;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:"Segoe UI",Arial,sans-serif}}
 .ch.off{{opacity:.55}} .ch i{{color:var(--muted);font-size:10.5pt}}
+h2.sec{{font-size:15pt;margin:8px 0 4px}}
 .note{{margin-top:22px;font-size:10.5pt;color:var(--muted);font-family:"Segoe UI",Arial,sans-serif;line-height:1.6}}
 </style></head><body><div class="wrap">
 <h1>Ôn tập Nhà kho dữ liệu và tích hợp</h1>
 <p class="sub">Trắc nghiệm 50 câu mỗi chương · Nhận biết 8 · Thông hiểu 15 · Vận dụng 17 · Vận dụng cao 10</p>
 <a class="ch" href="on-tap.html" style="margin-bottom:14px"><span class="n">★</span><span><b>Trắc nghiệm ôn tập trọng tâm</b><br>50 câu xoay quanh 40 chủ đề trong đề ôn tập · <span style="white-space:nowrap">kèm <u>bảng đáp án tự luận</u></span></span></a>
+<h2 class="sec">Đề thi thử trắc nghiệm</h2>
+<p class="sub">Mỗi đề 47 câu phủ đủ 40 câu của file chẩn đoán kiến thức · cùng ý chính, mỗi đề một cách hỏi, câu tính toán đổi số liệu</p>
+<div class="grid" style="margin-bottom:22px">
+{exams}
+</div>
+<h2 class="sec">Trắc nghiệm theo chương</h2>
 <div class="grid">
 {items}
 </div>
