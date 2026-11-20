@@ -1,0 +1,764 @@
+{
+ "questions": [
+  {
+   "lv": "VD",
+   "t": "Active metadata (C1)",
+   "q": "Hệ thống tự phát hiện một bảng 6 tháng không ai truy vấn và tự đề xuất chuyển sang lưu trữ giá rẻ. Đây là biểu hiện của:",
+   "o": [
+    "Active metadata trong Data Fabric",
+    "Passive metadata trong data catalog",
+    "Federated governance trong Data Mesh",
+    "Zero-copy cloning trong Snowflake"
+   ],
+   "w": "Active metadata được hệ thống phân tích liên tục và tự kích hoạt hành động (đề xuất, áp chính sách), khác passive metadata chỉ để tra cứu.",
+   "x": [
+    "Passive metadata chỉ là danh mục ghi chép, người dùng phải tự đọc.",
+    "Federated governance là cách đặt chuẩn chung giữa các miền.",
+    "Zero-copy cloning là tạo bản sao chỉ ở metadata để thử nghiệm."
+   ],
+   "trap": "Nghĩ mọi metadata đều là danh mục tĩnh.",
+   "mem": "Metadata biết “hành động” → active metadata."
+  },
+  {
+   "lv": "NB",
+   "t": "Open Table Format (C1)",
+   "q": "Open Table Format nào được slide mô tả là <b>tối ưu cho nạp streaming và upsert liên tục</b>?",
+   "o": [
+    "Apache Hudi",
+    "Delta Lake",
+    "Apache Iceberg",
+    "Apache Parquet"
+   ],
+   "w": "Delta Lake (Databricks): Time Travel, ACID. Iceberg (Netflix): hiệu năng, schema evolution. Hudi (Uber): streaming, upsert.",
+   "x": [
+    "Delta Lake nổi bật ở Time Travel và ACID.",
+    "Iceberg nổi bật ở hiệu năng cao và thay đổi schema linh hoạt.",
+    "Parquet là định dạng file cột, không phải Open Table Format."
+   ],
+   "trap": "Coi Parquet là một Open Table Format.",
+   "mem": "Delta–Time Travel · Iceberg–schema evolution · Hudi–upsert."
+  },
+  {
+   "lv": "VD",
+   "t": "Chọn kiến trúc (C1)",
+   "q": "Một tập đoàn có hàng chục khối kinh doanh; đội IT trung tâm quá tải, yêu cầu mới phải chờ hàng tuần, các khối muốn tự chủ làm sản phẩm dữ liệu. Kiến trúc phù hợp nhất:",
+   "o": [
+    "Data Mesh",
+    "Data Fabric",
+    "Data Lakehouse",
+    "Data Warehouse tập trung truyền thống"
+   ],
+   "w": "Tổ chức rất lớn, IT quá tải, phòng ban muốn tự chủ → Mesh (phân quyền sở hữu dữ liệu theo miền).",
+   "x": [
+    "Fabric vẫn do đội IT dẫn dắt qua công nghệ, không gỡ được điểm nghẽn tổ chức.",
+    "Lakehouse hợp với đội IT tập trung, tổ chức vừa và nhỏ.",
+    "Kho tập trung chính là nguyên nhân gây nghẽn."
+   ],
+   "trap": "Chọn Fabric vì cũng “kết nối nhiều nguồn”.",
+   "mem": "IT quá tải + tự chủ phòng ban → Mesh."
+  },
+  {
+   "lv": "TH",
+   "t": "Snowflake (C1)",
+   "q": "Trong Snowflake, <b>zero-copy cloning</b> hoạt động thế nào?",
+   "o": [
+    "Chỉ chép metadata, dùng chung file; phần bị sửa mới ghi file mới",
+    "Chép toàn bộ file dữ liệu sang một vùng lưu trữ khác ngay khi tạo",
+    "Chép dữ liệu sang tài khoản đối tác qua FTP theo lịch",
+    "Tạo bản sao nén của bảng và đẩy xuống archive tier"
+   ],
+   "w": "Zero-copy clone không tốn thêm dung lượng lúc tạo; chỉ khi bản sao hoặc bản gốc bị sửa thì phần bị sửa mới thành file mới. Dùng để tạo môi trường thử nghiệm.",
+   "x": [
+    "Chép toàn bộ file sẽ tốn thêm dung lượng, trái với “zero-copy”.",
+    "Chia sẻ cho đối tác không tạo bản sao và không qua FTP.",
+    "Cloning không liên quan phân tầng lưu trữ."
+   ],
+   "trap": "Nghĩ “clone” là chép vật lý.",
+   "mem": "Clone = chép metadata, dùng chung file."
+  },
+  {
+   "lv": "TH",
+   "t": "SCD (C2)",
+   "q": "Theo slide, <b>SCD Type 6</b> là gì?",
+   "o": [
+    "Kết hợp Type 1 + Type 2 + Type 3",
+    "Kết hợp mini-dimension với logic Type 1",
+    "Tách bảng current và bảng history",
+    "Kết hợp Type 1 + Type 2"
+   ],
+   "w": "Type 6 = 1 + 2 + 3: vẫn thêm dòng như Type 2, mỗi dòng có thêm cột “giá trị hiện tại” được ghi đè (Type 1), nên lọc được cả theo lịch sử lẫn hiện tại.",
+   "x": [
+    "Đó là Type 5.",
+    "Đó là Type 4.",
+    "Thiếu phần cột giá trị (Type 3)."
+   ],
+   "trap": "Lẫn Type 5 và Type 6.",
+   "mem": "Type 6 = 1 + 2 + 3 (cộng lại bằng 6)."
+  },
+  {
+   "lv": "TH",
+   "t": "Medallion (C2)",
+   "q": "Data Scientist cần dữ liệu <b>đã làm sạch, đã nối nguồn nhưng vẫn ở mức atomic</b> để trích đặc trưng. Nên lấy ở tầng nào?",
+   "o": [
+    "Silver",
+    "Bronze",
+    "Gold",
+    "Semantic layer"
+   ],
+   "w": "Silver: làm sạch, imputation, data quality gate, JOIN nguồn, vẫn chi tiết → nguồn chính cho Data Science. Gold phục vụ BI.",
+   "x": [
+    "Bronze chưa làm sạch.",
+    "Gold đã tổng hợp, mất chi tiết atomic.",
+    "Semantic layer là lớp định nghĩa nghiệp vụ, không phải tầng lưu dữ liệu."
+   ],
+   "trap": "Chọn Gold vì nghĩ “sạch nhất là tốt nhất”.",
+   "mem": "Silver cho Data Science, Gold cho BI."
+  },
+  {
+   "lv": "NB",
+   "t": "Headless BI (C2)",
+   "q": "<b>Headless BI</b> nghĩa là gì?",
+   "o": [
+    "Định nghĩa chỉ số tách khỏi công cụ hiển thị, mọi công cụ gọi chung",
+    "BI chạy trên hạ tầng serverless, không cần quản lý máy chủ",
+    "Dashboard ẩn tiêu đề và menu để tiết kiệm không gian",
+    "BI chỉ cung cấp API dữ liệu thô, người dùng không xem được biểu đồ"
+   ],
+   "w": "“Không có đầu” = không gắn với giao diện nào. Ví dụ dbt Semantic Layer, Cube, LookML.",
+   "x": [
+    "Serverless là khái niệm hạ tầng, không phải Headless BI.",
+    "Không liên quan giao diện dashboard.",
+    "Người dùng vẫn xem biểu đồ trên Power BI, Tableau… như bình thường."
+   ],
+   "trap": "Hiểu chữ “headless” theo nghĩa đen.",
+   "mem": "Headless BI = định nghĩa tách khỏi hiển thị."
+  },
+  {
+   "lv": "VDC",
+   "t": "Point-in-time correctness (C2)",
+   "q": "Mô hình dự báo khách rời bỏ tại ngày 01/06 nhưng đặc trưng “số lần gọi tổng đài” lại lấy từ bảng khách hàng <b>hiện tại</b> (đã gồm cả cuộc gọi huỷ dịch vụ sau 01/06). Cách khắc phục đúng:",
+   "o": [
+    "Dùng Time Travel hoặc SCD Type 2 để lấy dữ liệu đúng như tại ngày 01/06",
+    "Tăng số mẫu huấn luyện lên nhiều lần để mô hình tự học cách bỏ qua sai lệch",
+    "Chuẩn hoá Min-Max cột số lần gọi trước khi huấn luyện",
+    "Chuyển bảng đặc trưng từ wide table sang star schema"
+   ],
+   "w": "Đây là data leakage. Point-in-time correctness: mỗi mẫu chỉ dùng dữ liệu có trước thời điểm của mẫu; Time Travel đọc bảng như ở ngày 01/06, SCD Type 2 cho thuộc tính đúng vào ngày đó.",
+   "x": [
+    "Thêm mẫu không xoá được thông tin “từ tương lai”.",
+    "Chuẩn hoá không đổi bản chất dữ liệu bị rò rỉ.",
+    "Đổi cấu trúc bảng không giải quyết rò rỉ theo thời gian."
+   ],
+   "trap": "Không nhận ra điểm số thử nghiệm cao bất thường là do rò rỉ.",
+   "mem": "Leakage → point-in-time → Time Travel / SCD Type 2."
+  },
+  {
+   "lv": "NB",
+   "t": "ETL và ELT (C3)",
+   "q": "Khác biệt cốt lõi giữa <b>ETL</b> và <b>ELT</b> là gì?",
+   "o": [
+    "Biến đổi diễn ra trước hay sau khi nạp, và diễn ra ở đâu",
+    "ETL chỉ dùng cho dữ liệu có cấu trúc, ELT chỉ dùng cho JSON",
+    "ETL chạy trên cloud, ELT chạy on-premise",
+    "ELT không có bước biến đổi dữ liệu"
+   ],
+   "w": "ETL: lấy → biến đổi trên máy chủ ETL trung gian → nạp. ELT: lấy → nạp thô vào kho → biến đổi bằng SQL ngay trong kho.",
+   "x": [
+    "Không phải tiêu chí phân biệt trong slide.",
+    "Ngược lại: ELT là cách làm cloud-native.",
+    "ELT vẫn biến đổi, chỉ là sau khi nạp và ngay trong kho."
+   ],
+   "trap": "Nghĩ ELT bỏ hẳn bước Transform.",
+   "mem": "ETL: T trước L, ngoài kho · ELT: L trước T, trong kho."
+  },
+  {
+   "lv": "TH",
+   "t": "CDC (C3)",
+   "q": "Query-based CDC dùng <code>WHERE updated_at &gt; mốc_lần_trước</code> <b>không phát hiện được</b> thao tác nào?",
+   "o": [
+    "Hard delete (xoá hẳn dòng khỏi bảng)",
+    "INSERT dòng mới có updated_at mới",
+    "UPDATE một dòng đã có",
+    "UPDATE nhiều cột trong cùng một dòng"
+   ],
+   "w": "Dòng bị xoá hẳn không còn để truy vấn ra. Ngoài ra nếu một dòng bị sửa hai lần giữa hai lần quét thì chỉ thấy trạng thái cuối.",
+   "x": [
+    "INSERT có updated_at mới nên được quét ra.",
+    "UPDATE làm đổi updated_at nên được quét ra.",
+    "Vẫn là một UPDATE, vẫn có updated_at mới."
+   ],
+   "trap": "Nghĩ query-based bắt đủ cả ba thao tác.",
+   "mem": "Query-based: nặng nguồn, sót hard delete, trễ theo chu kỳ."
+  },
+  {
+   "lv": "TH",
+   "t": "Spark Structured Streaming (C3)",
+   "q": "Trong Spark Structured Streaming, <b>watermark</b> dùng để làm gì?",
+   "o": [
+    "Xử lý sự kiện đến trễ trong một ngưỡng chờ cho phép",
+    "Ghi lại vị trí đã xử lý để phục hồi sau sự cố",
+    "Bảo đảm mỗi sự kiện chỉ được xử lý đúng một lần",
+    "Tổng hợp dữ liệu theo khung 5 phút"
+   ],
+   "w": "Watermark là ngưỡng chờ, ví dụ chấp nhận trễ tối đa 10 phút: trễ trong ngưỡng vẫn tính vào đúng khung, quá ngưỡng thì bỏ để không giữ trạng thái mãi.",
+   "x": [
+    "Đó là checkpointing.",
+    "Đó là exactly-once.",
+    "Đó là windowing."
+   ],
+   "trap": "Lẫn bốn khái niệm của Structured Streaming.",
+   "mem": "Watermark–trễ · Checkpoint–phục hồi · Exactly-once · Windowing."
+  },
+  {
+   "lv": "TH",
+   "t": "dbt test (C3)",
+   "q": "Test nào <b>KHÔNG</b> thuộc bốn generic (schema) test có sẵn của dbt?",
+   "o": [
+    "no_future_dates",
+    "unique",
+    "accepted_values",
+    "relationships"
+   ],
+   "w": "Bốn test có sẵn: not_null, unique, accepted_values, relationships. Quy tắc nghiệp vụ riêng (ví dụ không có ngày trong tương lai) viết bằng singular test.",
+   "x": [
+    "unique là test có sẵn.",
+    "accepted_values là test có sẵn.",
+    "relationships là test có sẵn."
+   ],
+   "trap": "Nghĩ mọi tên test nghe hợp lý đều có sẵn.",
+   "mem": "Generic: not_null · unique · accepted_values · relationships."
+  },
+  {
+   "lv": "VD",
+   "t": "Năm trụ cột observability (C3)",
+   "q": "Sau một bản cập nhật hệ nguồn, cột discount <b>biến mất</b> khỏi bảng đích. Trụ cột nào được thiết kế để phát hiện loại sự cố này?",
+   "o": [
+    "Schema",
+    "Distribution",
+    "Volume",
+    "Freshness"
+   ],
+   "w": "Schema hỏi: cấu trúc bảng có bị đổi trái phép hoặc mất cột không?",
+   "x": [
+    "Distribution theo dõi thống kê giá trị trong cột.",
+    "Volume theo dõi số bản ghi.",
+    "Freshness theo dõi độ mới."
+   ],
+   "trap": "Lẫn mất cột với dữ liệu rỗng.",
+   "mem": "Mất cột / đổi kiểu → Schema."
+  },
+  {
+   "lv": "NB",
+   "t": "Chất lượng dữ liệu (C4)",
+   "q": "Hồ sơ khách hàng ghi năm sinh <b>1890</b>. Đây là vi phạm chiều chất lượng nào?",
+   "o": [
+    "Accuracy",
+    "Completeness",
+    "Consistency",
+    "Timeliness"
+   ],
+   "w": "Accuracy: mức dữ liệu mô tả đúng thực thể. Năm sinh 1890 có giá trị nhưng sai thực tế.",
+   "x": [
+    "Completeness là thiếu giá trị (Null); ở đây có giá trị nhưng sai.",
+    "Consistency là lệch đơn vị/định dạng giữa các nguồn.",
+    "Timeliness là dữ liệu đến muộn."
+   ],
+   "trap": "Chọn Completeness vì nghĩ dữ liệu “hỏng” là thiếu.",
+   "mem": "Thiếu → Completeness · Sai → Accuracy · Lệch nguồn → Consistency · Muộn → Timeliness."
+  },
+  {
+   "lv": "VD",
+   "t": "Jaccard (C4)",
+   "q": "Hai hồ sơ có tập thuộc tính A = {a, b, c, d, e} và B = {c, d, e, f, g, h}. J(A, B) bằng:",
+   "o": [
+    "0,375",
+    "0,6",
+    "0,5",
+    "≈ 0,273"
+   ],
+   "w": "Giao {c, d, e} = 3; hợp = 5 + 6 − 3 = 8 → J = 3/8 = 0,375.",
+   "x": [
+    "Chia cho |A| = 5.",
+    "Chia cho |B| = 6.",
+    "Chia cho tổng 5 + 6 = 11."
+   ],
+   "trap": "Quên trừ phần giao khi tính hợp.",
+   "mem": "|A ∪ B| = |A| + |B| − |A ∩ B|."
+  },
+  {
+   "lv": "VD",
+   "t": "Moving Average (C4)",
+   "q": "Giá 6 ngày: 50, 54, 52, 58, 61, 57. Với cửa sổ k = 3, <b>SMA tại ngày 5</b> bằng:",
+   "o": [
+    "57",
+    "56,25",
+    "55",
+    "≈ 58,67"
+   ],
+   "w": "Ngày 5 lấy 3 giá trị gần nhất tính đến ngày 5: 52, 58, 61 → 171/3 = 57.",
+   "x": [
+    "Lấy 4 giá trị (ngày 2–5) thay vì 3.",
+    "Lấy trung bình cả 5 ngày đầu.",
+    "Đó là SMA ngày 6 (58, 61, 57)."
+   ],
+   "trap": "Lấy sai số điểm hoặc sai vị trí cửa sổ.",
+   "mem": "SMA_n = trung bình k giá trị từ n − k + 1 đến n."
+  },
+  {
+   "lv": "VDC",
+   "t": "Equal-width binning (C4)",
+   "q": "Dữ liệu: 5, 8, 9, 11, 14, 16, 20, 45, 65. Chia <b>3</b> nhóm equal-width theo quy ước [a, b), giá trị max xếp vào nhóm cuối. Số phần tử mỗi nhóm lần lượt là:",
+   "o": [
+    "7 – 0 – 2",
+    "3 – 3 – 3",
+    "7 – 1 – 1",
+    "7 – 2 – 0"
+   ],
+   "w": "Width = (65 − 5)/3 = 20: [5; 25) có 7 phần tử; [25; 45) không có phần tử nào; [45; 65] có 45 và 65. Equal-width có thể sinh nhóm rỗng khi dữ liệu lệch.",
+   "x": [
+    "Đó là kết quả của equal-frequency.",
+    "Xếp 45 vào nhóm 2, trong khi 45 đúng biên nên thuộc nhóm 3.",
+    "Đẩy cả 45 và 65 vào nhóm 2."
+   ],
+   "trap": "Xếp sai giá trị đúng biên.",
+   "mem": "Đúng biên [a, b) → nhóm phía trên; max → nhóm cuối."
+  },
+  {
+   "lv": "TH",
+   "t": "Information Gain (C4)",
+   "q": "Ở mỗi nút cây quyết định, ID3 chọn thuộc tính tách theo tiêu chí nào?",
+   "o": [
+    "Gain lớn nhất (tương đương Info_A(D) nhỏ nhất)",
+    "Entropy sau khi tách lớn nhất",
+    "Thuộc tính có nhiều giá trị khác nhau nhất",
+    "Thuộc tính xuất hiện đầu tiên trong bảng"
+   ],
+   "w": "Thuộc tính làm giảm độ hỗn loạn nhiều nhất được chọn. Ví dụ slide: Credit History có Gain ≈ 0,5488 nên làm nút gốc.",
+   "x": [
+    "Entropy sau tách lớn nghĩa là còn lẫn lộn nhiều – tệ nhất.",
+    "Nhiều giá trị là nguyên nhân gây thiên vị, không phải tiêu chí.",
+    "Thứ tự cột không liên quan."
+   ],
+   "trap": "Chọn entropy lớn nhất vì nhầm hướng.",
+   "mem": "Gain max ⇔ Info_A(D) min."
+  },
+  {
+   "lv": "VD",
+   "t": "Lift (C5)",
+   "q": "<p>CSDL 10 giao dịch (TT = tài khoản thanh toán, TD = thẻ tín dụng, VTD = vay tiêu dùng, BH = bảo hiểm, TK = tiết kiệm):</p><table><tr><th>TID</th><th>Sản phẩm</th><th>TID</th><th>Sản phẩm</th></tr><tr><td>1</td><td>TT, TD, VTD</td><td>6</td><td>TT, TK, BH</td></tr><tr><td>2</td><td>TT, TD</td><td>7</td><td>TD, VTD</td></tr><tr><td>3</td><td>TT, TK</td><td>8</td><td>TT, TD, TK</td></tr><tr><td>4</td><td>TD, VTD, BH</td><td>9</td><td>TT, VTD</td></tr><tr><td>5</td><td>TT, TD, VTD, BH</td><td>10</td><td>TT, TD, VTD, TK</td></tr></table><b>Lift</b> của luật {TD} ⇒ {VTD} xấp xỉ:",
+   "o": [
+    "1,19",
+    "1,02",
+    "0,71",
+    "0,83"
+   ],
+   "w": "Conf = 5/7 ≈ 0,714; P(VTD) = 6/10 = 0,6 → Lift = 0,714/0,6 ≈ 1,19. Kiểm tra: 0,5/(0,7 × 0,6) ≈ 1,19 > 1 → quan hệ tích cực.",
+   "x": [
+    "Chia Confidence cho P(TD) = 0,7 thay vì P(VTD).",
+    "Dừng ở Confidence, chưa chia cho P(VTD).",
+    "Lấy Support/P(VTD) = 0,5/0,6, quên chia thêm P(TD)."
+   ],
+   "trap": "Chia cho xác suất tiền đề thay vì hậu đề.",
+   "mem": "Lift = Conf / P(Y) = P(X∩Y) / (P(X)·P(Y))."
+  },
+  {
+   "lv": "NB",
+   "t": "Tính chất Apriori (C5)",
+   "q": "<b>Tính chất Apriori</b> (anti-monotone) phát biểu rằng:",
+   "o": [
+    "Mọi tập con của một tập phổ biến đều phổ biến",
+    "Tập cha của tập phổ biến thì cũng phổ biến",
+    "Tập con của tập không phổ biến thì cũng không phổ biến",
+    "Support của tập cha luôn lớn hơn support của tập con"
+   ],
+   "w": "Giao dịch chứa Y thì chứa mọi tập con của Y, nên Sup(tập cha) ≤ Sup(tập con). Nhờ vậy loại sớm ứng viên có tập con không phổ biến mà không cần đếm.",
+   "x": [
+    "Tập cha có support ≤ tập con nên có thể không phổ biến.",
+    "Tập con có support ≥ tập cha nên có thể vẫn phổ biến.",
+    "Ngược lại: X ⊆ Y thì Sup(Y) ≤ Sup(X)."
+   ],
+   "trap": "Đảo chiều “cha – con”.",
+   "mem": "Con của phổ biến → phổ biến; cha của không phổ biến → không phổ biến."
+  },
+  {
+   "lv": "NB",
+   "t": "FP-Growth (C5)",
+   "q": "So với Apriori, <b>FP-Growth</b> quét CSDL bao nhiêu lần và có sinh ứng viên không?",
+   "o": [
+    "Đúng 2 lần; không sinh ứng viên",
+    "Một lần cho mỗi kích thước k; có sinh ứng viên",
+    "Đúng 1 lần; có sinh ứng viên",
+    "Đúng 2 lần; sinh ứng viên kích thước 2"
+   ],
+   "w": "Lần quét 1 đếm support từng item; lần quét 2 lọc, sắp xếp và chèn từng giao dịch vào FP-tree. Sau đó khai thác trên cây.",
+   "x": [
+    "Đó là cách làm của Apriori.",
+    "Lần 1 đếm item, lần 2 chèn giao dịch vào cây – cần 2 lần.",
+    "FP-Growth tìm tập phổ biến trực tiếp trên cây, không sinh ứng viên."
+   ],
+   "trap": "Nhớ nhầm số lần quét.",
+   "mem": "FP-Growth: 2 lần quét, không ứng viên."
+  },
+  {
+   "lv": "TH",
+   "t": "ID3 và C4.5 (C5)",
+   "q": "Khả năng nào <b>chỉ C4.5</b> có, ID3 không có?",
+   "o": [
+    "Xử lý dữ liệu liên tục, giá trị thiếu và có post-pruning",
+    "Dựng cây quyết định theo kiểu từ nút gốc xuống các nút lá",
+    "Dùng entropy để đo độ hỗn loạn của tập dữ liệu",
+    "Dự đoán nhãn lớp cho bản ghi mới chưa có nhãn"
+   ],
+   "w": "C4.5: chọn ngưỡng t để tách thuộc tính liên tục; chia bản ghi thiếu vào các nhánh theo trọng số; dựng cây đầy đủ rồi cắt nhánh (post-pruning) nên ít overfitting.",
+   "x": [
+    "Cả hai đều dựng cây từ trên xuống.",
+    "Cả hai đều dựa trên entropy.",
+    "Cả hai đều là thuật toán phân lớp."
+   ],
+   "trap": "Chọn đặc điểm chung của hai thuật toán.",
+   "mem": "Chỉ C4.5: liên tục · Null · post-pruning."
+  },
+  {
+   "lv": "TH",
+   "t": "Naive Bayes (C5)",
+   "q": "Khi so sánh các lớp trong Naive Bayes, vì sao có thể bỏ mẫu số P(X)?",
+   "o": [
+    "P(X) như nhau cho mọi lớp nên không đổi lớp thắng",
+    "P(X) luôn bằng 1 với mọi bản ghi",
+    "P(X) luôn bằng 0 nên có thể bỏ qua",
+    "P(X) đã được tính sẵn bên trong xác suất tiên nghiệm P(C)"
+   ],
+   "w": "P(C | X) = P(X | C)·P(C)/P(X); mẫu chung cho mọi lớp nên chỉ cần so tử số. Muốn ra xác suất thật thì chuẩn hoá theo tổng các tử số.",
+   "x": [
+    "P(X) là xác suất của một bản ghi cụ thể, thường rất nhỏ.",
+    "Nếu bằng 0 công thức không xác định.",
+    "P(C) là xác suất tiên nghiệm của lớp, không chứa P(X)."
+   ],
+   "trap": "Nghĩ P(X) bằng 1.",
+   "mem": "So tử số; chuẩn hoá nếu cần xác suất."
+  },
+  {
+   "lv": "VD",
+   "t": "DBSCAN (C5)",
+   "q": "Các điểm trên trục số: 2, 3, 4, 5, 9, 10, 11, 15, 22; Eps = 1, MinPts = 3 (tính cả chính điểm đang xét). Điểm <b>5</b> thuộc loại nào?",
+   "o": [
+    "Border",
+    "Core",
+    "Noise",
+    "Không xác định nếu không biết số cụm k"
+   ],
+   "w": "Border: không đủ MinPts nhưng nằm trong vùng Eps của một điểm core (ở đây là 4).",
+   "x": [
+    "Lân cận của 5 chỉ có {4, 5} = 2 điểm < 3.",
+    "5 nằm trong Eps của core 4 nên không phải noise.",
+    "DBSCAN không cần k."
+   ],
+   "trap": "Thấy không đủ MinPts là kết luận noise.",
+   "mem": "Border = không đủ MinPts nhưng kề một core."
+  },
+  {
+   "lv": "VD",
+   "t": "In-Database ML (C6)",
+   "q": "Ngân hàng muốn <b>chỉ vai trò risk_analyst</b> được gọi mô hình chấm điểm tín dụng, theo đúng cơ chế cấp quyền đọc một bảng. Lợi ích nào của In-Database ML thể hiện ở đây?",
+   "o": [
+    "Governance với RBAC đồng nhất",
+    "Scalability nhờ MPP",
+    "Simplicity khi gắn mô hình vào pipeline ELT",
+    "Push-down của Snowpark"
+   ],
+   "w": "Quyền dùng mô hình được cấp cho role giống quyền trên bảng – một hệ phân quyền cho cả dữ liệu lẫn mô hình.",
+   "x": [
+    "Scalability nói về xử lý hàng terabyte.",
+    "Simplicity nói về việc dự báo chỉ là một câu SQL.",
+    "Push-down là cơ chế dịch Python sang SQL."
+   ],
+   "trap": "Chọn Scalability vì nghe quen.",
+   "mem": "Phân quyền theo vai trò → Governance (RBAC)."
+  },
+  {
+   "lv": "VDC",
+   "t": "Dữ liệu mất cân bằng (C6)",
+   "q": "Tập kiểm tra 1.000 giao dịch có 20 giao dịch gian lận. Một mô hình đoán <b>“không gian lận” cho mọi giao dịch</b>. Nhận định nào đúng?",
+   "o": [
+    "Accuracy 98% nhưng Recall = 0, mô hình vô dụng để bắt gian lận",
+    "Accuracy 98% nên mô hình rất tốt",
+    "Precision = 98% vì mô hình đoán đúng 980 trên tổng số 1.000 giao dịch",
+    "Recall = 98% vì chỉ bỏ sót 2% dữ liệu"
+   ],
+   "w": "TN = 980, FN = 20, TP = FP = 0 → Accuracy = 98%, Recall = 0. Với dữ liệu mất cân bằng phải xem Precision, Recall, F1.",
+   "x": [
+    "Accuracy cao giả tạo do lớp âm chiếm đa số.",
+    "Mô hình không báo dương lần nào nên Precision không xác định (TP + FP = 0).",
+    "Recall = TP/(TP + FN) = 0/20 = 0."
+   ],
+   "trap": "Tin Accuracy khi dữ liệu mất cân bằng.",
+   "mem": "Mất cân bằng → nhìn Recall, Precision, F1."
+  },
+  {
+   "lv": "TH",
+   "t": "CPT (C6)",
+   "q": "Trong CPT, chuỗi huấn luyện u được coi là <b>tương tự</b> chuỗi cần dự đoán khi:",
+   "o": [
+    "u chứa đủ mọi phần tử của hậu tố, theo thứ tự bất kỳ",
+    "u chứa hậu tố liên tiếp và đúng thứ tự",
+    "u có cùng độ dài với chuỗi cần dự đoán",
+    "u bắt đầu bằng phần tử đầu của chuỗi cần dự đoán"
+   ],
+   "w": "Ví dụ ⟨D, C, B, E⟩ không phải chuỗi tương tự của hậu tố {A, D} vì thiếu A; ⟨E, A, D, C, B⟩ thì có.",
+   "x": [
+    "CPT không đòi liên tiếp hay đúng thứ tự.",
+    "Độ dài không phải tiêu chí.",
+    "Tiêu chí dựa vào hậu tố (phần cuối), không phải phần đầu."
+   ],
+   "trap": "Đòi đúng thứ tự như khớp chuỗi con.",
+   "mem": "Tương tự = chứa đủ phần tử hậu tố."
+  },
+  {
+   "lv": "VD",
+   "t": "Model drift (C6)",
+   "q": "Sau khi lãi suất tăng mạnh, khách có <b>cùng mức DTI như trước</b> nhưng tỷ lệ vỡ nợ cao hơn hẳn. Hiện tượng và hành động phù hợp:",
+   "o": [
+    "Concept drift; giám sát và kích hoạt huấn luyện lại mô hình",
+    "Data drift; chỉ cần chuẩn hoá lại dữ liệu đầu vào theo phân phối mới",
+    "Data leakage; xoá cột DTI khỏi mô hình",
+    "Overfitting; cắt tỉa cây quyết định"
+   ],
+   "w": "Concept drift: quan hệ giữa đầu vào và nhãn thay đổi, mô hình cũ không còn đúng → autoretraining khi độ chính xác dưới ngưỡng.",
+   "x": [
+    "Phân phối DTI không đổi; quan hệ DTI → vỡ nợ mới đổi.",
+    "Không có thông tin tương lai lọt vào huấn luyện.",
+    "Mô hình không học thuộc nhiễu; thế giới đã đổi."
+   ],
+   "trap": "Chọn data drift vì “dữ liệu thay đổi”.",
+   "mem": "Quan hệ đầu vào → nhãn đổi → concept drift."
+  },
+  {
+   "lv": "TH",
+   "t": "AutoML (C6)",
+   "q": "Đâu là một <b>siêu tham số</b> (hyperparameter) mà AutoML có thể tự dò?",
+   "o": [
+    "Độ sâu tối đa của cây quyết định",
+    "Trọng số mà mô hình học được sau huấn luyện",
+    "Nhãn của dữ liệu huấn luyện",
+    "Giá trị dự báo của mô hình cho khách mới"
+   ],
+   "w": "Siêu tham số đặt trước khi huấn luyện, mô hình không tự học ra: độ sâu cây, số cụm k, Eps và MinPts. AutoML tự động hoá feature engineering, thử nhiều thuật toán, hyperparameter tuning.",
+   "x": [
+    "Trọng số là tham số mô hình tự học ra.",
+    "Nhãn là dữ liệu, không phải tham số.",
+    "Dự báo là đầu ra."
+   ],
+   "trap": "Lẫn tham số học được với siêu tham số.",
+   "mem": "Siêu tham số = đặt trước khi huấn luyện."
+  },
+  {
+   "lv": "VD",
+   "t": "RLS và masking (C7)",
+   "q": "Nhân viên chi nhánh Hà Nội chỉ được thấy khách hàng của Hà Nội; tổng đài viên thấy đủ khách nhưng số điện thoại bị che. Hai kỹ thuật lần lượt là:",
+   "o": [
+    "Row-level security; Dynamic data masking",
+    "Dynamic data masking; Row-level security",
+    "k-anonymity; Differential privacy",
+    "Zero-copy sharing; Object Lock"
+   ],
+   "w": "RLS lọc dòng; masking che giá trị cột. Cả hai dựa vào danh tính/vai trò người truy vấn, không đổi dữ liệu gốc, không đổi cấu trúc bảng.",
+   "x": [
+    "Đảo ngược: RLS lọc dòng, masking che cột.",
+    "Đó là kỹ thuật ẩn danh khi công bố dữ liệu.",
+    "Không liên quan phân quyền theo người xem."
+   ],
+   "trap": "Đảo vai trò RLS và masking.",
+   "mem": "RLS = lọc dòng · Masking = che cột."
+  },
+  {
+   "lv": "VD",
+   "t": "Secure data sharing (C7)",
+   "q": "Ngân hàng chia sẻ bảng tỷ giá cho đối tác qua Secure Data Sharing, sau đó chấm dứt hợp đồng và thu hồi quyền. Điều gì xảy ra?",
+   "o": [
+    "Đối tác mất quyền truy cập ngay, vì họ chưa từng có bản sao",
+    "Đối tác vẫn giữ bản sao đầy đủ đến hết tháng",
+    "Đối tác vẫn giữ dữ liệu cũ nhưng không nhận thêm cập nhật mới nào",
+    "Ngân hàng phải gửi yêu cầu đối tác tự xoá file"
+   ],
+   "w": "Thu hồi share là bên nhận không còn đọc được nữa – lợi thế lớn so với gửi file.",
+   "x": [
+    "Zero-copy không tạo bản sao.",
+    "Không có dữ liệu cũ nào nằm phía đối tác.",
+    "Không cần, vì không có file nào được gửi đi."
+   ],
+   "trap": "Suy diễn theo kiểu chia sẻ bằng file.",
+   "mem": "Thu hồi share = mất quyền ngay."
+  },
+  {
+   "lv": "NB",
+   "t": "AI-powered catalog (C7)",
+   "q": "Ba thành phần của <b>AI-powered data catalog</b> theo slide:",
+   "o": [
+    "Semantic Search, Lineage Integration, Trust Score",
+    "Producer, Broker, Consumer",
+    "Connector, Global catalog, Predicate pushdown",
+    "Monitor, Detect, Alert"
+   ],
+   "w": "Semantic Search: tìm theo nghĩa; Lineage Integration: thấy nguồn gốc ngay trong catalog; Trust Score: điểm tin cậy dựa trên chất lượng, mức sử dụng.",
+   "x": [
+    "Đó là thành phần Kafka (Chương 8).",
+    "Đó là thành phần federated query (Chương 9).",
+    "Đó là các bước auditing tự động."
+   ],
+   "trap": "Lẫn bộ thành phần giữa các công nghệ.",
+   "mem": "AI catalog: Search · Lineage · Trust Score."
+  },
+  {
+   "lv": "TH",
+   "t": "Audit trail (C7)",
+   "q": "Yêu cầu quan trọng nhất với <b>audit trail</b> là gì?",
+   "o": [
+    "Bất biến: không ai, kể cả quản trị viên, sửa hay xoá được",
+    "Chỉ lưu trong 24 giờ để tiết kiệm",
+    "Cho phép quản trị viên chỉnh sửa khi cần, miễn là có ghi chú lý do",
+    "Lưu ở tầng Gold cùng KPI"
+   ],
+   "w": "Audit trail ghi ai truy cập dữ liệu gì, khi nào; phải immutable (ví dụ Object Lock hoặc neo Merkle root lên blockchain) mới có giá trị pháp lý.",
+   "x": [
+    "Nhật ký kiểm toán phải lưu đủ lâu theo quy định.",
+    "Cho phép sửa thì mất giá trị chứng cứ.",
+    "Tầng lưu trữ không phải yêu cầu cốt lõi."
+   ],
+   "trap": "Nghĩ admin được phép sửa log.",
+   "mem": "Audit trail = immutable."
+  },
+  {
+   "lv": "TH",
+   "t": "Cosine similarity (C8)",
+   "q": "Cosine similarity của hai embedding bằng <b>0</b> nghĩa là:",
+   "o": [
+    "Hai vector vuông góc – không liên quan về nghĩa",
+    "Hai câu giống hệt nhau",
+    "Hai câu trái nghĩa hoàn toàn",
+    "Một trong hai vector có độ dài (chuẩn) bằng 0 nên không xác định"
+   ],
+   "w": "Cosine đo góc giữa hai vector, không phụ thuộc độ dài: 1 cùng hướng, 0 vuông góc, −1 ngược hướng.",
+   "x": [
+    "Giống hệt (cùng hướng) cho cosine = 1.",
+    "Ngược hướng cho cosine = −1.",
+    "Vector độ dài 0 làm cosine không xác định."
+   ],
+   "trap": "Nghĩ 0 là trái nghĩa.",
+   "mem": "1 giống · 0 không liên quan · −1 ngược."
+  },
+  {
+   "lv": "NB",
+   "t": "RAG (C8)",
+   "q": "Thứ tự bốn bước của RAG theo slide:",
+   "o": [
+    "Ingestion → Embedding → Retrieval → Generation",
+    "Embedding → Ingestion → Generation → Retrieval",
+    "Retrieval → Embedding → Ingestion → Generation",
+    "Ingestion → Retrieval → Embedding → Generation"
+   ],
+   "w": "Nạp và chia nhỏ tài liệu → nhúng thành vector → truy hồi đoạn liên quan với câu hỏi → LLM sinh câu trả lời dựa trên đoạn đó.",
+   "x": [
+    "Phải nạp tài liệu trước khi nhúng; sinh câu trả lời là bước cuối.",
+    "Phải có embedding trước mới truy hồi được.",
+    "Truy hồi cần embedding có sẵn."
+   ],
+   "trap": "Đảo Retrieval và Embedding.",
+   "mem": "Ingest → Embed → Retrieve → Generate."
+  },
+  {
+   "lv": "TH",
+   "t": "Apache Kafka (C8)",
+   "q": "Thành phần Kafka nào <b>lưu trữ</b> dữ liệu và phục vụ các yêu cầu đọc/ghi?",
+   "o": [
+    "Broker",
+    "Producer",
+    "Consumer",
+    "Offset"
+   ],
+   "w": "Một cụm Kafka gồm nhiều broker; mỗi partition được lưu và nhân bản trên các broker.",
+   "x": [
+    "Producer ghi dữ liệu.",
+    "Consumer đọc dữ liệu.",
+    "Offset chỉ là vị trí."
+   ],
+   "trap": "Lẫn producer với broker.",
+   "mem": "Broker = máy chủ lưu."
+  },
+  {
+   "lv": "VDC",
+   "t": "DFS (C9)",
+   "q": "Đồ thị vô hướng có các cạnh A–B, A–C, B–D, B–E, C–F, D–G, E–G. Xuất phát từ A, khi có nhiều đỉnh kề thì chọn theo thứ tự bảng chữ cái. Thứ tự duyệt <b>DFS</b> (đệ quy) là:",
+   "o": [
+    "A → B → D → G → E → C → F",
+    "A → B → C → D → E → F → G",
+    "A → B → D → G → C → E → F",
+    "A → B → E → G → D → C → F"
+   ],
+   "w": "A → B → D → G → (G kề E chưa thăm) E → quay lui về A → C → F.",
+   "x": [
+    "Đó là thứ tự BFS.",
+    "Sau G phải thăm E (kề G, chưa thăm) trước khi quay về C.",
+    "Từ B phải chọn D trước E theo bảng chữ cái."
+   ],
+   "trap": "Quên đi tiếp sang đỉnh kề chưa thăm trước khi quay lui.",
+   "mem": "DFS ↔ stack/đệ quy ↔ đi sâu rồi quay lui."
+  },
+  {
+   "lv": "NB",
+   "t": "ANN (C9)",
+   "q": "Ghép đúng thuật toán ANN với ý tưởng:",
+   "o": [
+    "HNSW – đồ thị phân cấp; IVF – phân cụm Voronoi; PQ – nén vector",
+    "HNSW – nén vector; IVF – đồ thị phân cấp; PQ – phân cụm Voronoi",
+    "HNSW – phân cụm Voronoi; IVF – nén vector; PQ – đồ thị phân cấp",
+    "Cả ba đều là tìm kiếm chính xác bằng cách vét cạn"
+   ],
+   "w": "HNSW: đồ thị nhiều tầng, nhảy xa ở tầng trên rồi tinh chỉnh ở tầng dưới. IVF: chỉ tìm trong vài cụm gần. PQ: nén vector để vừa RAM.",
+   "x": [
+    "Đảo HNSW, IVF, PQ.",
+    "Đảo cả ba.",
+    "ANN là gần đúng, đổi chút độ chính xác lấy tốc độ."
+   ],
+   "trap": "Lẫn ba thuật toán.",
+   "mem": "HNSW đồ thị · IVF cụm · PQ nén."
+  },
+  {
+   "lv": "TH",
+   "t": "Federated query (C9)",
+   "q": "Trong kiến trúc federated query, thành phần nào biết <b>bảng nào nằm ở nguồn nào</b>?",
+   "o": [
+    "Global catalog",
+    "Connector",
+    "Predicate pushdown",
+    "Broker"
+   ],
+   "w": "Global catalog là danh mục metadata hợp nhất; engine tra catalog để lập kế hoạch truy vấn.",
+   "x": [
+    "Connector thực hiện giao tiếp với từng nguồn cụ thể.",
+    "Pushdown là kỹ thuật tối ưu lọc.",
+    "Broker là thành phần Kafka."
+   ],
+   "trap": "Lẫn catalog và connector.",
+   "mem": "Catalog biết ở đâu · Connector kết nối."
+  },
+  {
+   "lv": "TH",
+   "t": "Nhân bản dữ liệu (C9)",
+   "q": "So sánh nhân bản <b>đồng bộ</b> và <b>bất đồng bộ</b>:",
+   "o": [
+    "Đồng bộ: RPO ≈ 0 nhưng ghi chậm; bất đồng bộ: ghi nhanh, RPO > 0",
+    "Đồng bộ: ghi nhanh, RPO > 0; bất đồng bộ: RPO ≈ 0, ghi chậm",
+    "Cả hai đều cho RPO = 0 và tốc độ ghi như nhau",
+    "Bất đồng bộ luôn cho RTO bằng 0 vì không phải chờ"
+   ],
+   "w": "Đồng bộ chờ bản sao xác nhận mới báo ghi xong → không mất dữ liệu nhưng chậm; bất đồng bộ báo xong ngay → nhanh nhưng có độ trễ dữ liệu chưa sang.",
+   "x": [
+    "Đảo ngược.",
+    "Có đánh đổi giữa tốc độ ghi và mất dữ liệu.",
+    "Nhân bản không quyết định RTO bằng 0."
+   ],
+   "trap": "Đảo đặc điểm hai cách.",
+   "mem": "Sync: RPO≈0, chậm · Async: nhanh, RPO>0."
+  }
+ ]
+}

@@ -1,0 +1,764 @@
+{
+ "questions": [
+  {
+   "lv": "TH",
+   "t": "Hạn chế của RDBMS (C1)",
+   "q": "Theo slide, ý nào <b>KHÔNG</b> phải hạn chế của RDBMS truyền thống trong kỷ nguyên Big Data?",
+   "o": [
+    "Không bảo đảm được tính toàn vẹn giao dịch ACID",
+    "Khó và đắt khi scale-out theo chiều ngang",
+    "Schema-on-write cứng nhắc khi nguồn thêm trường",
+    "Compute và storage ràng buộc trên cùng một máy"
+   ],
+   "w": "ACID chính là thế mạnh của RDBMS. Bảy hạn chế trong slide: khó scale-out, schema-on-write cứng nhắc, kém với đa loại dữ liệu, bản quyền đắt, tương tác kém với AI/ML, rủi ro silo, compute–storage ràng buộc.",
+   "x": [
+    "Đây là hạn chế “nghẽn cổ chai khi mở rộng” trong slide.",
+    "Đây là hạn chế “sự cứng nhắc của schema-on-write”.",
+    "Đây là hạn chế “tính toán và lưu trữ ràng buộc với nhau”."
+   ],
+   "trap": "Nghĩ RDBMS “cũ” thì cái gì cũng kém, kể cả ACID.",
+   "mem": "RDBMS mạnh ở ACID; yếu ở mở rộng, schema cứng, đa loại dữ liệu, chi phí, AI/ML."
+  },
+  {
+   "lv": "VD",
+   "t": "Quản lý chi phí cloud (C1)",
+   "q": "Dashboard doanh thu được 200 người mở mỗi sáng bằng đúng một câu truy vấn, dữ liệu không đổi từ tối hôm trước. Kỹ thuật nào giúp các lần chạy sau <b>không tốn compute</b>?",
+   "o": [
+    "Caching kết quả truy vấn",
+    "Auto-suspend virtual warehouse",
+    "Budget alerts theo ngưỡng 80%",
+    "Chuyển bảng sang archive tier"
+   ],
+   "w": "Truy vấn lặp lại, câu giống hệt, dữ liệu gốc chưa đổi → trả kết quả đã giữ trong cache (khoảng 24 giờ), không quét lại bảng.",
+   "x": [
+    "Auto-suspend chỉ tiết kiệm lúc không có truy vấn nào chạy.",
+    "Budget alerts chỉ cảnh báo, tự nó không làm giảm chi phí.",
+    "Archive tier giảm phí lưu trữ dữ liệu ít dùng, không phải dữ liệu đọc hằng ngày."
+   ],
+   "trap": "Cặp dễ nhầm caching và auto-suspend.",
+   "mem": "Có truy vấn lặp lại → caching; không có truy vấn → auto-suspend."
+  },
+  {
+   "lv": "TH",
+   "t": "Data as a Product (C1)",
+   "q": "Theo cách diễn giải của slide, thuộc tính <b>Addressable</b> của một sản phẩm dữ liệu nghĩa là gì?",
+   "o": [
+    "Cấu trúc rõ ràng, tài liệu hướng dẫn đầy đủ",
+    "Tìm thấy được qua công cụ tìm kiếm, catalog chung",
+    "Đủ thông tin, không cần tra nguồn khác",
+    "Đổi phiên bản không làm hỏng hệ thống cũ"
+   ],
+   "w": "Bảy thuộc tính: Discoverable, Addressable, Trustworthy, Self-contained, Interoperable, Secure, Evolvable. Slide diễn giải Addressable là “cấu trúc rõ, tài liệu đầy đủ” (bài gốc của Dehghani là “có địa chỉ truy cập cố định”); đi thi theo slide.",
+   "x": [
+    "Đó là Discoverable.",
+    "Đó là Self-contained.",
+    "Đó là Evolvable."
+   ],
+   "trap": "Lẫn Addressable với Discoverable.",
+   "mem": "Discoverable = tìm thấy · Addressable (slide) = cấu trúc + tài liệu."
+  },
+  {
+   "lv": "VD",
+   "t": "Object Storage (C1)",
+   "q": "Luật yêu cầu lưu chứng từ giao dịch <b>10 năm</b>, gần như không bao giờ đọc lại, và <b>không ai được xoá hay sửa</b> trong thời hạn đó. Cấu hình phù hợp nhất:",
+   "o": [
+    "Archive tier kết hợp Object Lock",
+    "Hot tier kết hợp Versioning",
+    "Archive tier kết hợp Versioning",
+    "Cool tier kết hợp Bucket policy"
+   ],
+   "w": "Archive: phí lưu rẻ nhất, lấy ra chậm, hợp dữ liệu lưu vì pháp lý. Object Lock: chặn xoá/sửa object trong thời gian quy định (ghi một lần, đọc nhiều lần).",
+   "x": [
+    "Hot tier có phí lưu cao nhất, dành cho dữ liệu đọc hằng ngày.",
+    "Versioning chỉ giữ bản cũ để khôi phục, vẫn cho phép xoá.",
+    "Bucket policy giới hạn ai được truy cập, không chặn xoá/sửa theo thời hạn."
+   ],
+   "trap": "Lẫn Versioning (khôi phục) với Object Lock (chống xoá/sửa).",
+   "mem": "Hot → Cool → Archive · Object Lock chống xoá · Versioning để khôi phục."
+  },
+  {
+   "lv": "TH",
+   "t": "Conformed dimension (C2)",
+   "q": "<b>Conformed dimension</b> là gì và giúp đạt điều gì?",
+   "o": [
+    "Dimension dùng chung cho nhiều bảng fact; giúp có Single Version of Truth",
+    "Dimension gom các cờ trạng thái rời rạc; giúp giảm số cột trong fact",
+    "Dimension tách thuộc tính đổi nhanh; giúp bảng chính không phình to",
+    "Một bảng ngày đóng nhiều vai trò (ngày đặt, ngày giao); giúp giảm số bảng dim_date"
+   ],
+   "w": "Conformed dimension có cùng khoá, cùng thuộc tính, cùng nghĩa ở mọi fact (ví dụ dim_customer cho cả fact bán hàng và fact trả hàng), nên mọi báo cáo ra cùng một con số.",
+   "x": [
+    "Đó là junk dimension.",
+    "Đó là mini-dimension.",
+    "Đó là role-playing dimension."
+   ],
+   "trap": "Lẫn conformed với các kỹ thuật dimension nâng cao.",
+   "mem": "Conformed = dùng chung → Single Version of Truth."
+  },
+  {
+   "lv": "VD",
+   "t": "Data pruning (C2)",
+   "q": "Bảng có <b>2.000</b> micro-partition. Với WHERE order_date = '2026-03-04', metadata min/max cho thấy chỉ <b>8</b> phân vùng có thể chứa ngày này. Hệ thống phải đọc bao nhiêu phần trăm số micro-partition?",
+   "o": [
+    "0,4%",
+    "99,6%",
+    "4%",
+    "8%"
+   ],
+   "w": "Đọc 8/2.000 = 0,004 = 0,4%; bỏ qua 1.992 phân vùng (99,6%).",
+   "x": [
+    "99,6% là tỷ lệ phân vùng được bỏ qua.",
+    "Chia nhầm 8/200.",
+    "Lấy nhầm số phân vùng làm phần trăm."
+   ],
+   "trap": "Nhầm tỷ lệ đọc với tỷ lệ bỏ qua.",
+   "mem": "% quét = số phân vùng khớp / tổng số phân vùng."
+  },
+  {
+   "lv": "NB",
+   "t": "Loại fact table (C2)",
+   "q": "Bảng lưu <b>số dư mỗi tài khoản vào cuối mỗi ngày</b>, kể cả ngày không có giao dịch, thuộc loại fact nào?",
+   "o": [
+    "Periodic snapshot fact table",
+    "Transaction fact table",
+    "Accumulating snapshot fact table",
+    "Factless fact table"
+   ],
+   "w": "Periodic snapshot: một dòng = một đối tượng tại một kỳ cố định (số dư cuối ngày, tồn kho cuối tuần), dễ so sánh giữa các kỳ.",
+   "x": [
+    "Transaction fact ghi từng sự kiện khi nó xảy ra.",
+    "Accumulating snapshot theo dõi tiến độ quy trình nhiều bước.",
+    "Factless không có số đo; ở đây có số dư."
+   ],
+   "trap": "Chọn transaction vì dữ liệu ngân hàng.",
+   "mem": "Trạng thái theo kỳ → periodic snapshot."
+  },
+  {
+   "lv": "VD",
+   "t": "Materialization (C2)",
+   "q": "Trường v:customer.city trong cột VARIANT xuất hiện trong WHERE của hầu hết báo cáo. Cách tối ưu được slide khuyến nghị:",
+   "o": [
+    "Trích thành cột vật lý riêng (materialization) ở tầng Silver",
+    "Tạo view trên VARIANT để dữ liệu được lưu thật ra cột",
+    "Chuyển bảng sang archive tier cho rẻ",
+    "Ép toàn bộ JSON thành bảng cố định ngay lúc nạp ở Bronze"
+   ],
+   "w": "Trường hay dùng thì vật chất hoá thành cột có kiểu cố định, có thống kê đầy đủ, dùng được làm clustering key; phần còn lại vẫn giữ trong VARIANT cho linh hoạt.",
+   "x": [
+    "View không chép dữ liệu, mỗi lần đọc vẫn chạy lại câu SELECT.",
+    "Archive tier làm truy vấn chậm hơn.",
+    "Ép cấu trúc ngay lúc nạp (schema-on-write) dễ vỡ khi nguồn đổi."
+   ],
+   "trap": "Nghĩ view lưu thật dữ liệu.",
+   "mem": "Hay dùng → cột vật lý; view không chép dữ liệu."
+  },
+  {
+   "lv": "TH",
+   "t": "ETL và ELT (C3)",
+   "q": "Theo slide, vì sao ELT <b>tăng bảo mật</b> so với ETL?",
+   "o": [
+    "Dữ liệu không phải đi qua máy chủ ETL trung gian",
+    "ELT mã hoá dữ liệu bằng thuật toán riêng của dbt",
+    "ELT xoá dữ liệu thô ngay sau khi biến đổi",
+    "ELT chỉ cho phép quản trị viên chạy câu SQL"
+   ],
+   "w": "Ít điểm trung gian thì ít chỗ dữ liệu bị lộ. Các lợi ích khác: tận dụng compute song song của kho, pay-as-you-go, dùng SQL phổ biến, auto-scaling.",
+   "x": [
+    "dbt không có thuật toán mã hoá riêng.",
+    "ELT giữ dữ liệu thô ở tầng Bronze.",
+    "Không phải lý do slide nêu."
+   ],
+   "trap": "Nghĩ ELT xoá dữ liệu thô cho an toàn.",
+   "mem": "ELT an toàn hơn vì bỏ máy trung gian."
+  },
+  {
+   "lv": "VD",
+   "t": "Zero-ETL (C3)",
+   "q": "Dữ liệu nguồn nằm trên máy chủ <b>on-premise</b>, nhiều lỗi định dạng và cần làm sạch, nối nhiều bảng trước khi dùng. Nhận định nào đúng?",
+   "o": [
+    "Không nên dùng Zero-ETL; dùng pipeline ELT có bước làm sạch (như dbt)",
+    "Nên dùng Zero-ETL vì nó tự làm sạch và biến đổi phức tạp",
+    "Nên dùng Zero-ETL vì nó mạnh nhất với hệ on-premise",
+    "Nên dùng Zero-ETL vì nó không bao giờ phụ thuộc vào nhà cung cấp cloud nào"
+   ],
+   "w": "Tình huống chạm cả hai hạn chế lớn của Zero-ETL: dữ liệu bẩn cần biến đổi và nguồn on-premise.",
+   "x": [
+    "Zero-ETL chủ yếu nhân bản nguyên trạng.",
+    "Zero-ETL chạy tốt giữa các dịch vụ cloud, khó với on-premise.",
+    "Vendor lock-in chính là hạn chế của Zero-ETL."
+   ],
+   "trap": "Nghĩ công nghệ mới thì dùng được mọi tình huống.",
+   "mem": "Dữ liệu bẩn hoặc on-prem → không hợp Zero-ETL."
+  },
+  {
+   "lv": "TH",
+   "t": "Orchestration (C3)",
+   "q": "Phân biệt đúng <b>Apache Airflow</b> và <b>Dagster</b>:",
+   "o": [
+    "Airflow task-centric (tác vụ); Dagster asset-centric (tài sản dữ liệu)",
+    "Airflow asset-centric (tài sản dữ liệu); Dagster task-centric (tác vụ)",
+    "Airflow là công cụ CDC; Dagster là công cụ orchestration",
+    "Airflow viết DAG bằng SQL; Dagster viết DAG bằng YAML"
+   ],
+   "w": "Task-centric hỏi “tác vụ nào chạy, thành công hay thất bại”; asset-centric hỏi “bảng nào đang mới, được tạo từ đâu” (ưu tiên lineage).",
+   "x": [
+    "Đảo ngược hai tư duy.",
+    "Airflow là công cụ orchestration, không phải CDC.",
+    "Airflow viết DAG bằng Python."
+   ],
+   "trap": "Đảo task-centric và asset-centric.",
+   "mem": "Airflow = task · Dagster = asset."
+  },
+  {
+   "lv": "NB",
+   "t": "Snowpipe (C3)",
+   "q": "<b>Snowpipe</b> tự kích hoạt nạp dữ liệu khi nào?",
+   "o": [
+    "Khi có file mới trên cloud storage (thông báo qua SQS/Event Grid)",
+    "Theo lịch cố định lúc 2 giờ sáng mỗi ngày bằng một lệnh COPY INTO",
+    "Khi người dùng bật lại virtual warehouse của mình",
+    "Khi bảng đích bị thay đổi schema ở tầng Silver"
+   ],
+   "w": "Snowpipe: event-driven, serverless, micro-batch, tính phí theo lượng dữ liệu nạp thực tế, tự loại trùng nhờ nhớ file đã nạp.",
+   "x": [
+    "Đó là batch theo lịch (ví dụ lệnh COPY chạy định kỳ).",
+    "Snowpipe là serverless, không dùng warehouse của người dùng.",
+    "Không phải điều kiện kích hoạt Snowpipe."
+   ],
+   "trap": "Nghĩ Snowpipe chạy theo lịch như batch.",
+   "mem": "Snowpipe = file mới → thông báo → nạp micro-batch."
+  },
+  {
+   "lv": "TH",
+   "t": "Schema drift (C3)",
+   "q": "<b>Silent loss</b> trong bối cảnh schema drift là gì?",
+   "o": [
+    "Cột mới bị bỏ ngầm mà pipeline vẫn báo thành công",
+    "Pipeline dừng lại và gửi cảnh báo lỗi cho kỹ sư",
+    "Dữ liệu cũ bị xoá khi bảng đích thêm cột mới",
+    "Mất kết nối mạng giữa hệ nguồn và kho dữ liệu"
+   ],
+   "w": "Silent loss nguy hiểm vì không ai biết: dữ liệu mới không bao giờ vào kho. Cơ chế chống: VARIANT/JSON, auto-column addition, type coercion, cảnh báo sớm.",
+   "x": [
+    "Báo lỗi là trường hợp ngược lại – lỗi có tiếng.",
+    "Thêm cột không xoá dữ liệu cũ.",
+    "Không liên quan mạng."
+   ],
+   "trap": "Nghĩ mọi lỗi pipeline đều có thông báo.",
+   "mem": "Silent loss = mất mà không báo."
+  },
+  {
+   "lv": "TH",
+   "t": "Chất lượng dữ liệu (C4)",
+   "q": "Hệ thống Thẻ lưu số tiền theo <b>VNĐ</b>, hệ thống Khoản vay lưu theo <b>nghìn VNĐ</b>; gộp lại cho mô hình chấm điểm. Vi phạm chiều nào?",
+   "o": [
+    "Consistency",
+    "Accuracy",
+    "Completeness",
+    "Timeliness"
+   ],
+   "w": "Consistency: đồng bộ logic và định dạng giữa các nguồn, tránh xung đột đơn vị (VNĐ – nghìn VNĐ, dd/mm/yyyy – yyyy-mm-dd).",
+   "x": [
+    "Mỗi hệ đều đúng theo đơn vị của mình; vấn đề là lệch giữa các nguồn.",
+    "Không thiếu giá trị.",
+    "Không liên quan độ trễ."
+   ],
+   "trap": "Chọn Accuracy vì số tiền “sai”.",
+   "mem": "Lệch đơn vị/định dạng giữa nguồn → Consistency."
+  },
+  {
+   "lv": "VD",
+   "t": "Z-score (C4)",
+   "q": "Chi tiêu thẻ có µ = 50 triệu, σ = 8 triệu. Một giao dịch <b>78 triệu</b> có Z-score bao nhiêu và có bị gắn cờ outlier không?",
+   "o": [
+    "Z = 3,5 → là outlier tiềm năng",
+    "Z = 3,5 → không phải outlier vì ngưỡng là |Z| > 4",
+    "Z ≈ 0,44 → không phải outlier",
+    "Z = 0,56 → không phải outlier"
+   ],
+   "w": "Z = (78 − 50)/8 = 3,5 > 3 → outlier tiềm năng (với phân phối chuẩn, 99,7% giá trị nằm trong µ ± 3σ).",
+   "x": [
+    "Ngưỡng theo slide là |Z| > 3, không phải 4.",
+    "Chia nhầm cho phương sai 64 thay vì σ = 8.",
+    "Chia hiệu số cho µ = 50 thay vì σ."
+   ],
+   "trap": "Chia cho phương sai thay vì độ lệch chuẩn.",
+   "mem": "Z = (x − µ)/σ; outlier khi |Z| > 3."
+  },
+  {
+   "lv": "TH",
+   "t": "Xung đột dữ liệu (C4)",
+   "q": "Hai nguồn ghi số điện thoại khác nhau cho cùng một khách; hệ thống chọn số được <b>cập nhật gần nhất</b>. Đây là quy tắc nào?",
+   "o": [
+    "Latest timestamp",
+    "Source Authority",
+    "Jaccard similarity",
+    "Metadata Resolution"
+   ],
+   "w": "Hai quy tắc giải xung đột: Source Authority (trọng số tin cậy của nguồn) và Latest timestamp (giá trị mới nhất thắng).",
+   "x": [
+    "Source Authority chọn theo nguồn được tin hơn (ví dụ eKYC thắng form tự khai).",
+    "Jaccard đo độ giống giữa hai tập, không chọn giá trị.",
+    "Metadata Resolution xử lý tên cột, không chọn giá trị."
+   ],
+   "trap": "Lẫn hai quy tắc giải xung đột.",
+   "mem": "Nguồn tin cậy hơn → Source Authority · Mới hơn → Latest timestamp."
+  },
+  {
+   "lv": "VD",
+   "t": "Decimal scaling (C4)",
+   "q": "Số dư tài khoản nằm trong khoảng <b>−48.700 đến 12.300</b>. Chuẩn hoá decimal scaling, giá trị −48.700 thành:",
+   "o": [
+    "j = 5; −0,487",
+    "j = 4; −4,87",
+    "j = 6; −0,0487",
+    "j = 5; −4,87"
+   ],
+   "w": "max |v| = 48.700 (5 chữ số phần nguyên) → j = 5 nhỏ nhất để 10⁵ > 48.700 → v′ = −48.700/10⁵ = −0,487.",
+   "x": [
+    "Với j = 4, |v′| = 4,87 ≥ 1, vi phạm điều kiện |v′| < 1.",
+    "j = 6 không phải số nhỏ nhất thoả điều kiện.",
+    "Chia 48.700 cho 10⁵ được 0,487, không phải 4,87."
+   ],
+   "trap": "Lấy max theo giá trị dương thay vì giá trị tuyệt đối.",
+   "mem": "j = số chữ số phần nguyên của max |v|."
+  },
+  {
+   "lv": "VDC",
+   "t": "Information Gain (C4)",
+   "q": "Tập D có 10 dòng (5 Yes, 5 No). Thuộc tính X chia D thành X1: 4 Yes, 0 No và X2: 1 Yes, 5 No. <b>Gain(X)</b> xấp xỉ:",
+   "o": [
+    "0,61",
+    "0,39",
+    "0,35",
+    "1"
+   ],
+   "w": "Info(D) = 1. H(X1) = 0; H(X2) = H(1/6) ≈ 0,65. Info_X = 0,4·0 + 0,6·0,65 ≈ 0,39. Gain = 1 − 0,39 ≈ 0,61.",
+   "x": [
+    "0,39 là Info_X(D), entropy còn lại sau khi tách.",
+    "Lấy 1 − H(X2) = 1 − 0,65, quên trọng số 6/10.",
+    "Gain = 1 chỉ khi mọi nhánh đều thuần."
+   ],
+   "trap": "Nhầm Info_A(D) với Gain hoặc quên trọng số |Dj|/|D|.",
+   "mem": "Gain(A) = Info(D) − Σ |Dj|/|D| · Info(Dj)."
+  },
+  {
+   "lv": "VDC",
+   "t": "Ngưỡng minsup, minconf (C5)",
+   "q": "<p>CSDL 10 giao dịch (TT = tài khoản thanh toán, TD = thẻ tín dụng, VTD = vay tiêu dùng, BH = bảo hiểm, TK = tiết kiệm):</p><table><tr><th>TID</th><th>Sản phẩm</th><th>TID</th><th>Sản phẩm</th></tr><tr><td>1</td><td>TT, TD, VTD</td><td>6</td><td>TT, TK, BH</td></tr><tr><td>2</td><td>TT, TD</td><td>7</td><td>TD, VTD</td></tr><tr><td>3</td><td>TT, TK</td><td>8</td><td>TT, TD, TK</td></tr><tr><td>4</td><td>TD, VTD, BH</td><td>9</td><td>TT, VTD</td></tr><tr><td>5</td><td>TT, TD, VTD, BH</td><td>10</td><td>TT, TD, VTD, TK</td></tr></table>Với minsup = 0,25 và minconf = 0,7, luật <b>{TT, TD} ⇒ {VTD}</b> có được giữ lại không?",
+   "o": [
+    "Không: Support 0,3 đạt nhưng Confidence 0,6 không đạt",
+    "Có: Support 0,3 và Confidence 0,6 đều đạt ngưỡng đã cho",
+    "Không: Support 0,3 không đạt minsup",
+    "Có: Confidence ≈ 0,71 đạt minconf"
+   ],
+   "w": "{TT, TD} có ở 5 giao dịch (1, 2, 5, 8, 10); cả ba có ở 1, 5, 10 → Support = 3/10 = 0,3 ≥ 0,25; Confidence = 3/5 = 0,6 < 0,7 → loại.",
+   "x": [
+    "0,6 < 0,7 nên Confidence không đạt.",
+    "0,3 ≥ 0,25 nên Support đạt; lý do loại là Confidence.",
+    "Nhầm với Confidence của luật {TD} ⇒ {VTD}."
+   ],
+   "trap": "Chỉ kiểm tra một ngưỡng.",
+   "mem": "Luật được giữ khi vượt cả minsup lẫn minconf."
+  },
+  {
+   "lv": "VD",
+   "t": "Apriori (C5)",
+   "q": "Tập item I có <b>6</b> item. Số tập con <b>khác rỗng</b> có thể có là:",
+   "o": [
+    "63",
+    "64",
+    "62",
+    "36"
+   ],
+   "w": "Số tập con khác rỗng của n item là 2ⁿ − 1 = 2⁶ − 1 = 63 – lý do không thể đếm hết mà cần Apriori.",
+   "x": [
+    "Quên trừ tập rỗng (2⁶).",
+    "Trừ nhầm 2.",
+    "Tính nhầm 6²."
+   ],
+   "trap": "Quên trừ tập rỗng.",
+   "mem": "Số tập con khác rỗng = 2ⁿ − 1."
+  },
+  {
+   "lv": "VDC",
+   "t": "Conditional Pattern Base (C5)",
+   "q": "CPB của item P gồm các đường: ⟨F, C, A, M⟩ : 2, ⟨C, B⟩ : 1, ⟨F, B⟩ : 1. Với minsupportcount = 3, các item phổ biến trong CPB của P là:",
+   "o": [
+    "{F, C}",
+    "Không item nào đạt",
+    "{C}",
+    "{F, C, B}"
+   ],
+   "w": "Cộng count của các đường chứa item: F = 2 + 1 = 3; C = 2 + 1 = 3; B = 1 + 1 = 2; A = M = 2. Đạt ngưỡng: F, C → tập phổ biến {F, P}, {C, P}, {F, C, P}.",
+   "x": [
+    "Đếm số đường chứa item (F: 2 đường, C: 2 đường) thay vì cộng count.",
+    "F cũng có 2 + 1 = 3.",
+    "B chỉ có 1 + 1 = 2 < 3."
+   ],
+   "trap": "Đếm số đường thay vì cộng count.",
+   "mem": "Đếm trong CPB = cộng count các đường chứa item."
+  },
+  {
+   "lv": "TH",
+   "t": "Gain Ratio (C5)",
+   "q": "Cột Customer (mỗi khách một giá trị) có Information Gain cao nhất nhưng vô dụng để dự đoán. C4.5 khắc phục bằng cách nào?",
+   "o": [
+    "Chia Gain cho SplitInfo, vốn lớn khi thuộc tính nhiều giá trị",
+    "Loại bỏ mọi thuộc tính có nhiều hơn 2 giá trị khác nhau",
+    "Cắt tỉa cây ngay trong lúc dựng (pre-pruning) để bỏ nhánh thừa",
+    "Chuẩn hoá Min-Max cột Customer trước khi tính Gain"
+   ],
+   "w": "Cột Customer: Gain = 1 nhưng SplitInfo = log₂8 = 3 → GainRatio = 0,333 < 0,575 của Credit History, nên Credit History vẫn được chọn.",
+   "x": [
+    "C4.5 không loại cứng thuộc tính.",
+    "C4.5 dùng post-pruning (cắt sau).",
+    "Chuẩn hoá không làm giảm số giá trị khác nhau."
+   ],
+   "trap": "Nghĩ C4.5 cắt tỉa trước.",
+   "mem": "Gain Ratio phạt thuộc tính nhiều giá trị."
+  },
+  {
+   "lv": "TH",
+   "t": "Biến thể KMeans (C5)",
+   "q": "Dữ liệu khách hàng gồm <b>cả cột số lẫn cột phân loại</b>. Biến thể phân cụm phù hợp:",
+   "o": [
+    "KPrototypes",
+    "KModes",
+    "Mini-Batch KMeans",
+    "CLARA"
+   ],
+   "w": "KModes thay mean bằng mode cho dữ liệu phân loại; KPrototypes lai KMeans + KModes cho dữ liệu hỗn hợp.",
+   "x": [
+    "KModes chỉ dành cho dữ liệu phân loại.",
+    "Mini-Batch KMeans tăng tốc KMeans cho Big Data, vẫn cần dữ liệu số.",
+    "CLARA là bản lấy mẫu của KMedoids cho dữ liệu lớn."
+   ],
+   "trap": "Lẫn KModes và KPrototypes.",
+   "mem": "Phân loại → KModes · Hỗn hợp → KPrototypes · KMedoids lớn → CLARA/CLARANS."
+  },
+  {
+   "lv": "NB",
+   "t": "Phân cụm phân cấp (C5)",
+   "q": "Phân biệt <b>AGNES</b> và <b>DIANA</b>:",
+   "o": [
+    "AGNES gộp dần từ dưới lên; DIANA chia dần từ trên xuống",
+    "AGNES chia dần từ trên xuống; DIANA gộp dần từ dưới lên",
+    "AGNES là phân cụm lưới; DIANA là phân cụm mật độ",
+    "Cả hai đều cần biết trước số cụm k khi chạy"
+   ],
+   "w": "AGNES: mỗi điểm là một cụm, lần lượt gộp hai cụm gần nhất. DIANA: bắt đầu một cụm chứa tất cả rồi tách dần.",
+   "x": [
+    "Đảo ngược hai hướng.",
+    "Cả hai là phân cụm phân cấp.",
+    "Phân cấp tạo dendrogram, cắt ở độ cao nào thì được số cụm tương ứng."
+   ],
+   "trap": "Đảo chiều gộp/chia.",
+   "mem": "AGNES = Agglomerative (gộp) · DIANA = Divisive (chia)."
+  },
+  {
+   "lv": "TH",
+   "t": "In-Database ML (C6)",
+   "q": "Ba lợi ích của In-Database ML theo slide là:",
+   "o": [
+    "Scalability, Governance (RBAC), Simplicity",
+    "Discovery, Consistency, Lineage",
+    "Transparency, Human Oversight, Data Quality",
+    "Freshness, Volume, Distribution"
+   ],
+   "w": "Scalability: tận dụng MPP, auto-scaling của kho. Governance: phân quyền RBAC đồng nhất. Simplicity: dự báo chỉ là thêm một câu SQL vào pipeline ELT.",
+   "x": [
+    "Đó là ba lợi ích của Feature Store.",
+    "Đó là ba trụ cột của AI Act.",
+    "Đó là ba trong năm trụ cột data observability."
+   ],
+   "trap": "Lẫn các bộ ba khái niệm giữa các chương.",
+   "mem": "In-DB ML: Scalability · Governance · Simplicity."
+  },
+  {
+   "lv": "TH",
+   "t": "Precision và Recall (C6)",
+   "q": "Câu hỏi nào mô tả đúng ý nghĩa của <b>Recall</b>?",
+   "o": [
+    "Trong số ca dương thật, mô hình bắt được bao nhiêu?",
+    "Trong số ca mô hình báo dương, bao nhiêu thật sự dương?",
+    "Trong toàn bộ dữ liệu, mô hình đoán đúng bao nhiêu?",
+    "Mô hình xếp ca dương cao hơn ca âm với xác suất bao nhiêu?"
+   ],
+   "w": "Recall = TP/(TP + FN): độ phủ ca dương thật. Precision = TP/(TP + FP): độ chính xác khi báo dương.",
+   "x": [
+    "Đó là Precision.",
+    "Đó là Accuracy.",
+    "Đó là ý nghĩa của ROC-AUC."
+   ],
+   "trap": "Đảo Precision và Recall.",
+   "mem": "Precision: báo dương có đúng? · Recall: dương thật có bị sót?"
+  },
+  {
+   "lv": "NB",
+   "t": "CPT (C6)",
+   "q": "Ba cấu trúc dữ liệu của <b>Compact Prediction Tree</b> là:",
+   "o": [
+    "Prediction Tree, Inverted Index, Lookup Table",
+    "FP-tree, Header Table, Node-link",
+    "Prediction Tree, Hash Table, B-tree",
+    "Dendrogram, Inverted Index, Lookup Table"
+   ],
+   "w": "Prediction Tree: cây tiền tố lưu chuỗi. Inverted Index: bảng item × chuỗi để tìm nhanh chuỗi chứa tập item. Lookup Table: trỏ mỗi chuỗi tới nút cuối của nhánh.",
+   "x": [
+    "Đó là các thành phần của FP-Growth.",
+    "Hash Table và B-tree không thuộc CPT.",
+    "Dendrogram là của phân cụm phân cấp."
+   ],
+   "trap": "Lẫn cấu trúc của CPT với FP-tree.",
+   "mem": "CPT: Tree · Inverted Index · Lookup Table."
+  },
+  {
+   "lv": "VD",
+   "t": "PageRank (C6)",
+   "q": "Đồ thị liên kết: A → B, A → C, B → C, C → A, D → C, D → A. Dùng công thức PR(X) = (1 − d) + d·Σ PR(T)/C(T), d = 0,85, vòng 0 mọi PR = 1. <b>PR(B)</b> sau vòng 1 là:",
+   "o": [
+    "0,575",
+    "1",
+    "0,425",
+    "0,15"
+   ],
+   "w": "B chỉ nhận link từ A, A có 2 link ra: PR(B) = 0,15 + 0,85 × 1/2 = 0,15 + 0,425 = 0,575.",
+   "x": [
+    "Giữ nguyên giá trị khởi tạo.",
+    "Quên cộng (1 − d) = 0,15.",
+    "Coi như B không có link vào."
+   ],
+   "trap": "Quên phần (1 − d).",
+   "mem": "PR = (1 − d) + d × Σ PR(T)/C(T)."
+  },
+  {
+   "lv": "TH",
+   "t": "Snowflake Cortex (C6)",
+   "q": "Hai loại <b>Cortex ML Functions</b> dựng sẵn được nêu trong slide là:",
+   "o": [
+    "Forecasting và Anomaly Detection",
+    "Classification và Clustering",
+    "Regression và PCA",
+    "Sentiment và Summarize"
+   ],
+   "w": "Cortex có hai nhóm: ML Functions (Forecasting, Anomaly Detection) và AI & LLM (gọi Llama, Mistral bằng SQL để tóm tắt, phân tích cảm xúc).",
+   "x": [
+    "Không phải hai hàm slide nêu cho Cortex ML Functions.",
+    "Không phải hàm dựng sẵn của Cortex trong slide.",
+    "Đó là hàm thuộc nhóm Cortex AI & LLM, không phải ML Functions."
+   ],
+   "trap": "Lẫn hai nhóm chức năng của Cortex.",
+   "mem": "Cortex ML: dự báo + bất thường · Cortex LLM: tóm tắt + cảm xúc."
+  },
+  {
+   "lv": "NB",
+   "t": "EU AI Act (C7)",
+   "q": "Theo EU AI Act, hệ thống <b>chấm điểm tín dụng</b> của ngân hàng thuộc mức rủi ro nào?",
+   "o": [
+    "High risk",
+    "Limited risk",
+    "Minimal risk",
+    "Unacceptable risk"
+   ],
+   "w": "Bốn mức: Unacceptable (cấm), High (tín dụng, tuyển dụng, y tế – yêu cầu nghiêm ngặt), Limited (chatbot – minh bạch), Minimal (spam filter – gần như không ràng buộc).",
+   "x": [
+    "Limited là chatbot, deepfake – chỉ cần minh bạch, dán nhãn.",
+    "Minimal là bộ lọc spam, game AI.",
+    "Unacceptable là bị cấm hẳn, ví dụ social scoring."
+   ],
+   "trap": "Nhầm chấm điểm tín dụng với social scoring.",
+   "mem": "Tín dụng → High · Chatbot → Limited · Social scoring → Unacceptable."
+  },
+  {
+   "lv": "TH",
+   "t": "Differential privacy (C7)",
+   "q": "Trong differential privacy, giảm tham số <b>ε</b> thì:",
+   "o": [
+    "Riêng tư cao hơn nhưng kết quả kém chính xác hơn",
+    "Riêng tư thấp hơn và kết quả chính xác hơn",
+    "Riêng tư cao hơn và kết quả chính xác hơn",
+    "Không ảnh hưởng gì vì ε chỉ là tên phiên bản"
+   ],
+   "w": "ε nhỏ → thêm nhiều nhiễu → khó suy ra cá nhân → riêng tư cao, độ chính xác thấp.",
+   "x": [
+    "Đảo ngược.",
+    "Có đánh đổi: thêm nhiễu nhiều thì kém chính xác.",
+    "ε là ngân sách riêng tư, quyết định lượng nhiễu."
+   ],
+   "trap": "Đảo chiều ε.",
+   "mem": "ε nhỏ = riêng tư cao = kém chính xác."
+  },
+  {
+   "lv": "TH",
+   "t": "Data catalog (C7)",
+   "q": "Thông tin “cột <code>txn_date</code> có kiểu DATE, bảng cập nhật lúc 6 giờ mỗi sáng” thuộc loại metadata nào?",
+   "o": [
+    "Technical Metadata",
+    "Business Glossary",
+    "Trust Score",
+    "Audit trail"
+   ],
+   "w": "Kiểu dữ liệu, schema, độ mới (freshness) là technical metadata.",
+   "x": [
+    "Glossary định nghĩa thuật ngữ nghiệp vụ.",
+    "Trust Score là điểm tin cậy tổng hợp.",
+    "Audit trail ghi lịch sử truy cập."
+   ],
+   "trap": "Lẫn hai loại metadata.",
+   "mem": "Kiểu, schema, freshness → Technical."
+  },
+  {
+   "lv": "NB",
+   "t": "AI bias (C7)",
+   "q": "Theo slide, nguồn gốc chủ yếu của thiên lệch (bias) trong mô hình AI là:",
+   "o": [
+    "Dữ liệu lịch sử phản ánh định kiến trong quá khứ",
+    "Bản thân thuật toán học máy được thiết kế có định kiến",
+    "Phần cứng GPU tính sai",
+    "Người dùng nhập câu hỏi sai"
+   ],
+   "w": "Mô hình học từ dữ liệu quá khứ nên tái tạo định kiến có trong đó (ví dụ từ chối cho vay nhiều hơn ở một nhóm).",
+   "x": [
+    "Thuật toán chỉ học lại những gì có trong dữ liệu.",
+    "Không phải nguồn gốc bias.",
+    "Không phải nguồn gốc bias."
+   ],
+   "trap": "Đổ lỗi cho thuật toán.",
+   "mem": "Bias đến từ dữ liệu lịch sử."
+  },
+  {
+   "lv": "TH",
+   "t": "Object Tables (C8)",
+   "q": "<b>Object Tables</b> (BigQuery) cho phép điều gì?",
+   "o": [
+    "Dùng SQL truy vấn file phi cấu trúc tại chỗ, không di chuyển dữ liệu",
+    "Chuyển file ảnh, PDF thành bảng quan hệ bằng một job ETL",
+    "Lưu các object ít dùng xuống archive tier cho rẻ",
+    "Khoá object để không ai xoá hay sửa được trong thời hạn lưu trữ quy định"
+   ],
+   "w": "Object Table là bảng metadata trỏ tới file trên Cloud Storage; kết hợp mô hình AI để phân tích nội dung ảnh, văn bản bằng SQL.",
+   "x": [
+    "Không cần ETL, file vẫn nằm tại chỗ.",
+    "Đó là phân tầng lưu trữ.",
+    "Đó là Object Lock."
+   ],
+   "trap": "Lẫn Object Tables với Object Lock.",
+   "mem": "Object Tables = SQL trên file phi cấu trúc."
+  },
+  {
+   "lv": "VDC",
+   "t": "Cosine similarity (C8)",
+   "q": "Vector truy vấn q = (1, 0, 1). Tài liệu nào <b>gần q nhất</b> theo cosine similarity?<table><tr><th>Tài liệu</th><th>Vector</th></tr><tr><td>d1</td><td>(1, 1, 0)</td></tr><tr><td>d2</td><td>(0, 1, 1)</td></tr><tr><td>d3</td><td>(2, 0, 1)</td></tr><tr><td>d4</td><td>(0, 2, 0)</td></tr></table>",
+   "o": [
+    "d3, cosine ≈ 0,949",
+    "d1, cosine = 0,5",
+    "d4, cosine = 0",
+    "d2, cosine = 1"
+   ],
+   "w": "cos(q, d3) = (2 + 0 + 1)/(√2·√5) = 3/√10 ≈ 0,949; d1 và d2 đều 0,5; d4 = 0 → d3 gần nhất.",
+   "x": [
+    "d1 = (1,1,0): 1/(√2·√2) = 0,5, kém d3.",
+    "d4 vuông góc với q nên cosine = 0, xa nhất.",
+    "d2: 1/(√2·√2) = 0,5, không phải 1."
+   ],
+   "trap": "Chọn theo tích vô hướng hoặc độ dài vector.",
+   "mem": "cos = A·B / (‖A‖·‖B‖)."
+  },
+  {
+   "lv": "NB",
+   "t": "Data storytelling (C8)",
+   "q": "Thứ tự một câu chuyện dữ liệu theo slide:",
+   "o": [
+    "Bối cảnh → Vấn đề → Giải pháp → Hành động",
+    "Vấn đề → Bối cảnh → Hành động → Giải pháp",
+    "Giải pháp → Vấn đề → Bối cảnh → Hành động",
+    "Hành động → Giải pháp → Vấn đề → Bối cảnh"
+   ],
+   "w": "Đặt bối cảnh → chỉ ra vấn đề trong dữ liệu → đề xuất giải pháp → kêu gọi hành động cụ thể.",
+   "x": [
+    "Phải đặt bối cảnh trước khi nêu vấn đề.",
+    "Bắt đầu bằng giải pháp khiến người nghe không hiểu vì sao.",
+    "Đảo ngược toàn bộ."
+   ],
+   "trap": "Nêu giải pháp trước vấn đề.",
+   "mem": "Bối cảnh → Vấn đề → Giải pháp → Hành động."
+  },
+  {
+   "lv": "NB",
+   "t": "Polyglot persistence (C9)",
+   "q": "Lưu <b>phiên đăng nhập (session)</b> và cache cần đọc/ghi cực nhanh theo khoá, nên dùng:",
+   "o": [
+    "Key-value store (ví dụ Redis)",
+    "Document store (ví dụ MongoDB)",
+    "Data Warehouse",
+    "Graph database"
+   ],
+   "w": "Key-value: truy cập theo khoá, độ trễ cực thấp.",
+   "x": [
+    "Document hợp hồ sơ có cấu trúc linh hoạt.",
+    "Kho dữ liệu dành cho phân tích, không cho session.",
+    "Graph dành cho quan hệ."
+   ],
+   "trap": "Chọn document vì quen.",
+   "mem": "Cache/session → key-value."
+  },
+  {
+   "lv": "VD",
+   "t": "Blockchain ETL (C9)",
+   "q": "Một giao dịch ghi giá trị <b>3,2 × 10¹⁸ Wei</b>. Sau bước chuẩn hoá, giá trị bằng bao nhiêu Ether?",
+   "o": [
+    "3,2 ETH",
+    "3,2 × 10⁹ ETH",
+    "0,32 ETH",
+    "32 ETH"
+   ],
+   "w": "1 Ether = 10¹⁸ Wei → 3,2 × 10¹⁸ / 10¹⁸ = 3,2 ETH.",
+   "x": [
+    "Chia cho 10⁹ (Gwei) thay vì 10¹⁸.",
+    "Sai một bậc 10.",
+    "Sai một bậc 10."
+   ],
+   "trap": "Nhầm Wei với Gwei.",
+   "mem": "1 ETH = 10¹⁸ Wei."
+  },
+  {
+   "lv": "NB",
+   "t": "Federated query (C9)",
+   "q": "<b>Federated query</b> là:",
+   "o": [
+    "Một câu SQL đọc nhiều nguồn mà không ETL dữ liệu về một chỗ",
+    "Sao chép mọi nguồn về kho trung tâm bằng ETL rồi mới truy vấn",
+    "Chia một bảng lớn thành nhiều partition theo ngày",
+    "Chạy nhiều câu SQL song song trên cùng một nguồn"
+   ],
+   "w": "Ba thành phần: connector (nói chuyện với từng nguồn), global catalog (biết bảng nào ở đâu), predicate pushdown (đẩy điều kiện lọc xuống nguồn).",
+   "x": [
+    "Đó là cách tích hợp truyền thống.",
+    "Đó là phân vùng.",
+    "Đó là song song hoá trên một nguồn."
+   ],
+   "trap": "Nghĩ phải chép dữ liệu trước.",
+   "mem": "Federated = một SQL, nhiều nguồn, không ETL."
+  },
+  {
+   "lv": "VD",
+   "t": "Distributed join (C9)",
+   "q": "Bảng giao dịch <b>20 GB</b> phân tán trên <b>8</b> máy cần JOIN với bảng chi nhánh <b>100 MB</b>. Dùng broadcast join thì tổng lượng dữ liệu bảng nhỏ gửi qua mạng khoảng bao nhiêu?",
+   "o": [
+    "800 MB",
+    "100 MB",
+    "20 GB",
+    "2,5 GB"
+   ],
+   "w": "Broadcast: gửi bảng nhỏ tới cả 8 máy → 8 × 100 MB = 800 MB, rẻ hơn nhiều so với xáo trộn 20 GB.",
+   "x": [
+    "Chỉ tính một bản, trong khi mỗi máy cần một bản.",
+    "Đó là xáo trộn bảng lớn (hash join).",
+    "20 GB/8 là phần bảng lớn trên mỗi máy."
+   ],
+   "trap": "Quên nhân với số máy.",
+   "mem": "Broadcast = kích thước bảng nhỏ × số máy."
+  }
+ ]
+}

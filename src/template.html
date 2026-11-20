@@ -27,6 +27,7 @@ header.top .wrap{padding-top:10px;padding-bottom:10px}
 .stats{display:flex;gap:12px;font-size:10.5pt;color:var(--muted);flex-wrap:wrap}
 .stats b{color:var(--ink)}
 .stats .ok b{color:var(--ok)} .stats .bad b{color:var(--bad)}
+.stats .timer b{font-variant-numeric:tabular-nums} .stats .timer.late b{color:var(--bad)}
 .bar{height:8px;background:var(--idle);border-radius:6px;overflow:hidden;margin-top:8px}
 .bar>div{height:100%;background:var(--brand);width:0;transition:width .25s}
 .roundtag{font-size:9.5pt;background:var(--brand-soft);color:var(--brand);padding:2px 8px;border-radius:10px}
@@ -100,6 +101,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
       <span>Đã trả lời: <b id="sAns">0</b>/<b id="sTot">0</b></span>
       <span class="ok">Đúng: <b id="sOk">0</b></span>
       <span class="bad">Sai: <b id="sBad">0</b></span>
+      <span class="timer hide" id="tWrap"><span id="tLbl">Còn lại</span>: <b id="tVal">--:--</b></span>
     </div>
     <div class="bar"><div id="bar"></div></div>
   </div>
@@ -144,6 +146,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 <script>
 (function(){
   var KEY = "__KEY__";
+  var MIN = parseInt("__MINUTES__", 10) || 0;  // > 0: đề thi thử có giới hạn thời gian
   var RAW = "__DATA__";
   function b64(s){var bin=atob(s);var bytes=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);return new TextDecoder("utf-8").decode(bytes);}
   var Q = JSON.parse(b64(RAW));
@@ -154,12 +157,30 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
   var S = null;
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
   function load(){ try{ var v = localStorage.getItem(KEY); if(v){ var o = JSON.parse(v); if(o && o.ids && o.ids.every(function(i){return i < Q.length;})) return o; } }catch(e){} return null; }
-  function newRound(ids, kind, n){ S = {ids:ids, ans:{}, n:n, kind:kind, cur:0}; save(); }
+  function newRound(ids, kind, n){ S = {ids:ids, ans:{}, n:n, kind:kind, cur:0, t0:Date.now()}; save(); }
 
   S = load();
   if(!S){ newRound(Q.map(function(_,i){return i;}), "all", 1); }
 
   var $ = function(id){return document.getElementById(id);};
+  if(!S.t0){ S.t0 = Date.now(); save(); }
+
+  // Đồng hồ đếm ngược: chỉ cho lượt "Toàn bộ" của đề có giới hạn thời gian; tính từ lúc mở lượt.
+  function mmss(ms){ var s=Math.max(0,Math.round(ms/1000)); return ("0"+Math.floor(s/60)).slice(-2)+":"+("0"+s%60).slice(-2); }
+  function tick(){
+    var w=$("tWrap");
+    if(!MIN || S.kind!=="all"){ w.classList.add("hide"); return; }
+    w.classList.remove("hide");
+    var c=counts(), lim=MIN*60000;
+    if(c.a===c.t && !S.tEnd){ S.tEnd=Date.now(); save(); }
+    if(c.a<c.t && S.tEnd){ delete S.tEnd; save(); }
+    if(S.tEnd){ $("tLbl").textContent="Thời gian làm"; $("tVal").textContent=mmss(S.tEnd-S.t0)+" / "+MIN+" phút"; w.classList.toggle("late", S.tEnd-S.t0>lim); return; }
+    var left=lim-(Date.now()-S.t0);
+    $("tLbl").textContent = left>0 ? "Còn lại" : "Hết giờ";
+    $("tVal").textContent = left>0 ? mmss(left) : "quá " + mmss(-left);
+    w.classList.toggle("late", left<=0);
+  }
+  setInterval(tick, 1000);
 
   function counts(){
     var a=0,ok=0,bad=0;
@@ -171,6 +192,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
     $("sAns").textContent=c.a; $("sTot").textContent=c.t; $("sOk").textContent=c.ok; $("sBad").textContent=c.bad;
     $("bar").style.width = (c.t? (100*c.a/c.t):0)+"%";
     $("roundtag").textContent = "Lượt " + S.n + " · " + (S.kind==="all" ? "Toàn bộ" : "Làm lại câu sai");
+    tick();
   }
   function navRender(){
     var nav = $("nav"); nav.innerHTML="";

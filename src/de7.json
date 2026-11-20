@@ -1,0 +1,764 @@
+{
+ "questions": [
+  {
+   "lv": "NB",
+   "t": "Tiến hoá hệ dữ liệu (C1)",
+   "q": "Ghép thập kỷ – hệ thống – mục đích nào <b>đúng</b> theo slide Chương 1?",
+   "o": [
+    "1990s – Data Warehouse – OLAP",
+    "1980s – Data Lake – lưu dữ liệu thô trên Hadoop/S3",
+    "2010s – Data Warehouse – báo cáo quản trị",
+    "2020s – RDBMS – giao dịch OLTP"
+   ],
+   "w": "1980s RDBMS phục vụ giao dịch (OLTP) → 1990s Data Warehouse phục vụ phân tích (OLAP) → 2010s Data Lake lưu thô trên Hadoop/S3 → 2020s Lakehouse hợp nhất Lake và Warehouse nhờ Open Table Format.",
+   "x": [
+    "Data Lake trên Hadoop/S3 là làn sóng 2010s; 1980s là RDBMS – OLTP.",
+    "2010s là Data Lake; Data Warehouse – OLAP là 1990s.",
+    "2020s là Lakehouse; RDBMS – OLTP là 1980s."
+   ],
+   "trap": "Đảo thứ tự Data Warehouse và Data Lake vì nghĩ “lake” cũ hơn.",
+   "mem": "80s RDBMS–OLTP · 90s DW–OLAP · 10s Lake–Hadoop/S3 · 20s Lakehouse."
+  },
+  {
+   "lv": "NB",
+   "t": "Elasticity (C1)",
+   "q": "Theo slide, <b>elasticity</b> khác <b>scalability</b> ở điểm nào?",
+   "o": [
+    "Elasticity nhấn mạnh việc tự mở rộng và tự co lại theo tải",
+    "Elasticity chỉ nói hệ thống có thể lớn lên được",
+    "Elasticity là mua thêm máy chủ vật lý khi tải tăng",
+    "Elasticity là trả trước cho năng lực dự phòng theo năm để được giảm giá"
+   ],
+   "w": "Scalability: hệ thống lớn lên được. Elasticity: cấp thêm tài nguyên trong vài giây–phút khi tải tăng và tự thu về khi tải giảm.",
+   "x": [
+    "Đó là scalability; elasticity còn tự co lại.",
+    "Mua máy vật lý là CAPEX của on-premise, trái với cloud.",
+    "Trả trước dự phòng trái với pay-as-you-go."
+   ],
+   "trap": "Coi hai từ là đồng nghĩa.",
+   "mem": "Elasticity = co + giãn tự động."
+  },
+  {
+   "lv": "NB",
+   "t": "Data Fabric (C1)",
+   "q": "Bộ từ khoá nào giúp nhận diện kiến trúc <b>Data Fabric</b>?",
+   "o": [
+    "Ảo hoá dữ liệu, zero-copy, active metadata, một cổng truy cập",
+    "Domain ownership, data as a product, quản trị liên bang",
+    "Open Table Format, Bronze–Silver–Gold, ACID trên Object Storage",
+    "Batch layer, speed layer, serving layer"
+   ],
+   "w": "Data Fabric để dữ liệu nằm tại nguồn, phủ lớp kết nối dựa trên metadata và virtualization, cho một cổng truy cập chung, hỗ trợ hybrid cloud, do đội IT dẫn dắt.",
+   "x": [
+    "Đó là từ khoá của Data Mesh.",
+    "Đó là từ khoá của Lakehouse.",
+    "Đó là kiến trúc Lambda (Chương 3)."
+   ],
+   "trap": "Lẫn từ khoá giữa Fabric, Mesh và Lakehouse.",
+   "mem": "Fabric = ảo hoá + metadata; Mesh = domain; Lakehouse = OTF + Medallion."
+  },
+  {
+   "lv": "VD",
+   "t": "Chọn kiến trúc (C1)",
+   "q": "Một công ty khởi nghiệp xây hệ thống dữ liệu <b>từ đầu</b>, ưu tiên huấn luyện mô hình AI/ML, cần ACID, đội dữ liệu nhỏ và tập trung, muốn chi phí quản lý thấp. Kiến trúc phù hợp nhất:",
+   "o": [
+    "Data Lakehouse",
+    "Data Mesh",
+    "Data Fabric",
+    "Data Lake thuần trên Hadoop"
+   ],
+   "w": "Greenfield, ưu tiên AI/ML, cần ACID, đội IT tập trung, chi phí thấp → Lakehouse.",
+   "x": [
+    "Mesh dành cho tổ chức rất lớn có nhiều phòng ban mạnh.",
+    "Fabric dành cho dữ liệu phân tán không thể di chuyển, nhiều hệ cũ.",
+    "Data Lake thuần không có ACID."
+   ],
+   "trap": "Chọn Mesh vì nghe hiện đại dù tổ chức nhỏ.",
+   "mem": "Dự án mới + AI/ML + ACID + đội tập trung → Lakehouse."
+  },
+  {
+   "lv": "TH",
+   "t": "Denormalization trên cloud (C2)",
+   "q": "Vì sao Kimball trên cloud lại <b>khuyến khích denormalization/flat table</b>?",
+   "o": [
+    "Lưu trữ rẻ, lưu theo cột nên ưu tiên ít JOIN hơn tiết kiệm dung lượng",
+    "Cloud warehouse không hỗ trợ JOIN giữa các bảng lớn",
+    "Flat table tự động loại bỏ dữ liệu trùng lặp khi nạp",
+    "Chuẩn hoá 3NF làm tăng chi phí lưu trữ và chi phí bản quyền trên cloud"
+   ],
+   "w": "Trước đây tối ưu dung lượng; nay đĩa rẻ, kho lưu theo cột chỉ đọc cột cần dùng và nén tốt cột lặp, nên gộp sẵn bảng rộng giúp truy vấn nhanh, rẻ hơn. Đổi lại phải quản lý nhất quán khi giá trị lặp thay đổi.",
+   "x": [
+    "Cloud warehouse vẫn JOIN bình thường; chỉ là JOIN nhiều thì tốn.",
+    "Flat table chấp nhận lặp giá trị, không khử trùng.",
+    "Chuẩn hoá thường tiết kiệm dung lượng hơn; lý do là hiệu năng truy vấn."
+   ],
+   "trap": "Nghĩ denormalization để tiết kiệm dung lượng.",
+   "mem": "Cloud: tối ưu truy vấn > tối ưu dung lượng."
+  },
+  {
+   "lv": "TH",
+   "t": "Loại fact table (C2)",
+   "q": "Loại fact table nào có <b>dòng được cập nhật</b> mỗi khi đối tượng qua một mốc mới và dùng để tính <b>lead time</b>?",
+   "o": [
+    "Accumulating snapshot",
+    "Periodic snapshot",
+    "Transaction fact",
+    "Bridge table"
+   ],
+   "w": "Accumulating snapshot: một dòng = một đơn hàng trong cả vòng đời; có nhiều cột ngày (đặt, đóng gói, giao) được điền dần. Đây là loại fact duy nhất mà dòng bị sửa sau khi ghi.",
+   "x": [
+    "Periodic snapshot không sửa dữ liệu đã ghi.",
+    "Transaction fact ghi rồi không sửa.",
+    "Bridge table giải quyết quan hệ nhiều–nhiều, không phải loại fact."
+   ],
+   "trap": "Nghĩ mọi fact đều chỉ thêm, không sửa.",
+   "mem": "Nhiều mốc + lead time → accumulating snapshot."
+  },
+  {
+   "lv": "VDC",
+   "t": "SCD Type 2 (C2)",
+   "q": "Bảng dim_customer dùng SCD Type 2 như dưới. Một giao dịch ngày <b>15/03/2026</b> của KH077 được ghi trong fact với customer_key nào và tính doanh số cho thành phố nào?<table><tr><th>customer_key</th><th>customer_id</th><th>city</th><th>start_date</th><th>end_date</th><th>is_current</th></tr><tr><td>310</td><td>KH077</td><td>Đà Nẵng</td><td>2023-04-01</td><td>2026-06-30</td><td>false</td></tr><tr><td>588</td><td>KH077</td><td>Cần Thơ</td><td>2026-07-01</td><td>9999-12-31</td><td>true</td></tr></table>",
+   "o": [
+    "310 – Đà Nẵng",
+    "588 – Cần Thơ",
+    "588 – Đà Nẵng",
+    "310 – Cần Thơ"
+   ],
+   "w": "Ngày 15/03/2026 nằm trong [2023-04-01, 2026-06-30] của dòng 310 → fact mang khoá 310 → doanh số tính cho Đà Nẵng. Nếu dùng Type 1 thì toàn bộ lịch sử bị tính cho Cần Thơ.",
+   "x": [
+    "Dòng 588 chỉ có hiệu lực từ 01/07/2026.",
+    "Khoá 588 gắn với Cần Thơ, không phải Đà Nẵng.",
+    "Khoá 310 gắn với Đà Nẵng."
+   ],
+   "trap": "Lấy dòng is_current = true cho mọi giao dịch cũ.",
+   "mem": "Type 2: fact trỏ tới phiên bản có hiệu lực tại thời điểm giao dịch."
+  },
+  {
+   "lv": "NB",
+   "t": "Medallion (C2)",
+   "q": "Tầng nào trong Medallion được giữ <b>bất biến</b>, lưu kèm Ingestion_Timestamp và cho phép <b>reprocess</b> khi logic thay đổi?",
+   "o": [
+    "Bronze",
+    "Silver",
+    "Gold",
+    "Data mart"
+   ],
+   "w": "Bronze nhận dữ liệu gốc không biến đổi, chỉ thêm không sửa; khi logic ở Silver đổi thì chạy lại từ Bronze.",
+   "x": [
+    "Silver là tầng đã làm sạch, chuẩn hoá.",
+    "Gold là tầng tổng hợp phục vụ BI.",
+    "Data mart là một phần của tầng Gold."
+   ],
+   "trap": "Nghĩ tầng thô thì được sửa tự do.",
+   "mem": "Bronze = thô + immutable + reprocess."
+  },
+  {
+   "lv": "TH",
+   "t": "ETL và ELT (C3)",
+   "q": "Phát biểu nào <b>đúng</b> với ELT trên cloud?",
+   "o": [
+    "Giữ dữ liệu thô ở Bronze và biến đổi bằng SQL trong kho",
+    "Biến đổi trên máy chủ trung gian bằng Informatica, SSIS",
+    "Bắt buộc schema-on-write trước khi nạp",
+    "Không giữ dữ liệu thô sau khi nạp"
+   ],
+   "w": "ELT nạp thô trước rồi in-place transform bằng compute của kho; dữ liệu thô còn nguyên nên Data Scientist dùng được thông tin mà bước biến đổi cho BI đã bỏ đi.",
+   "x": [
+    "Đó là ETL truyền thống.",
+    "ELT hỗ trợ schema-on-read.",
+    "ELT giữ dữ liệu thô, hỗ trợ AI/ML."
+   ],
+   "trap": "Gán đặc điểm ETL cho ELT.",
+   "mem": "ELT: thô ở Bronze + SQL/dbt trong kho."
+  },
+  {
+   "lv": "VD",
+   "t": "CDC (C3)",
+   "q": "Hệ core banking không chịu thêm tải truy vấn, cần đồng bộ sang kho với độ trễ mili giây và phải ghi nhận cả giao dịch bị <b>xoá</b>. Cách làm phù hợp:",
+   "o": [
+    "Log-based CDC",
+    "Query-based CDC quét mỗi 5 phút",
+    "Full load toàn bảng mỗi đêm",
+    "Zero-ETL từ hệ on-premise sang kho"
+   ],
+   "w": "Log-based CDC gần như không ảnh hưởng nguồn (không chạy truy vấn lên bảng), bắt đủ INSERT/UPDATE/DELETE, độ trễ mili giây.",
+   "x": [
+    "Liên tục quét bảng làm nặng nguồn và sót hard delete.",
+    "Trễ cả ngày và rất nặng với bảng lớn.",
+    "Zero-ETL khó áp dụng với hệ on-premise."
+   ],
+   "trap": "Chọn query-based vì dễ cài.",
+   "mem": "Nhẹ nguồn + real-time + bắt DELETE → log-based."
+  },
+  {
+   "lv": "NB",
+   "t": "DAG (C3)",
+   "q": "Trong orchestration, <b>DAG</b> nghĩa là đồ thị:",
+   "o": [
+    "Có hướng, không chu trình: tác vụ chảy một chiều, không vòng lặp",
+    "Vô hướng, có chu trình để tác vụ tự chạy lại",
+    "Có hướng, có chu trình để retry tự động",
+    "Vô hướng, không chu trình: tác vụ chạy theo thứ tự tuỳ ý, không phụ thuộc"
+   ],
+   "w": "Directed: công việc chảy một chiều; Acyclic: không bao giờ A chờ B, B chờ C, C chờ A. DAG quản lý phụ thuộc và cho chạy song song tác vụ độc lập.",
+   "x": [
+    "Có chu trình thì pipeline treo; retry là chức năng riêng.",
+    "Retry không cần chu trình trong đồ thị.",
+    "Cạnh phải có hướng để biết tác vụ nào chạy trước."
+   ],
+   "trap": "Nghĩ retry cần vòng lặp trong DAG.",
+   "mem": "DAG = Directed + Acyclic."
+  },
+  {
+   "lv": "VD",
+   "t": "Batch và streaming (C3)",
+   "q": "Doanh nghiệp có hai nhu cầu: (1) tính lương cuối tháng, (2) chặn giao dịch thẻ gian lận trong vài giây. Lựa chọn hợp lý:",
+   "o": [
+    "(1) batch, (2) streaming",
+    "(1) streaming, (2) batch",
+    "Cả hai dùng streaming để thống nhất",
+    "Cả hai dùng batch hằng đêm để tiết kiệm"
+   ],
+   "w": "Batch rẻ, đơn giản, độ trễ cao – hợp báo cáo cuối kỳ. Streaming đắt, phức tạp, độ trễ thấp – bắt buộc khi cần phản ứng tức thì.",
+   "x": [
+    "Đảo ngược: lương chấp nhận trễ, gian lận thì không.",
+    "Streaming đắt và phức tạp, không cần cho lương.",
+    "Batch hằng đêm quá trễ để chặn gian lận."
+   ],
+   "trap": "Chọn streaming cho mọi thứ vì “hiện đại”.",
+   "mem": "Chấp nhận trễ → batch; cần tức thì → streaming."
+  },
+  {
+   "lv": "VD",
+   "t": "Schema evolution (C3)",
+   "q": "Nguồn đổi kiểu cột so_luong từ số nguyên 32 bit sang 64 bit. Cơ chế schema evolution nào xử lý tự động thay đổi này?",
+   "o": [
+    "Type coercion: tự nâng kiểu dữ liệu ở đích",
+    "Auto-column addition: thêm cột mới",
+    "Schema versioning: rollback về phiên bản cũ",
+    "FLATTEN cột thành nhiều dòng"
+   ],
+   "w": "Type coercion chỉ áp dụng cho thay đổi “mở rộng” không mất dữ liệu (INT32 → INT64); đổi chuỗi sang số thì không tự làm được.",
+   "x": [
+    "Không có cột mới, chỉ đổi kiểu.",
+    "Rollback để quay lại khi lỗi, không phải để tiếp nhận thay đổi.",
+    "FLATTEN dùng cho mảng JSON."
+   ],
+   "trap": "Lẫn type coercion với auto-column addition.",
+   "mem": "Đổi kiểu mở rộng → type coercion; thêm trường → auto-column."
+  },
+  {
+   "lv": "TH",
+   "t": "Chất lượng dữ liệu (C4)",
+   "q": "Quy tắc kiểm tra <code>ngay_tat_toan &gt;= ngay_giai_ngan</code> trên mỗi khoản vay được gọi là gì?",
+   "o": [
+    "Cross-field validation",
+    "Kiểm tra schema bằng metadata",
+    "Entity resolution",
+    "Kiểm tra Completeness"
+   ],
+   "w": "Cross-field validation: quy tắc logic liên thuộc tính, kiểm tra quan hệ giữa hai cột trở lên (ngày tất toán ≥ ngày giải ngân; tuổi khớp năm sinh).",
+   "x": [
+    "Kiểm tra schema xác thực kiểu dữ liệu đồng nhất (cột phải là DATE).",
+    "Entity resolution xác định bản ghi nhiều nguồn cùng là một thực thể.",
+    "Completeness đo tỷ lệ ô không bị khuyết."
+   ],
+   "trap": "Lẫn kiểm tra kiểu dữ liệu với kiểm tra quan hệ giữa các cột.",
+   "mem": "Quan hệ nhiều cột → cross-field validation."
+  },
+  {
+   "lv": "NB",
+   "t": "Noise và outlier (C4)",
+   "q": "Ghép đúng cách xử lý theo slide:",
+   "o": [
+    "Noise: làm mượt (binning, moving average); outlier: Z-score, IQR",
+    "Noise: phát hiện bằng Z-score, IQR; outlier: làm mượt bằng binning",
+    "Noise và outlier đều xử lý bằng cách xoá bản ghi",
+    "Noise: chuẩn hoá Min-Max; outlier: giảm chiều bằng PCA"
+   ],
+   "w": "Noise là sai số ngẫu nhiên nhỏ phủ lên mọi giá trị → làm mượt. Outlier là vài điểm rất xa phần còn lại → phát hiện rồi quyết định bỏ, sửa hay giữ.",
+   "x": [
+    "Đảo ngược cách xử lý hai loại.",
+    "Outlier có thể cần giữ lại để điều tra (ví dụ gian lận).",
+    "Min-Max và PCA không phải kỹ thuật làm sạch noise/outlier."
+   ],
+   "trap": "Đảo cách xử lý noise và outlier.",
+   "mem": "Noise → làm mượt · Outlier → phát hiện."
+  },
+  {
+   "lv": "VD",
+   "t": "Jaccard (C4)",
+   "q": "Ứng viên A có kỹ năng {Python, SQL, Excel, Tableau, R}; ứng viên B có {SQL, R, Power BI, Python}. Hệ số <b>Jaccard J(A, B)</b> bằng:",
+   "o": [
+    "0,5",
+    "0,6",
+    "0,75",
+    "≈ 0,333"
+   ],
+   "w": "A ∩ B = {Python, SQL, R} → 3; A ∪ B có 5 + 4 − 3 = 6 phần tử → J = 3/6 = 0,5.",
+   "x": [
+    "Chia cho kích thước tập A (3/5).",
+    "Chia cho kích thước tập B (3/4).",
+    "Chia cho tổng kích thước hai tập (3/9)."
+   ],
+   "trap": "Chia cho một tập hoặc cho tổng hai tập.",
+   "mem": "J = |A ∩ B| / |A ∪ B|."
+  },
+  {
+   "lv": "TH",
+   "t": "Discretization (C4)",
+   "q": "Thu nhập khách hàng lệch nặng (đa số thấp, vài người rất cao). Muốn mỗi nhóm có <b>số khách bằng nhau</b>, nên dùng:",
+   "o": [
+    "Equal-frequency binning",
+    "Equal-width binning",
+    "Decimal scaling",
+    "Min-Max normalization"
+   ],
+   "w": "Equal-frequency chia đều số bản ghi, hợp với dữ liệu lệch; equal-width chia đều khoảng giá trị.",
+   "x": [
+    "Equal-width làm các nhóm phía giá trị cao gần như rỗng.",
+    "Decimal scaling là chuẩn hoá thang đo, không rời rạc hoá.",
+    "Min-Max là chuẩn hoá thang đo."
+   ],
+   "trap": "Lẫn rời rạc hoá với chuẩn hoá.",
+   "mem": "Dữ liệu lệch → equal-frequency."
+  },
+  {
+   "lv": "NB",
+   "t": "Entropy (C4)",
+   "q": "Với bài toán 2 lớp, entropy của tập có tỷ lệ <b>50/50</b> và của tập <b>chỉ một lớp</b> lần lượt là:",
+   "o": [
+    "1 và 0",
+    "0 và 1",
+    "0,5 và 0",
+    "1 và 0,5"
+   ],
+   "w": "Entropy đo độ hỗn loạn (không chắc chắn): lẫn lộn tối đa (1/2 – 1/2) cho 1 bit, thuần hoàn toàn cho 0.",
+   "x": [
+    "Đảo ngược: thuần hoàn toàn thì entropy 0.",
+    "Nhầm entropy với tỷ lệ lớp.",
+    "Tập thuần có entropy 0."
+   ],
+   "trap": "Đảo hai trường hợp.",
+   "mem": "50/50 → 1 · thuần → 0."
+  },
+  {
+   "lv": "VDC",
+   "t": "Lift (C5)",
+   "q": "<p>CSDL 10 giao dịch (TT = tài khoản thanh toán, TD = thẻ tín dụng, VTD = vay tiêu dùng, BH = bảo hiểm, TK = tiết kiệm):</p><table><tr><th>TID</th><th>Sản phẩm</th><th>TID</th><th>Sản phẩm</th></tr><tr><td>1</td><td>TT, TD, VTD</td><td>6</td><td>TT, TK, BH</td></tr><tr><td>2</td><td>TT, TD</td><td>7</td><td>TD, VTD</td></tr><tr><td>3</td><td>TT, TK</td><td>8</td><td>TT, TD, TK</td></tr><tr><td>4</td><td>TD, VTD, BH</td><td>9</td><td>TT, VTD</td></tr><tr><td>5</td><td>TT, TD, VTD, BH</td><td>10</td><td>TT, TD, VTD, TK</td></tr></table>Với luật <b>{TT} ⇒ {VTD}</b>, nhận định nào đúng?",
+   "o": [
+    "Lift ≈ 0,83 < 1: có TT làm giảm khả năng có VTD",
+    "Lift ≈ 1,2 > 1: có TT làm tăng khả năng có VTD",
+    "Lift = 1: TT và VTD độc lập",
+    "Confidence = 0,8 nên luật rất mạnh"
+   ],
+   "w": "TT có ở 8 giao dịch, trong đó 4 có VTD → Conf = 0,5; P(VTD) = 0,6 → Lift = 0,5/0,6 ≈ 0,83 < 1: quan hệ tiêu cực.",
+   "x": [
+    "Tính sai; Conf = 4/8 = 0,5 nhỏ hơn P(VTD) = 0,6.",
+    "Lift chỉ bằng 1 khi Conf = P(Y).",
+    "Lấy nhầm support của TT (0,8) làm Confidence."
+   ],
+   "trap": "Thấy Confidence 50% là kết luận luật có ích.",
+   "mem": "Lift > 1 tích cực · = 1 độc lập · < 1 tiêu cực."
+  },
+  {
+   "lv": "VD",
+   "t": "Apriori (C5)",
+   "q": "Sau vòng 1, Apriori có <b>8</b> item phổ biến. Số ứng viên kích thước 2 được sinh ra là:",
+   "o": [
+    "28",
+    "64",
+    "56",
+    "16"
+   ],
+   "w": "Số cặp không thứ tự = n(n − 1)/2 = 8 × 7/2 = 28 ≈ n²/2 – điểm yếu sinh nhiều ứng viên của Apriori.",
+   "x": [
+    "Tính 8², đếm cả cặp trùng và cặp đảo thứ tự.",
+    "Tính 8 × 7, đếm mỗi cặp hai lần.",
+    "Tính 8 × 2."
+   ],
+   "trap": "Quên chia 2 vì cặp {a, b} và {b, a} là một.",
+   "mem": "Ứng viên cỡ 2 = n(n − 1)/2."
+  },
+  {
+   "lv": "TH",
+   "t": "Conditional Pattern Base (C5)",
+   "q": "Khi lập CPB của item x, <b>count</b> của mỗi đường tiền tố được lấy theo đâu?",
+   "o": [
+    "Count của nút x ở cuối đường đó",
+    "Count của nút gốc của nhánh",
+    "Count lớn nhất trên đường",
+    "Số nút trên đường"
+   ],
+   "w": "Đường ⟨F, C, A, M⟩ dẫn tới nút P2 được ghi “: 2” vì lấy count của nút P, không phải của F (F4). Xử lý CPB từ item cuối bảng lên.",
+   "x": [
+    "Nút đầu nhánh có thể được nhiều giao dịch khác dùng chung.",
+    "Không phải quy tắc của FP-Growth.",
+    "Số nút không liên quan count."
+   ],
+   "trap": "Lấy count của nút đầu nhánh.",
+   "mem": "Count đường = count nút item đang xét."
+  },
+  {
+   "lv": "NB",
+   "t": "Naive Bayes (C5)",
+   "q": "Giả định <b>“naive”</b> trong Naive Bayes là:",
+   "o": [
+    "Các thuộc tính độc lập với nhau khi đã biết lớp",
+    "Các lớp có xác suất tiên nghiệm bằng nhau",
+    "Dữ liệu tuân theo phân phối chuẩn",
+    "Các thuộc tính phụ thuộc theo một đồ thị có hướng"
+   ],
+   "w": "Nhờ giả định độc lập có điều kiện: P(C | X) ∝ P(C) · Π P(xk | C).",
+   "x": [
+    "Naive Bayes dùng P(C) đúng theo tỷ lệ lớp trong dữ liệu.",
+    "Không phải giả định “naive”.",
+    "Đó là mạng Bayes, vốn bỏ giả định độc lập."
+   ],
+   "trap": "Lẫn Naive Bayes với mạng Bayes.",
+   "mem": "Naive = độc lập có điều kiện khi biết lớp."
+  },
+  {
+   "lv": "TH",
+   "t": "Biến thể KMeans (C5)",
+   "q": "Muốn dùng KMedoids (chống nhiễu) nhưng dữ liệu quá lớn khiến thuật toán rất chậm. Nên chọn:",
+   "o": [
+    "CLARA / CLARANS",
+    "KModes",
+    "KPrototypes",
+    "AGNES"
+   ],
+   "w": "CLARA chạy KMedoids trên vài mẫu con rồi chọn kết quả tốt nhất; CLARANS tìm medoid bằng thử ngẫu nhiên thay vì thử hết.",
+   "x": [
+    "KModes dành cho dữ liệu phân loại.",
+    "KPrototypes dành cho dữ liệu hỗn hợp.",
+    "AGNES là phân cụm phân cấp, càng chậm với dữ liệu lớn."
+   ],
+   "trap": "Chọn biến thể theo loại dữ liệu thay vì theo quy mô.",
+   "mem": "KMedoids + dữ liệu lớn → CLARA/CLARANS."
+  },
+  {
+   "lv": "TH",
+   "t": "DBSCAN (C5)",
+   "q": "Theo DBSCAN, điểm <b>border</b> là điểm:",
+   "o": [
+    "Không đủ MinPts nhưng nằm trong vùng Eps của một điểm core",
+    "Có ít nhất MinPts điểm trong bán kính Eps của nó",
+    "Không đủ MinPts và không nằm trong vùng Eps của điểm core nào",
+    "Nằm ở biên ngoài cùng của toàn bộ tập dữ liệu"
+   ],
+   "w": "Ba loại điểm: core (đủ MinPts), border (không đủ nhưng kề core), noise (không thuộc hai loại trên).",
+   "x": [
+    "Đó là điểm core.",
+    "Đó là điểm noise.",
+    "Border định nghĩa theo mật độ, không theo vị trí biên của tập dữ liệu."
+   ],
+   "trap": "Hiểu “border” theo nghĩa hình học.",
+   "mem": "Core · Border · Noise theo Eps và MinPts."
+  },
+  {
+   "lv": "VDC",
+   "t": "CPT (C6)",
+   "q": "CSDL chuỗi huấn luyện như bảng. Dự đoán phần tử kế tiếp của chuỗi kết thúc bằng ⟨A, B⟩ với hậu tố kích cỡ 2. Phần tử được dự đoán và điểm của nó là:<table><tr><th>Chuỗi</th><th>Nội dung</th></tr><tr><td>s1</td><td>⟨A, B, C, E⟩</td></tr><tr><td>s2</td><td>⟨B, C, D⟩</td></tr><tr><td>s3</td><td>⟨A, C, B, D, E⟩</td></tr><tr><td>s4</td><td>⟨C, A, B, F⟩</td></tr><tr><td>s5</td><td>⟨B, D, A⟩</td></tr></table>",
+   "o": [
+    "E, điểm 0,5",
+    "E, điểm 0,4",
+    "E, điểm ≈ 0,67",
+    "C, điểm 0,5"
+   ],
+   "w": "Chuỗi chứa đủ A và B: s1, s3, s4, s5 (4 chuỗi). Mệnh đề kết quả (phần sau vị trí mà A, B đều đã xuất hiện): s1 → ⟨C, E⟩, s3 → ⟨D, E⟩, s4 → ⟨F⟩, s5 → ⟨⟩. Count: E = 2, C = D = F = 1 → E = 2/4 = 0,5 cao nhất.",
+   "x": [
+    "Chia cho tổng số chuỗi (5) thay vì số chuỗi tương tự (4).",
+    "Chỉ chia cho 3 chuỗi có mệnh đề kết quả khác rỗng; s5 vẫn là chuỗi tương tự.",
+    "C chỉ xuất hiện trong mệnh đề kết quả của s1."
+   ],
+   "trap": "Sai mẫu số: tổng số chuỗi hoặc chỉ chuỗi có mệnh đề khác rỗng.",
+   "mem": "Điểm CPT = số chuỗi tương tự có e / số chuỗi tương tự."
+  },
+  {
+   "lv": "TH",
+   "t": "PageRank (C6)",
+   "q": "Trong công thức PageRank, <b>C(Tᵢ)</b> là gì?",
+   "o": [
+    "Số liên kết đi ra từ trang nguồn Tᵢ",
+    "Số liên kết đi vào trang đích A",
+    "Tổng số trang trong đồ thị",
+    "Số vòng lặp đã chạy"
+   ],
+   "w": "Trang Tᵢ chia đều điểm của nó cho mọi trang nó trỏ tới, nên mỗi trang nhận PR(Tᵢ)/C(Tᵢ).",
+   "x": [
+    "Bẫy hay gặp: mẫu số không phải số link vào của trang đích.",
+    "Đó là n, không xuất hiện trong dạng công thức của slide.",
+    "Không liên quan số vòng."
+   ],
+   "trap": "Lấy số link vào của trang đích.",
+   "mem": "C(T) = số link ra của T."
+  },
+  {
+   "lv": "TH",
+   "t": "BigQuery ML (C6)",
+   "q": "Muốn lấy precision, recall, ROC-AUC của mô hình đã huấn luyện trong BigQuery ML bằng một câu SELECT, dùng:",
+   "o": [
+    "ML.EVALUATE",
+    "ML.PREDICT",
+    "CREATE MODEL",
+    "SNOWFLAKE.CORTEX.SENTIMENT"
+   ],
+   "w": "ROC-AUC từ 0,5 (đoán ngẫu nhiên) đến 1 (hoàn hảo), đo khả năng xếp hồ sơ dương cao hơn hồ sơ âm.",
+   "x": [
+    "ML.PREDICT trả kết quả dự báo cho dữ liệu mới.",
+    "CREATE MODEL dùng để huấn luyện.",
+    "Đó là hàm của Snowflake Cortex."
+   ],
+   "trap": "Lẫn đánh giá với dự báo.",
+   "mem": "Chỉ số đánh giá → ML.EVALUATE."
+  },
+  {
+   "lv": "VD",
+   "t": "Feature Store (C6)",
+   "q": "Phòng tín dụng tính DTI theo thu nhập <b>trước thuế</b>, phòng thẻ tính theo thu nhập <b>sau thuế</b>; hai mô hình dùng hai định nghĩa mà không ai biết. Giải pháp và lợi ích tương ứng:",
+   "o": [
+    "Feature Store dùng chung định nghĩa – Consistency",
+    "Model Registry – quản lý trạng thái mô hình",
+    "AutoML – tự dò siêu tham số cho mô hình",
+    "Snowpark push-down – dịch code Python sang SQL chạy trong kho"
+   ],
+   "w": "Feature Store là kho tập trung quản lý, lưu và phân phối đặc trưng đã tính sẵn cho nhiều mô hình dùng lại, tránh tính trùng, tính lệch.",
+   "x": [
+    "Registry quản lý trạng thái mô hình, không thống nhất công thức đặc trưng.",
+    "AutoML không giải quyết lệch định nghĩa đặc trưng.",
+    "Push-down là cơ chế thực thi, không chuẩn hoá định nghĩa."
+   ],
+   "trap": "Chọn công cụ MLOps khác vì nghe gần.",
+   "mem": "Lệch định nghĩa đặc trưng → Feature Store (Consistency)."
+  },
+  {
+   "lv": "VD",
+   "t": "Model drift (C6)",
+   "q": "Mô hình được huấn luyện khi phần lớn khách có thu nhập 10–30 triệu; một năm sau phần lớn khách mới có thu nhập 30–60 triệu. Hiện tượng này là:",
+   "o": [
+    "Data drift",
+    "Concept drift",
+    "Data leakage",
+    "Overfitting"
+   ],
+   "w": "Data drift: phân phối dữ liệu đầu vào thay đổi so với lúc huấn luyện. Giải pháp: giám sát tự động, kích hoạt huấn luyện lại khi độ chính xác tụt.",
+   "x": [
+    "Concept drift là quan hệ đầu vào → nhãn thay đổi.",
+    "Leakage là dữ liệu huấn luyện chứa thông tin tương lai.",
+    "Overfitting là học thuộc nhiễu của dữ liệu huấn luyện."
+   ],
+   "trap": "Lẫn data drift với concept drift.",
+   "mem": "Đầu vào đổi phân phối → data drift."
+  },
+  {
+   "lv": "VD",
+   "t": "Dynamic masking (C7)",
+   "q": "Chính sách masking giữ <b>3 chữ số đầu và 3 chữ số cuối</b>, thay phần giữa bằng x. Số 0987654321 hiển thị cho tổng đài viên là:",
+   "o": [
+    "098xxxx321",
+    "098xxx4321",
+    "xxxxxxx321",
+    "0987xxx321"
+   ],
+   "w": "10 chữ số: giữ 098 và 321, che 4 chữ số giữa → 098xxxx321. Dữ liệu gốc trong bảng không đổi; người có quyền vẫn thấy số đầy đủ.",
+   "x": [
+    "Giữ 4 chữ số cuối thay vì 3.",
+    "Che cả 3 chữ số đầu.",
+    "Giữ 4 chữ số đầu thay vì 3."
+   ],
+   "trap": "Đếm sai số ký tự bị che.",
+   "mem": "Masking che lúc truy vấn, không sửa dữ liệu gốc."
+  },
+  {
+   "lv": "TH",
+   "t": "Secure data sharing (C7)",
+   "q": "Nền tảng kỹ thuật cho phép chia sẻ dữ liệu zero-copy là gì?",
+   "o": [
+    "Tách rời compute và storage",
+    "Lưu dữ liệu theo hàng trong RDBMS",
+    "Chạy ETL hằng đêm sang tài khoản đối tác",
+    "Mã hoá dữ liệu bằng blockchain"
+   ],
+   "w": "Vì dữ liệu nằm ở tầng storage độc lập, bên nhận có thể dùng compute riêng để đọc cùng bản dữ liệu mà không cần chép.",
+   "x": [
+    "Lưu theo hàng không liên quan chia sẻ.",
+    "ETL sang đối tác chính là sao chép.",
+    "Blockchain không phải cơ chế chia sẻ của kho."
+   ],
+   "trap": "Không nối kiến thức Chương 1 với Chương 7.",
+   "mem": "Zero-copy sharing ← decoupling compute/storage."
+  },
+  {
+   "lv": "VD",
+   "t": "k-anonymity (C7)",
+   "q": "Sau khi tổng quát hoá quasi-identifier, dữ liệu có các nhóm như bảng. Bộ dữ liệu đạt <b>k-anonymity</b> với k bằng bao nhiêu?<table><tr><th>Nhóm tuổi</th><th>Mã vùng</th><th>Số dòng</th></tr><tr><td>20–29</td><td>700**</td><td>3</td></tr><tr><td>30–39</td><td>701**</td><td>2</td></tr><tr><td>40–49</td><td>702**</td><td>4</td></tr></table>",
+   "o": [
+    "2",
+    "3",
+    "4",
+    "9"
+   ],
+   "w": "k-anonymity: mọi nhóm QI có ít nhất k dòng → k = kích thước nhóm nhỏ nhất = 2.",
+   "x": [
+    "Lấy nhóm đầu tiên thay vì nhóm nhỏ nhất.",
+    "Lấy nhóm lớn nhất.",
+    "Lấy tổng số dòng."
+   ],
+   "trap": "Lấy nhóm lớn nhất hoặc tổng.",
+   "mem": "k = nhóm QI nhỏ nhất."
+  },
+  {
+   "lv": "TH",
+   "t": "AI bias (C7)",
+   "q": "Ghép đúng kỹ thuật giảm thiên lệch với giai đoạn: (1) resampling/reweighting, (2) thêm ràng buộc công bằng vào hàm loss, (3) điều chỉnh ngưỡng quyết định theo nhóm.",
+   "o": [
+    "(1) pre-processing, (2) in-processing, (3) post-processing",
+    "(1) in-processing, (2) pre-processing, (3) post-processing",
+    "(1) post-processing, (2) in-processing, (3) pre-processing",
+    "(1) pre-processing, (2) post-processing, (3) in-processing"
+   ],
+   "w": "Pre: sửa dữ liệu. In: sửa quá trình học. Post: sửa đầu ra/ngưỡng.",
+   "x": [
+    "Resampling sửa dữ liệu trước khi huấn luyện.",
+    "Chỉnh ngưỡng là sau khi có mô hình.",
+    "Ràng buộc trong loss là trong lúc huấn luyện."
+   ],
+   "trap": "Nhầm giai đoạn của resampling.",
+   "mem": "Dữ liệu → pre · loss → in · ngưỡng → post."
+  },
+  {
+   "lv": "TH",
+   "t": "Semantic search (C8)",
+   "q": "Câu hỏi “thẻ hết tiền” tìm được tài liệu “card has no balance” dù không chung từ nào. Cơ chế cho phép điều này:",
+   "o": [
+    "Semantic search: embeddings của hai câu gần nhau",
+    "Keyword search khớp chính xác từng từ khoá",
+    "Full-text index so khớp theo chuỗi ký tự",
+    "Row-level security lọc các dòng theo người đặt câu hỏi"
+   ],
+   "w": "Embedding biểu diễn nghĩa thành vector; câu cùng nghĩa (kể cả khác ngôn ngữ) có vector gần nhau, đo bằng cosine similarity.",
+   "x": [
+    "Keyword search khớp chữ nên không tìm được.",
+    "Index ký tự vẫn khớp chữ.",
+    "RLS không liên quan tìm kiếm."
+   ],
+   "trap": "Nghĩ tìm kiếm luôn cần trùng từ.",
+   "mem": "Khớp nghĩa → embeddings · Khớp chữ → keyword."
+  },
+  {
+   "lv": "VD",
+   "t": "Cosine similarity (C8)",
+   "q": "Cho q = (1, 2, 2) và d = (2, 1, 2). Cosine similarity của q và d là:",
+   "o": [
+    "≈ 0,889",
+    "8",
+    "≈ 0,667",
+    "1"
+   ],
+   "w": "q·d = 2 + 2 + 4 = 8; ‖q‖ = ‖d‖ = 3 → cos = 8/9 ≈ 0,889.",
+   "x": [
+    "8 là tích vô hướng, chưa chia cho tích độ dài.",
+    "Chia 8 cho 12 (tổng các thành phần) thay vì tích độ dài 9.",
+    "Chỉ bằng 1 khi hai vector cùng hướng."
+   ],
+   "trap": "Quên chuẩn hoá theo độ dài.",
+   "mem": "cos = tích vô hướng / tích độ dài."
+  },
+  {
+   "lv": "NB",
+   "t": "Generative BI (C8)",
+   "q": "Ba bước của Generative BI theo slide:",
+   "o": [
+    "Natural Query → Auto-SQL → Instant Insight",
+    "Ingestion → Embedding → Retrieval → Generation",
+    "Monitor → Detect → Alert",
+    "Bối cảnh → Vấn đề → Giải pháp → Hành động"
+   ],
+   "w": "Người dùng hỏi bằng ngôn ngữ tự nhiên → hệ thống sinh SQL → trả kết quả, biểu đồ ngay.",
+   "x": [
+    "Đó là các bước RAG.",
+    "Đó là các bước auditing.",
+    "Đó là cấu trúc kể chuyện dữ liệu."
+   ],
+   "trap": "Lẫn các chuỗi bước giữa các chủ đề.",
+   "mem": "GenBI: hỏi → SQL → insight."
+  },
+  {
+   "lv": "TH",
+   "t": "Tính nhất quán (C9)",
+   "q": "Trong kiến trúc polyglot của slide, các hệ NoSQL vệ tinh và kho trung tâm thường có mô hình nhất quán nào?",
+   "o": [
+    "Vệ tinh: eventual consistency; kho trung tâm: strong consistency",
+    "Vệ tinh: strong consistency; kho trung tâm: eventual consistency",
+    "Cả hai đều eventual consistency",
+    "Cả hai đều không cần nhất quán"
+   ],
+   "w": "NoSQL ưu tiên sẵn sàng và mở rộng, chấp nhận dữ liệu đồng bộ dần; kho trung tâm là nguồn sự thật nên cần nhất quán mạnh.",
+   "x": [
+    "Đảo ngược.",
+    "Kho trung tâm phục vụ báo cáo chuẩn cần nhất quán mạnh.",
+    "Nhất quán là yêu cầu cơ bản."
+   ],
+   "trap": "Đảo mô hình nhất quán.",
+   "mem": "Vệ tinh eventual · trung tâm strong."
+  },
+  {
+   "lv": "VD",
+   "t": "BFS (C9)",
+   "q": "Đồ thị vô hướng có các cạnh A–B, A–C, B–D, B–E, C–F, D–G, E–G. Xuất phát từ A, khi có nhiều đỉnh kề thì chọn theo thứ tự bảng chữ cái. Thứ tự duyệt <b>BFS</b> là:",
+   "o": [
+    "A → B → C → D → E → F → G",
+    "A → B → D → G → E → C → F",
+    "A → B → D → E → G → C → F",
+    "A → C → B → F → E → D → G"
+   ],
+   "w": "BFS dùng hàng đợi: cấp 1 B, C; cấp 2 D, E (từ B), F (từ C); cấp 3 G → A → B → C → D → E → F → G.",
+   "x": [
+    "Đó là thứ tự DFS (đi sâu rồi quay lui).",
+    "Đi hết nhánh B trước khi thăm C – không theo từng cấp.",
+    "Chọn đỉnh kề ngược thứ tự bảng chữ cái."
+   ],
+   "trap": "Đi sâu như DFS.",
+   "mem": "BFS ↔ queue ↔ theo cấp."
+  },
+  {
+   "lv": "TH",
+   "t": "Merkle tree (C9)",
+   "q": "Để chống sửa nhật ký kiểm toán, slide đề xuất đưa gì lên blockchain?",
+   "o": [
+    "Chỉ Merkle root của cả lô log",
+    "Toàn bộ log thô của mỗi ngày",
+    "Một bản sao của kho dữ liệu",
+    "Khoá mã hoá của quản trị viên"
+   ],
+   "w": "Merkle root nhỏ gọn nhưng đại diện cho cả lô; sửa một log bất kỳ làm root tính lại khác root đã neo trên chuỗi.",
+   "x": [
+    "Lưu dữ liệu thô lên chuỗi rất đắt và lộ thông tin.",
+    "Không cần và không khả thi.",
+    "Đưa khoá lên chuỗi là rủi ro bảo mật."
+   ],
+   "trap": "Nghĩ phải lưu hết dữ liệu lên blockchain.",
+   "mem": "Chỉ neo root lên chuỗi."
+  },
+  {
+   "lv": "TH",
+   "t": "Cost-based optimizer (C9)",
+   "q": "Trong hệ phân tán, cost-based optimizer chọn kế hoạch JOIN dựa trên:",
+   "o": [
+    "Chi phí ước tính, gồm cả chi phí truyền qua mạng",
+    "Chỉ số dòng của bảng lớn nhất trong truy vấn",
+    "Thứ tự viết các bảng trong câu SQL",
+    "Chỉ chi phí CPU"
+   ],
+   "w": "Truyền dữ liệu giữa các máy thường đắt nhất nên optimizer phải tính chi phí mạng.",
+   "x": [
+    "Cần cả thống kê của mọi bảng.",
+    "Optimizer không phụ thuộc thứ tự viết.",
+    "Bỏ qua mạng là sai lầm lớn trong hệ phân tán."
+   ],
+   "trap": "Quên chi phí mạng.",
+   "mem": "CBO phân tán: CPU + IO + mạng."
+  }
+ ]
+}

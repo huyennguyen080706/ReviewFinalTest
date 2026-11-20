@@ -26,8 +26,8 @@ CHAPTERS = {
 
 def validate(n, qs):
     errs, warns = [], []
-    exam = str(n).startswith("de")  # đề thi thử: 47 câu, không chia cố định theo mức
-    want = 47 if exam else 50
+    exam = str(n).startswith("de")  # đề thi thử: không chia cố định theo mức
+    want = (40 if int(str(n)[2:]) >= 5 else 47) if exam else 50  # đề 1–4: 47 câu; đề 5–10: 40 câu
     if len(qs) != want:
         errs.append(f"có {len(qs)} câu, cần {want}")
     cnt = {k: 0 for k in NEED}
@@ -92,6 +92,11 @@ SPECIAL = {"ontap": (99, "Ôn tập trọng tâm: 40 chủ đề trong đề ôn
 # Đề thi thử: src/deN.json sinh bởi src/de_gen.py
 for _v in (1, 2, 3, 4):
     SPECIAL[f"de{_v}"] = (200 + _v, f"Đề thi thử số {_v}", f"de-thi-thu-{_v}.html")
+# Đề 5–10: src/deN.json sinh bởi src/de_gen2.py, bám mục "Hay ra thi" của 3 file giảng giải
+for _v in range(5, 11):
+    SPECIAL[f"de{_v}"] = (200 + _v, f"Đề thi thử số {_v}", f"de-thi-thu-{_v}.html")
+# Thời gian làm bài (phút); 0 = không tính giờ
+MINUTES = {f"de{_v}": 60 for _v in range(5, 11)}
 
 
 def build(n):
@@ -113,6 +118,7 @@ def build(n):
     payload = base64.b64encode(json.dumps(out, ensure_ascii=False).encode("utf-8")).decode("ascii")
     page = (TEMPLATE.replace("__TITLE__", html.escape(title))
             .replace("__KEY__", f"dwquiz-{n if n in SPECIAL else 'ch' + str(n)}-v1")
+            .replace("__MINUTES__", str(MINUTES.get(n, 0)))
             .replace("__DATA__", payload))
     (ROOT / outname).write_text(page, encoding="utf-8")
     print(f"Ch{n} OK · {len(out)} câu · đáp án A/B/C/D = {dist}")

@@ -1,0 +1,764 @@
+{
+ "questions": [
+  {
+   "lv": "TH",
+   "t": "AI-Native Lakehouse (C1)",
+   "q": "Ý nào <b>KHÔNG</b> thuộc bảy đặc điểm của AI-Native Lakehouse theo slide?",
+   "o": [
+    "Bắt buộc chuẩn hoá dữ liệu về dạng 3NF trước khi nạp",
+    "Hỗ trợ native vector để lưu và truy vấn embedding",
+    "Cơ chế ACID trên Object Storage",
+    "Tích hợp Feature Store cho mô hình"
+   ],
+   "w": "Bảy đặc điểm: native vector, quản trị metadata tự động, compute đa năng (SQL + ML), ACID trên Object Storage, Feature Store, streaming thời gian thực, serverless. Chuẩn hoá 3NF trước khi nạp là tư duy schema-on-write của RDBMS.",
+   "x": [
+    "Native vector là đặc điểm thứ nhất trong slide.",
+    "ACID trên Object Storage là một trong bảy đặc điểm.",
+    "Tích hợp Feature Store là một trong bảy đặc điểm."
+   ],
+   "trap": "Chọn một đặc điểm thật vì nghe lạ.",
+   "mem": "AI-Native: vector · metadata tự động · compute đa năng · ACID · Feature Store · streaming · serverless."
+  },
+  {
+   "lv": "NB",
+   "t": "Nền tảng Modern DW (C1)",
+   "q": "Theo slide, nền tảng nào được mô tả là <b>serverless, tích hợp sẵn AI/ML và cho phép huấn luyện mô hình bằng câu SQL</b>?",
+   "o": [
+    "Google BigQuery",
+    "Snowflake",
+    "Firebolt",
+    "Azure Synapse Analytics"
+   ],
+   "w": "BigQuery: serverless, có BigQuery ML huấn luyện mô hình bằng SQL. Snowflake: tiên phong tách compute/storage.",
+   "x": [
+    "Snowflake nổi bật ở việc tiên phong tách compute/storage và chia sẻ dữ liệu.",
+    "Firebolt nổi bật ở tốc độ truy vấn cho phân tích thời gian thực.",
+    "Synapse gộp SQL, Spark và tích hợp dữ liệu trong môi trường Microsoft."
+   ],
+   "trap": "Lẫn đặc điểm nhận diện giữa các nền tảng.",
+   "mem": "Serverless + ML bằng SQL → BigQuery; tách compute/storage → Snowflake."
+  },
+  {
+   "lv": "TH",
+   "t": "Data Fabric (C1)",
+   "q": "Nhược điểm hay được nhắc nhất của <b>Data Fabric</b> là gì?",
+   "o": [
+    "Truy vấn ảo hoá chậm hơn và phụ thuộc chất lượng metadata",
+    "Bắt buộc sao chép toàn bộ dữ liệu về một kho trung tâm",
+    "Không kết nối được hệ on-premise với các dịch vụ cloud",
+    "Các phòng ban tự xây pipeline riêng, trùng lặp nỗ lực"
+   ],
+   "w": "Truy vấn ảo hoá phải đi qua mạng tới từng nguồn (thường là OLTP đang bận, lưu theo hàng) nên chậm hơn dữ liệu đã nạp vào kho; metadata sai thì kết nối, bảo mật, tìm kiếm đều sai.",
+   "x": [
+    "Fabric dùng virtualization, không bắt buộc sao chép.",
+    "Hỗ trợ hybrid-cloud chính là mục tiêu của Fabric.",
+    "Trùng lặp nỗ lực giữa các miền là thách thức của Data Mesh."
+   ],
+   "trap": "Gán thách thức của Mesh cho Fabric.",
+   "mem": "Fabric: chậm do ảo hoá + sống nhờ metadata."
+  },
+  {
+   "lv": "TH",
+   "t": "Open Table Format (C1)",
+   "q": "Một job nạp ghi nhầm làm hỏng bảng trên Lakehouse. Đội dữ liệu muốn đọc lại bảng <b>đúng như lúc 8 giờ sáng hôm qua</b> để khôi phục. Tính năng nào đáp ứng?",
+   "o": [
+    "Time Travel của Open Table Format",
+    "Schema evolution",
+    "Hidden partitioning của Iceberg",
+    "Upsert liên tục của Hudi"
+   ],
+   "w": "Mỗi lần ghi tạo một snapshot mới mà không xoá ngay file cũ, nên đọc được bảng “như nó đã là” tại một thời điểm quá khứ.",
+   "x": [
+    "Schema evolution là đổi cấu trúc bảng mà không ghi lại dữ liệu.",
+    "Hidden partitioning là tự phân vùng theo cột thời gian để lọc nhanh.",
+    "Upsert là cập nhật nếu đã có, thêm nếu chưa có."
+   ],
+   "trap": "Lẫn khôi phục phiên bản cũ với thay đổi schema.",
+   "mem": "Quay về quá khứ → Time Travel."
+  },
+  {
+   "lv": "VDC",
+   "t": "Clustering depth (C2)",
+   "q": "Năm micro-partition có khoảng giá trị ngày như bảng. Truy vấn lọc <b>ngày = 13</b> phải đọc bao nhiêu micro-partition?<table><tr><th>Micro-partition</th><th>Khoảng ngày (min – max)</th></tr><tr><td>P1</td><td>1 – 10</td></tr><tr><td>P2</td><td>5 – 15</td></tr><tr><td>P3</td><td>12 – 20</td></tr><tr><td>P4</td><td>18 – 25</td></tr><tr><td>P5</td><td>8 – 22</td></tr></table>",
+   "o": [
+    "3",
+    "2",
+    "1",
+    "5"
+   ],
+   "w": "13 nằm trong P2 (5 – 15), P3 (12 – 20), P5 (8 – 22) → 3 phân vùng. Khoảng chồng lấn nhiều thì clustering depth cao, pruning kém; depth thấp nhất là 1.",
+   "x": [
+    "Bỏ sót P5 (8 – 22) cũng chứa 13.",
+    "Chỉ khi dữ liệu được clustering tốt, không chồng lấn, mới còn 1.",
+    "P1 (1 – 10) và P4 (18 – 25) không chứa 13."
+   ],
+   "trap": "Chỉ xét các khoảng liền kề, quên khoảng rộng.",
+   "mem": "Depth = số phân vùng có khoảng chứa giá trị; càng thấp càng tốt."
+  },
+  {
+   "lv": "VD",
+   "t": "Grain (C2)",
+   "q": "Một bảng fact chứa lẫn dòng “từng sản phẩm trong hoá đơn” và dòng “tổng cả hoá đơn”. Khi SUM(amount) theo tháng, hậu quả là gì?",
+   "o": [
+    "Doanh thu bị tính gấp đôi vì bảng trộn hai mức grain",
+    "Doanh thu bị thiếu vì dòng tổng ghi đè dòng chi tiết",
+    "Truy vấn báo lỗi vì hai loại dòng khác số cột",
+    "Kết quả đúng vì kho tự loại dòng tổng khi cộng"
+   ],
+   "w": "Quy tắc grain: mọi fact trong bảng phải cùng một mức chi tiết. Trộn chi tiết với tổng thì mỗi hoá đơn được cộng hai lần.",
+   "x": [
+    "Không có ghi đè; cả hai loại dòng đều nằm trong bảng.",
+    "Hai loại dòng có cùng cấu trúc nên truy vấn vẫn chạy, chỉ ra số sai.",
+    "Kho không tự biết dòng nào là dòng tổng."
+   ],
+   "trap": "Nghĩ lỗi grain sẽ làm truy vấn báo lỗi.",
+   "mem": "Một bảng fact – một grain."
+  },
+  {
+   "lv": "TH",
+   "t": "Kỹ thuật dimension (C2)",
+   "q": "<b>Số hoá đơn</b> được đặt thẳng trong bảng fact để nhóm các dòng cùng hoá đơn, không có bảng chiều riêng. Đây là:",
+   "o": [
+    "Degenerate dimension",
+    "Junk dimension",
+    "Mini-dimension",
+    "Role-playing dimension"
+   ],
+   "w": "Degenerate dimension: khoá nghiệp vụ nằm trong fact, không có thuộc tính mô tả nào khác nên không cần bảng riêng.",
+   "x": [
+    "Junk dimension gom nhiều cờ trạng thái rời rạc vào một bảng.",
+    "Mini-dimension tách các thuộc tính thay đổi nhanh sang bảng phụ.",
+    "Role-playing là một bảng dimension dùng cho nhiều vai trò (ngày đặt, ngày giao)."
+   ],
+   "trap": "Lẫn bốn kỹ thuật dimension nâng cao.",
+   "mem": "Junk gom cờ · Degenerate khoá trong fact · Mini đổi nhanh · Role-playing nhiều vai."
+  },
+  {
+   "lv": "TH",
+   "t": "VARIANT & FLATTEN (C2)",
+   "q": "Cột v kiểu VARIANT chứa JSON đơn hàng có mảng <code>items</code> gồm 3 sản phẩm. Muốn mỗi sản phẩm thành một dòng riêng, dùng gì?",
+   "o": [
+    "LATERAL FLATTEN(input => v:items)",
+    "Ép kiểu v:items::STRING",
+    "Hàm ref('items') của dbt",
+    "Lệnh COPY với auto-column addition"
+   ],
+   "w": "FLATTEN biến các phần tử của mảng thành các dòng riêng; truy cập trường lồng nhau bằng toán tử đường dẫn như v:customer.city.",
+   "x": [
+    "Ép kiểu chỉ đổi kiểu dữ liệu, không tách mảng thành dòng.",
+    "ref() dùng để tham chiếu model dbt.",
+    "COPY nạp file vào bảng, không tách mảng."
+   ],
+   "trap": "Lẫn toán tử truy cập trường với FLATTEN.",
+   "mem": "Mảng → dòng: FLATTEN."
+  },
+  {
+   "lv": "NB",
+   "t": "CDC (C3)",
+   "q": "<b>Log-based CDC</b> lấy thay đổi từ đâu?",
+   "o": [
+    "Nhật ký giao dịch của CSDL (redo log, binlog, WAL)",
+    "Truy vấn định kỳ WHERE updated_at > mốc lần trước",
+    "File CSV xuất hằng đêm từ hệ nguồn",
+    "Trigger ghi vào bảng tạm do người dùng viết"
+   ],
+   "w": "Log-based đọc nhật ký mà CSDL vốn ghi trước khi áp thay đổi: nhẹ cho nguồn, bắt được DELETE, độ trễ mili giây, nhưng khó cấu hình ban đầu.",
+   "x": [
+    "Đó là query-based CDC.",
+    "Đó là batch full load, không phải CDC.",
+    "Không phải cơ chế slide mô tả cho log-based."
+   ],
+   "trap": "Lẫn log-based với query-based.",
+   "mem": "Log-based = đọc redo log / binlog / WAL."
+  },
+  {
+   "lv": "TH",
+   "t": "Zero-ETL (C3)",
+   "q": "Ý nào <b>KHÔNG</b> phải hạn chế của Zero-ETL theo slide?",
+   "o": [
+    "Độ trễ cao vì chỉ chạy theo lô hằng đêm",
+    "Vendor lock-in, thường chỉ nối dịch vụ cùng hãng",
+    "Không hợp với dữ liệu bẩn cần biến đổi phức tạp",
+    "Khó áp dụng với hệ on-premise"
+   ],
+   "w": "Zero-ETL đưa dữ liệu sang đích gần như ngay lập tức. Hạn chế: vendor lock-in, không làm sạch được dữ liệu bẩn, chi phí truyền tải ẩn, khó với on-premise.",
+   "x": [
+    "Đây là hạn chế slide nêu.",
+    "Đây là hạn chế slide nêu.",
+    "Đây là hạn chế slide nêu (rào cản hybrid)."
+   ],
+   "trap": "Chọn một hạn chế thật vì không nhớ đủ danh sách.",
+   "mem": "Zero-ETL: nhanh, rẻ công · nhưng lock-in, không làm sạch, khó on-prem."
+  },
+  {
+   "lv": "TH",
+   "t": "DAG (C3)",
+   "q": "Một pipeline được khai báo: tác vụ A chờ B, B chờ C, C lại chờ A. Điều gì xảy ra?",
+   "o": [
+    "Vi phạm tính Acyclic, pipeline không bao giờ bắt đầu được",
+    "Orchestrator chạy song song cả ba tác vụ",
+    "Tác vụ được retry tự động cho tới khi thành công",
+    "Pipeline vẫn chạy bình thường theo thứ tự A → B → C rồi dừng"
+   ],
+   "w": "Chu trình làm mọi tác vụ chờ nhau mãi; đó là lý do pipeline phải là DAG (không chu trình).",
+   "x": [
+    "Không tác vụ nào sẵn sàng vì đều chờ tác vụ khác.",
+    "Retry chỉ áp dụng khi tác vụ đã chạy và lỗi.",
+    "Không có điểm bắt đầu nên không có thứ tự hợp lệ."
+   ],
+   "trap": "Nghĩ orchestrator tự phá vòng lặp.",
+   "mem": "Có chu trình → treo; DAG cấm chu trình."
+  },
+  {
+   "lv": "VD",
+   "t": "Spark Structured Streaming (C3)",
+   "q": "Máy xử lý luồng bị sập giữa chừng; khi khởi động lại nó chạy tiếp đúng từ chỗ đã dừng. Cơ chế nào làm được điều này?",
+   "o": [
+    "Checkpointing",
+    "Watermark",
+    "Windowing",
+    "Micro-batch của Snowpipe"
+   ],
+   "w": "Checkpoint định kỳ ghi lại đã xử lý tới đâu; đây là cách Structured Streaming đạt fault tolerance.",
+   "x": [
+    "Watermark xử lý sự kiện đến trễ.",
+    "Windowing là tổng hợp theo khung thời gian.",
+    "Micro-batch là cách chia lô nhỏ khi nạp, không phải cơ chế phục hồi."
+   ],
+   "trap": "Lẫn checkpoint với watermark.",
+   "mem": "Phục hồi sau sự cố → checkpoint."
+  },
+  {
+   "lv": "NB",
+   "t": "dbt (C3)",
+   "q": "Trong dbt, một <b>model</b> là gì?",
+   "o": [
+    "Một file .sql chứa một câu SELECT",
+    "Một mô hình học máy huấn luyện trong kho",
+    "Một bảng dimension theo chuẩn Kimball",
+    "Một DAG viết bằng Python"
+   ],
+   "w": "dbt: SQL-first; mỗi model là một câu SELECT; dbt tự sinh lệnh tạo bảng/view, tự suy thứ tự chạy, chạy test và sinh tài liệu.",
+   "x": [
+    "“Model” trong dbt không phải mô hình ML.",
+    "Model có thể là bất kỳ bảng hay view nào, không riêng dimension.",
+    "DAG được dbt tự suy ra từ ref(), không viết bằng Python."
+   ],
+   "trap": "Hiểu “model” theo nghĩa học máy.",
+   "mem": "dbt model = một SELECT."
+  },
+  {
+   "lv": "VDC",
+   "t": "IQR (C4)",
+   "q": "Dữ liệu đã sắp xếp: 12, 14, 15, 15, 16, 17, 18, 19, 40. Q1, Q3 lấy bằng trung vị nửa dưới và nửa trên (không tính trung vị chung). <b>Ngưỡng trên</b> của phương pháp IQR là:",
+   "o": [
+    "22",
+    "22,5",
+    "26,5",
+    "20,5"
+   ],
+   "w": "Nửa dưới 12, 14, 15, 15 → Q1 = 14,5; nửa trên 17, 18, 19, 40 → Q3 = 17,5; IQR = 3. Ngưỡng trên = 17,5 + 1,5 × 3 = 22 → giá trị 40 là outlier.",
+   "x": [
+    "Tính cả trung vị 16 vào hai nửa: Q1 = 15, Q3 = 18 → 18 + 4,5.",
+    "Dùng hệ số 3 (ngưỡng ngoại lai cực đoan) thay vì 1,5.",
+    "Cộng 1,5 × IQR vào trung vị (16) thay vì Q3."
+   ],
+   "trap": "Cộng vào trung vị thay vì Q3, hoặc nhớ sai hệ số 1,5.",
+   "mem": "Outlier nếu ngoài [Q1 − 1,5·IQR, Q3 + 1,5·IQR]."
+  },
+  {
+   "lv": "VD",
+   "t": "Moving Average (C4)",
+   "q": "Chuỗi có <b>10</b> điểm, tính SMA với cửa sổ <b>k = 4</b>. Có bao nhiêu giá trị SMA và giá trị đầu tiên ở điểm thứ mấy?",
+   "o": [
+    "7 giá trị, bắt đầu từ điểm thứ 4",
+    "10 giá trị, bắt đầu từ điểm thứ 1",
+    "6 giá trị, bắt đầu từ điểm thứ 5",
+    "7 giá trị, bắt đầu từ điểm thứ 1"
+   ],
+   "w": "Có n − k + 1 = 10 − 4 + 1 = 7 giá trị SMA; điểm đầu tiên có SMA là điểm thứ k = 4.",
+   "x": [
+    "Ba điểm đầu chưa đủ 4 giá trị nên chưa tính được.",
+    "Tính nhầm n − k = 6.",
+    "Số giá trị đúng nhưng điểm đầu phải là điểm thứ k."
+   ],
+   "trap": "Quên rằng k − 1 điểm đầu không có SMA.",
+   "mem": "Số SMA = n − k + 1; bắt đầu tại điểm k."
+  },
+  {
+   "lv": "NB",
+   "t": "PCA (C4)",
+   "q": "Trong PCA, các <b>thành phần chính</b> là:",
+   "o": [
+    "Vector riêng có trị riêng lớn nhất của ma trận hiệp phương sai",
+    "Các cột gốc có phương sai nhỏ nhất của dữ liệu",
+    "Các tâm cụm thu được sau khi chạy KMeans",
+    "Các cột gốc có Information Gain lớn nhất so với nhãn của biến mục tiêu"
+   ],
+   "w": "Vector riêng là hướng mới; trị riêng cho biết lượng phương sai theo hướng đó; giữ vài hướng có trị riêng lớn nhất.",
+   "x": [
+    "PCA giữ hướng có phương sai lớn, không phải nhỏ.",
+    "Thay nhóm điểm bằng centroid là numerosity reduction bằng clustering.",
+    "Đó là feature selection."
+   ],
+   "trap": "Nghĩ PCA chọn cột gốc tốt nhất.",
+   "mem": "Thành phần chính = vector riêng của ma trận hiệp phương sai."
+  },
+  {
+   "lv": "VD",
+   "t": "Min-Max (C4)",
+   "q": "Thu nhập có min = 20, max = 180 triệu. Chuẩn hoá Min-Max về [0, 1], thu nhập <b>60 triệu</b> thành:",
+   "o": [
+    "0,25",
+    "≈ 0,333",
+    "0,375",
+    "0,75"
+   ],
+   "w": "v′ = (60 − 20)/(180 − 20) = 40/160 = 0,25. Min-Max cho 0 tại min và 1 tại max.",
+   "x": [
+    "Chia 60 cho max 180, quên trừ min.",
+    "Quên trừ min ở tử số: 60/160.",
+    "Lấy 1 − 0,25."
+   ],
+   "trap": "Quên trừ min ở tử hoặc mẫu.",
+   "mem": "v′ = (v − min)/(max − min)."
+  },
+  {
+   "lv": "VD",
+   "t": "Entropy (C4)",
+   "q": "Một nút có <b>6 Yes và 2 No</b>. Entropy (log cơ số 2) của nút là:",
+   "o": [
+    "≈ 0,8113",
+    "≈ 0,5623",
+    "1",
+    "≈ 0,9183"
+   ],
+   "w": "p = 3/4 và 1/4: H = −0,75·log₂0,75 − 0,25·log₂0,25 = 0,3113 + 0,5 = 0,8113 ≈ 0,8113.",
+   "x": [
+    "Dùng log tự nhiên ln thay vì log₂.",
+    "Đó là entropy của tập 50/50.",
+    "Đó là entropy của tỷ lệ 1/3 – 2/3."
+   ],
+   "trap": "Dùng sai cơ số log.",
+   "mem": "Hai lớp 1/4 – 3/4 → 0,8113."
+  },
+  {
+   "lv": "VD",
+   "t": "Confidence (C5)",
+   "q": "<p>CSDL 10 giao dịch (TT = tài khoản thanh toán, TD = thẻ tín dụng, VTD = vay tiêu dùng, BH = bảo hiểm, TK = tiết kiệm):</p><table><tr><th>TID</th><th>Sản phẩm</th><th>TID</th><th>Sản phẩm</th></tr><tr><td>1</td><td>TT, TD, VTD</td><td>6</td><td>TT, TK, BH</td></tr><tr><td>2</td><td>TT, TD</td><td>7</td><td>TD, VTD</td></tr><tr><td>3</td><td>TT, TK</td><td>8</td><td>TT, TD, TK</td></tr><tr><td>4</td><td>TD, VTD, BH</td><td>9</td><td>TT, VTD</td></tr><tr><td>5</td><td>TT, TD, VTD, BH</td><td>10</td><td>TT, TD, VTD, TK</td></tr></table><b>Confidence</b> của luật {TD} ⇒ {VTD} là:",
+   "o": [
+    "≈ 0,714",
+    "0,5",
+    "≈ 0,833",
+    "0,6"
+   ],
+   "w": "TD có ở 7 giao dịch (1, 2, 4, 5, 7, 8, 10); trong đó 5 giao dịch có VTD → Conf = 5/7 ≈ 0,714.",
+   "x": [
+    "Đó là Support (chia cho 10).",
+    "Chia cho số giao dịch có VTD (6) – đó là luật ngược.",
+    "Đó là xác suất có VTD nói chung."
+   ],
+   "trap": "Chia nhầm cho số giao dịch có hậu đề.",
+   "mem": "Confidence = #(X và Y) / #(X)."
+  },
+  {
+   "lv": "VD",
+   "t": "FP-tree (C5)",
+   "q": "Với minsupportcount = 3, thứ tự item cố định theo support giảm dần là F, C, A, B, M (Z có count 1). Giao dịch {M, A, Z, F} được chèn vào FP-tree dưới dạng:",
+   "o": [
+    "F, A, M",
+    "M, A, F",
+    "F, A, M, Z",
+    "A, F, M"
+   ],
+   "w": "Bỏ item không phổ biến (Z), sắp các item còn lại theo thứ tự cố định F, C, A, B, M → F, A, M. Cùng thứ tự thì các giao dịch mới chung tiền tố để nén.",
+   "x": [
+    "Giữ nguyên thứ tự gốc; mọi giao dịch phải theo đúng thứ tự cố định.",
+    "Quên bỏ Z không phổ biến.",
+    "Sắp theo bảng chữ cái thay vì support giảm dần."
+   ],
+   "trap": "Quên lọc item không phổ biến hoặc sai thứ tự.",
+   "mem": "Lọc item < minsup, sắp theo support giảm dần."
+  },
+  {
+   "lv": "TH",
+   "t": "Mạng Bayes (C5)",
+   "q": "Điểm khác cơ bản của <b>mạng Bayes</b> so với Naive Bayes:",
+   "o": [
+    "Mô hình hoá phụ thuộc giữa các biến bằng đồ thị có hướng (DAG)",
+    "Giả định mọi thuộc tính độc lập có điều kiện hoàn toàn khi đã biết lớp",
+    "Không dùng tới xác suất có điều kiện giữa các biến",
+    "Chỉ áp dụng cho bài toán phân cụm, không phân lớp"
+   ],
+   "w": "Mũi tên U → V nghĩa là V phụ thuộc trực tiếp vào U. Slide gọi “Naive Bayes Network” nhưng tên chuẩn là Bayesian Network và nó không “naive”.",
+   "x": [
+    "Đó chính là giả định naive mà mạng Bayes bỏ đi.",
+    "Mỗi nút kèm bảng xác suất có điều kiện theo nút cha.",
+    "Mạng Bayes dùng cho suy luận xác suất, phân lớp."
+   ],
+   "trap": "Tin tên gọi “Naive Bayes Network” trong slide.",
+   "mem": "Mạng Bayes = DAG phụ thuộc + bảng xác suất có điều kiện."
+  },
+  {
+   "lv": "NB",
+   "t": "KMeans và KMedoids (C5)",
+   "q": "So sánh đúng KMeans và KMedoids:",
+   "o": [
+    "KMeans nhanh nhưng nhạy ngoại lai; KMedoids chống nhiễu nhưng chậm",
+    "KMeans chống nhiễu tốt; KMedoids nhạy ngoại lai",
+    "KMeans dùng điểm thật làm tâm cụm; KMedoids dùng trọng tâm ảo (mean)",
+    "KMeans không cần biết trước số cụm k"
+   ],
+   "w": "Mean (trọng tâm ảo) ↔ KMeans ↔ nhanh, nhạy ngoại lai. Medoid (điểm thật) ↔ KMedoids ↔ chống nhiễu, chậm, dùng được mọi loại dữ liệu.",
+   "x": [
+    "Đảo ngược ưu nhược.",
+    "Đảo ngược loại tâm.",
+    "Cả hai đều cần biết trước k."
+   ],
+   "trap": "Đảo ưu nhược hai thuật toán.",
+   "mem": "Mean–nhanh–nhạy · Medoid–bền–chậm."
+  },
+  {
+   "lv": "NB",
+   "t": "DBSCAN (C5)",
+   "q": "Ưu điểm nổi bật của <b>DBSCAN</b> so với KMeans:",
+   "o": [
+    "Không cần k, tìm cụm hình dạng bất kỳ, tự loại nhiễu",
+    "Luôn chạy nhanh hơn KMeans trên mọi tập dữ liệu",
+    "Không cần đặt bất kỳ tham số đầu vào nào",
+    "Tâm cụm luôn là một điểm thật trong dữ liệu"
+   ],
+   "w": "DBSCAN coi cụm là vùng mật độ dày, loang từ điểm core, nên cụm có thể cong, dài.",
+   "x": [
+    "Slide không khẳng định điều này.",
+    "DBSCAN cần Eps và MinPts.",
+    "Đó là đặc điểm của KMedoids."
+   ],
+   "trap": "Nghĩ DBSCAN không có tham số.",
+   "mem": "DBSCAN: không cần k · hình dạng bất kỳ · tự loại nhiễu · tham số Eps, MinPts."
+  },
+  {
+   "lv": "TH",
+   "t": "Phát hiện ngoại lai (C5)",
+   "q": "So sánh đúng hai cách phát hiện ngoại lai:",
+   "o": [
+    "Thống kê: cần giả định phân phối, nhanh; khoảng cách: không cần, tốn tài nguyên",
+    "Thống kê: không cần giả định phân phối; khoảng cách: cần giả định phân phối chuẩn",
+    "Khoảng cách luôn nhanh hơn thống kê vì không cần tính trung bình",
+    "Thống kê hợp dữ liệu nhiều chiều hơn phương pháp khoảng cách"
+   ],
+   "w": "Statistical-based (ví dụ Z-score |Z| > 3) sai nếu dữ liệu không theo phân phối giả định. Distance-based: điểm có ít hơn k điểm khác trong bán kính r là ngoại lai.",
+   "x": [
+    "Đảo ngược giả định.",
+    "Khoảng cách phải tính nhiều cặp điểm nên tốn tài nguyên.",
+    "Khoảng cách mới là cách tổng quát cho dữ liệu nhiều chiều."
+   ],
+   "trap": "Đảo ưu nhược hai cách.",
+   "mem": "Thống kê: giả định + nhanh · Khoảng cách: không giả định + tốn."
+  },
+  {
+   "lv": "NB",
+   "t": "In-Database ML (C6)",
+   "q": "Ý chính của <b>In-Database Machine Learning</b> là gì?",
+   "o": [
+    "Đưa code tới dữ liệu: huấn luyện, dự báo ngay trong kho",
+    "Trích dữ liệu qua Internet sang máy chủ ML riêng để huấn luyện",
+    "Chỉ huấn luyện mô hình trên laptop của Data Scientist",
+    "Sao chép dữ liệu sang Data Lake trước khi huấn luyện"
+   ],
+   "w": "In-Database ML loại bỏ độ trễ và chi phí dịch chuyển, dữ liệu vẫn dưới một chế độ quản trị tập trung.",
+   "x": [
+    "Đó là cách truyền thống: tốn băng thông, trễ, rủi ro bảo mật.",
+    "Vẫn phải kéo dữ liệu ra khỏi kho.",
+    "Vẫn là di chuyển dữ liệu."
+   ],
+   "trap": "Nghĩ ML bắt buộc chạy ngoài kho.",
+   "mem": "In-DB ML = code tới dữ liệu."
+  },
+  {
+   "lv": "VD",
+   "t": "Precision (C6)",
+   "q": "Kiểm tra 200 hồ sơ: TP = 30, FP = 10, FN = 20, TN = 140. <b>Precision</b> của mô hình là:",
+   "o": [
+    "0,75",
+    "0,6",
+    "0,85",
+    "≈ 0,67"
+   ],
+   "w": "Precision = TP/(TP + FP) = 30/40 = 0,75: trong số hồ sơ mô hình báo dương, 75% đúng.",
+   "x": [
+    "Đó là Recall = 30/50.",
+    "Đó là Accuracy = 170/200.",
+    "Đó là F1."
+   ],
+   "trap": "Lẫn Precision với Recall.",
+   "mem": "Precision = TP/(TP + FP)."
+  },
+  {
+   "lv": "VDC",
+   "t": "CPT (C6)",
+   "q": "CSDL chuỗi như bảng. Dự đoán phần tử kế tiếp của chuỗi kết thúc bằng ⟨X, Y⟩ (hậu tố {X, Y}). Kết quả:<table><tr><th>Chuỗi</th><th>Nội dung</th></tr><tr><td>u1</td><td>⟨X, Y, Z⟩</td></tr><tr><td>u2</td><td>⟨Y, X, W, Z⟩</td></tr><tr><td>u3</td><td>⟨X, Z, W⟩</td></tr><tr><td>u4</td><td>⟨Y, W⟩</td></tr></table>",
+   "o": [
+    "Z, điểm 1,0",
+    "Z, điểm 0,5",
+    "W, điểm 0,5",
+    "W, điểm 1,0"
+   ],
+   "w": "Chuỗi chứa cả X và Y: u1, u2 (không cần đúng thứ tự). Mệnh đề: u1 → ⟨Z⟩, u2 = ⟨Y, X, W, Z⟩ → ⟨W, Z⟩. Z = 2/2 = 1,0; W = 1/2 = 0,5 → dự đoán Z.",
+   "x": [
+    "Chia cho tổng 4 chuỗi thay vì 2 chuỗi tương tự.",
+    "W chỉ có ở mệnh đề kết quả của u2 → 1/2; Z có ở cả hai.",
+    "W chỉ xuất hiện 1 lần."
+   ],
+   "trap": "Đòi chuỗi tương tự phải đúng thứ tự X rồi Y nên bỏ u2.",
+   "mem": "Chuỗi tương tự chỉ cần chứa đủ phần tử của hậu tố."
+  },
+  {
+   "lv": "VDC",
+   "t": "PageRank (C6)",
+   "q": "Đồ thị liên kết: A → B, A → C, B → C, C → A, D → C, D → A. Dùng công thức PR(X) = (1 − d) + d·Σ PR(T)/C(T), d = 0,85, vòng 0 mọi PR = 1. <b>PR(C)</b> sau vòng 1 là:",
+   "o": [
+    "1,85",
+    "2,7",
+    "1,425",
+    "2,0"
+   ],
+   "w": "C nhận link từ A (2 link ra), B (1 link ra), D (2 link ra): PR(C) = 0,15 + 0,85 × (1/2 + 1/1 + 1/2) = 0,15 + 1,7 = 1,85.",
+   "x": [
+    "Quên chia PR của trang nguồn cho số link ra (cộng 1 + 1 + 1).",
+    "Đó là PR(A).",
+    "Quên (1 − d) và d: cộng thẳng 0,5 + 1 + 0,5."
+   ],
+   "trap": "Chia cho số link vào của trang đích.",
+   "mem": "Mẫu số C(T) = số link ra của trang nguồn."
+  },
+  {
+   "lv": "TH",
+   "t": "MLOps (C6)",
+   "q": "Phân biệt <b>Model Registry</b> và <b>Model Versioning</b>:",
+   "o": [
+    "Registry: trạng thái mô hình; Versioning: gắn mô hình với phiên bản dữ liệu và code",
+    "Registry: gắn mô hình với commit code; Versioning: quản lý trạng thái phê duyệt",
+    "Registry: lưu đặc trưng dùng chung; Versioning: lưu kết quả dự báo",
+    "Hai khái niệm giống nhau, chỉ khác tên gọi của công cụ"
+   ],
+   "w": "Registry: danh mục mô hình với trạng thái đang phát triển, đã phê duyệt, ngừng dùng. Versioning: credit_model v3 = snapshot dữ liệu 01/10 + commit a1b2c3, dựng lại được để điều tra.",
+   "x": [
+    "Đảo ngược hai khái niệm.",
+    "Lưu đặc trưng dùng chung là Feature Store.",
+    "Hai khái niệm có vai trò khác nhau."
+   ],
+   "trap": "Đảo vai trò hai thành phần.",
+   "mem": "Registry = trạng thái · Versioning = dữ liệu + code."
+  },
+  {
+   "lv": "TH",
+   "t": "EU AI Act (C7)",
+   "q": "Hệ thống <b>chấm điểm công dân</b> dựa trên hành vi xã hội để quyết định quyền lợi (social scoring) thuộc mức nào?",
+   "o": [
+    "Unacceptable risk – bị cấm",
+    "High risk – được phép nếu kiểm định",
+    "Limited risk – chỉ cần dán nhãn",
+    "Minimal risk – không ràng buộc"
+   ],
+   "w": "Unacceptable gồm social scoring, thao túng hành vi… bị cấm hoàn toàn trong EU.",
+   "x": [
+    "Social scoring không được phép dù có kiểm định.",
+    "Dán nhãn chỉ áp dụng cho chatbot, deepfake.",
+    "Đây là mức rủi ro cao nhất."
+   ],
+   "trap": "Lẫn social scoring với credit scoring.",
+   "mem": "Social scoring → cấm."
+  },
+  {
+   "lv": "NB",
+   "t": "Data lineage (C7)",
+   "q": "Theo slide, data lineage đáp ứng yêu cầu nào của EU AI Act?",
+   "o": [
+    "Traceability – truy vết được dữ liệu và mô hình",
+    "Cấm hẳn hệ thống social scoring",
+    "Dán nhãn mọi nội dung do AI tạo ra cho người dùng cuối",
+    "Mã hoá dữ liệu khi lưu trữ"
+   ],
+   "w": "Lineage ghi lại dữ liệu đi từ nguồn nào, qua biến đổi nào, tới bảng/mô hình nào – nền tảng cho truy vết và giải trình.",
+   "x": [
+    "Đó là quy định cho mức Unacceptable.",
+    "Đó là nghĩa vụ mức Limited.",
+    "Mã hoá là kiểm soát bảo mật, không phải lineage."
+   ],
+   "trap": "Nghĩ lineage chỉ là công cụ kỹ thuật, không liên quan pháp lý.",
+   "mem": "Lineage ↔ Traceability."
+  },
+  {
+   "lv": "TH",
+   "t": "RLS và masking (C7)",
+   "q": "Phát biểu nào <b>đúng</b> về RLS và dynamic masking?",
+   "o": [
+    "Không đổi dữ liệu gốc hay cấu trúc bảng; kết quả tuỳ người xem",
+    "Ghi đè dữ liệu gốc trong bảng bằng giá trị đã che, theo từng vai trò",
+    "Tạo một bảng sao riêng cho từng phòng ban",
+    "Chỉ áp dụng được khi xuất dữ liệu ra file CSV"
+   ],
+   "w": "Chính sách gắn vào bảng/cột, kho tự áp theo vai trò khi truy vấn; cùng một câu SELECT, người khác nhau thấy kết quả khác nhau.",
+   "x": [
+    "Masking động áp dụng lúc đọc, không ghi đè.",
+    "Không cần sao chép bảng.",
+    "Áp dụng ngay trên truy vấn trong kho."
+   ],
+   "trap": "Nghĩ masking sửa dữ liệu lưu trữ.",
+   "mem": "Cùng bảng – khác người xem – khác kết quả."
+  },
+  {
+   "lv": "TH",
+   "t": "k-anonymity (C7)",
+   "q": "Hai kỹ thuật dùng để đạt k-anonymity là:",
+   "o": [
+    "Generalization và suppression",
+    "Thêm nhiễu vào kết quả truy vấn và giới hạn ε",
+    "Row-level security và masking",
+    "Hashing và Merkle tree"
+   ],
+   "w": "Generalization: thay giá trị cụ thể bằng khoảng (tuổi 27 → 20–29, mã vùng 70012 → 700**). Suppression: xoá hoặc che các dòng/giá trị quá hiếm.",
+   "x": [
+    "Đó là differential privacy.",
+    "Đó là kiểm soát truy cập theo người xem.",
+    "Đó là kỹ thuật toàn vẹn dữ liệu (Chương 9)."
+   ],
+   "trap": "Lẫn k-anonymity với differential privacy.",
+   "mem": "k-anonymity sửa dữ liệu: generalize + suppress."
+  },
+  {
+   "lv": "TH",
+   "t": "RAG (C8)",
+   "q": "Mục đích chính của RAG là:",
+   "o": [
+    "Giảm hallucination, dùng dữ liệu riêng mà không huấn luyện lại LLM",
+    "Huấn luyện lại LLM từ đầu trên dữ liệu doanh nghiệp",
+    "Nén mô hình LLM để chạy vừa bộ nhớ RAM của máy chủ nội bộ doanh nghiệp",
+    "Thay thế hoàn toàn kho dữ liệu bằng một mô hình LLM"
+   ],
+   "w": "LLM nhận thêm ngữ cảnh truy hồi từ tài liệu nội bộ nên trả lời có căn cứ và cập nhật.",
+   "x": [
+    "RAG không huấn luyện lại mô hình.",
+    "Nén vector là PQ (Chương 9).",
+    "RAG dùng dữ liệu trong kho, không thay kho."
+   ],
+   "trap": "Nghĩ RAG là fine-tuning.",
+   "mem": "RAG = truy hồi + sinh, không train lại."
+  },
+  {
+   "lv": "TH",
+   "t": "Write-back (C8)",
+   "q": "Tính năng <b>write-back</b> của dashboard nghĩa là:",
+   "o": [
+    "Ghi ngược dữ liệu, hành động từ dashboard vào hệ thống nghiệp vụ",
+    "Dashboard tự viết lại câu SQL phía sau để truy vấn chạy nhanh hơn",
+    "Ghi lại lịch sử những ai đã xem dashboard",
+    "Sao lưu định kỳ dashboard sang archive tier cho rẻ"
+   ],
+   "w": "Ví dụ quản lý duyệt hạn mức, gán việc cho nhân viên ngay trên dashboard – đóng vòng từ insight đến hành động.",
+   "x": [
+    "Đó là tối ưu truy vấn.",
+    "Đó là audit log.",
+    "Không liên quan."
+   ],
+   "trap": "Hiểu write-back là ghi log.",
+   "mem": "Write-back = dashboard → hệ thống nghiệp vụ."
+  },
+  {
+   "lv": "VD",
+   "t": "Agentic BI (C8)",
+   "q": "Hệ thống tự phát hiện doanh số thẻ tín dụng vùng miền Trung giảm 15%, tự truy nguyên do và gửi đề xuất chiến dịch cho giám đốc vùng mà không ai hỏi. Đây là:",
+   "o": [
+    "Agentic BI",
+    "Generative BI",
+    "Descriptive dashboard truyền thống",
+    "Semantic search"
+   ],
+   "w": "Chủ động phát hiện → phân tích → đề xuất là dấu hiệu của Agentic BI.",
+   "x": [
+    "Generative BI cần người dùng đặt câu hỏi.",
+    "Dashboard truyền thống chỉ hiển thị số liệu.",
+    "Semantic search chỉ tìm tài liệu theo nghĩa."
+   ],
+   "trap": "Chọn Generative BI vì có AI.",
+   "mem": "Không ai hỏi mà vẫn làm → Agentic."
+  },
+  {
+   "lv": "NB",
+   "t": "BFS và DFS (C9)",
+   "q": "Ghép đúng cấu trúc dữ liệu hỗ trợ:",
+   "o": [
+    "BFS – queue; DFS – stack hoặc đệ quy",
+    "BFS – stack; DFS – queue",
+    "BFS và DFS đều dùng queue",
+    "BFS – hàng đợi ưu tiên (heap); DFS – hash table"
+   ],
+   "w": "Queue (FIFO) cho duyệt theo từng cấp; stack (LIFO) cho đi sâu rồi quay lui.",
+   "x": [
+    "Đảo ngược.",
+    "DFS cần cơ chế quay lui (LIFO).",
+    "Không phải cấu trúc của hai thuật toán."
+   ],
+   "trap": "Đảo queue và stack.",
+   "mem": "BFS–queue · DFS–stack."
+  },
+  {
+   "lv": "VD",
+   "t": "Product Quantization (C9)",
+   "q": "Một vector 1.024 chiều kiểu float32 chiếm <b>4.096 byte</b>. PQ nén nó thành <b>128 byte</b>. Tỷ lệ nén là:",
+   "o": [
+    "32 lần",
+    "8 lần",
+    "128 lần",
+    "4 lần"
+   ],
+   "w": "4.096/128 = 32 lần – giúp hàng trăm triệu vector vừa RAM, đổi lại khoảng cách chỉ gần đúng.",
+   "x": [
+    "Tính nhầm 1.024/128.",
+    "Lấy số byte sau nén làm tỷ lệ.",
+    "Chỉ tính 4 byte mỗi float."
+   ],
+   "trap": "Lấy số chiều thay cho số byte.",
+   "mem": "Tỷ lệ nén = kích thước gốc / kích thước nén."
+  },
+  {
+   "lv": "VD",
+   "t": "Blockchain ETL (C9)",
+   "q": "Token USDT có 6 chữ số thập phân. Giá trị thô trong log là <b>2.750.000</b>. Giá trị sau chuẩn hoá là:",
+   "o": [
+    "2,75 USDT",
+    "2.750.000 USDT",
+    "0,00275 USDT",
+    "27,5 USDT"
+   ],
+   "w": "Giá trị thực = giá trị thô / 10^decimals = 2.750.000 / 10⁶ = 2,75. Mỗi token có số decimals riêng (ETH 18, USDT 6).",
+   "x": [
+    "Chưa chia cho 10⁶.",
+    "Chia cho 10⁹.",
+    "Chia cho 10⁵."
+   ],
+   "trap": "Áp nhầm 18 chữ số của ETH cho mọi token.",
+   "mem": "Chuẩn hoá = thô / 10^decimals."
+  },
+  {
+   "lv": "TH",
+   "t": "Merkle tree (C9)",
+   "q": "Cây Merkle có 4 lá L1–L4: H12 = hash(H1, H2), H34 = hash(H3, H4), Root = hash(H12, H34). Sửa nội dung <b>L2</b> thì:",
+   "o": [
+    "H2, H12 và Root thay đổi; H34 giữ nguyên",
+    "Chỉ H2 thay đổi, Root giữ nguyên",
+    "Mọi nút trong cây, kể cả H34, đều thay đổi",
+    "Chỉ Root thay đổi"
+   ],
+   "w": "Thay đổi lan dọc đường từ lá lên gốc; nhánh còn lại giữ nguyên. Vì vậy so Root là phát hiện được bất kỳ sửa đổi nào.",
+   "x": [
+    "Hash cha phụ thuộc hash con nên thay đổi lan lên tận Root.",
+    "H34 không phụ thuộc L2.",
+    "H2 và H12 cũng phải đổi trước khi Root đổi."
+   ],
+   "trap": "Nghĩ chỉ nút lá đổi.",
+   "mem": "Sửa 1 lá → đổi cả đường lên Root."
+  }
+ ]
+}
